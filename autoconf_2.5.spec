@@ -4,7 +4,7 @@
 
 Name: %realname%dialect
 Version: 2.59
-Release: alt3
+Release: alt4
 Serial: 2
 
 Summary: A GNU tool for automatically configuring source code
@@ -33,7 +33,7 @@ Patch10: %realname-2.59-alt-lfltgb.patch
 Provides: %realname = %serial:%version-%release
 Obsoletes: %realname
 
-PreReq: autoconf-common, alternatives >= 0.0.6
+PreReq: autoconf-common, alternatives >= 0:0.2.0-alt0.12
 Requires(post): %install_info
 Requires(preun): %uninstall_info
 Requires: m4 >= 1.4, mktemp >= 1:1.3.1
@@ -68,9 +68,9 @@ their use.
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
-%patch10 -p1 -b .vns
+%patch10 -p1
 
-find -type f -name \*.orig -print -delete
+find -type f -name \*.orig -delete -print
 
 find -type f -print0 |
 	xargs -r0 %__grep -FZl 'mawk gawk' -- |
@@ -111,62 +111,39 @@ done
 
 %define _perl_lib_path %perl_vendor_privlib:%_datadir/%realname%suff
 
-%__install -d $RPM_BUILD_ROOT%_altdir
-cat>$RPM_BUILD_ROOT%_altdir/%name<<EOF
-<group name="candidate">
-    <option name="link">%_bindir/%realname-default</option>
-    <option name="real">%_bindir/%realname%suff</option>
-    <option name="weight" type="number">30</option>
+%__mkdir_p $RPM_BUILD_ROOT%_altdir
+
+cat >$RPM_BUILD_ROOT%_altdir/%name <<EOF
+%_bindir/%realname-default	%_bindir/%realname%suff	30
+%_datadir/%realname	%_datadir/%realname%suff	%_bindir/%realname%suff
+%_infodir/%realname.info.gz	%_infodir/%realname%suff.info.gz	%_bindir/%realname%suff
 EOF
-for i in autoheader autom4te autoreconf autoscan autoupdate ifnames
-do
-cat>>$RPM_BUILD_ROOT%_altdir/%name<<EOF
-    <group name="slave">
-        <option name="link">%_bindir/$i-default</option>
-        <option name="real">%_bindir/$i%suff</option>
-    </group>
+
+for i in autoheader autom4te autoreconf autoscan autoupdate ifnames; do
+cat >>$RPM_BUILD_ROOT%_altdir/%name <<EOF
+%_bindir/$i-default	%_bindir/$i%suff	%_bindir/%realname%suff
 EOF
 done
-cat>>$RPM_BUILD_ROOT%_altdir/%name<<EOF
-    <group name="slave">
-        <option name="link">%_infodir/%realname.info.gz</option>
-        <option name="real">%_infodir/%realname%suff.info.gz</option>
-    </group>
-EOF
-for i in %realname autoheader autom4te autoreconf autoscan autoupdate config.guess config.sub ifnames
-do
-cat>>$RPM_BUILD_ROOT%_altdir/%name<<EOF
-    <group name="slave">
-        <option name="link">%_man1dir/$i.1.gz</option>
-        <option name="real">%_man1dir/$i%suff.1.gz</option>
-    </group>
+
+for i in %realname autoheader autom4te autoreconf autoscan autoupdate config.guess config.sub ifnames; do
+cat >>$RPM_BUILD_ROOT%_altdir/%name <<EOF
+%_man1dir/$i.1.gz	%_man1dir/$i%suff.1.gz	%_bindir/%realname%suff
 EOF
 done
-cat>>$RPM_BUILD_ROOT%_altdir/%name<<EOF
-    <group name="slave">
-        <option name="link">%_datadir/%realname</option>
-        <option name="real">%_datadir/%realname%suff</option>
-    </group>
-</group>
-EOF
 
 %post
-if a=$(readlink -nf %_datadir/info/dir)
-then
-%__subst 's,%realname%dialect,%realname%suff,g' $a
+if a="$(readlink -ne %_datadir/info/dir)"; then
+	%__subst 's,%realname%dialect,%realname%suff,g' "$a"
 fi
 %install_info %realname%suff.info
-%register_alternatives %name --  %realname autoheader autom4te autoreconf autoscan \
-autoupdate ifnames %realname.info.gz %realname.1.gz autoheader.1.gz autom4te.1.gz \
-autoreconf.1.gz autoscan.1.gz autoupdate.1.gz config.guess.1.gz config.sub.1.gz \
-ifnames.1.gz %{realname}data
+%register_alternatives %name
 
-if ! %__grep -Fqs '(autoconf)' %_infodir/dir; then
+if ! %__grep -Fqs '(%realname)' %_infodir/dir; then
 	%__install_info \
 		--info-file=%_infodir/%realname.info \
 		--info-dir=%_infodir \
 		--section=Development/Other \
-		--entry='* Autoconf: (autoconf).          Create source code configuration scripts'
+		--entry='* Autoconf: (%realname).          Create source code configuration scripts'
 fi
 
 %preun
@@ -178,7 +155,7 @@ if [ ! -e %_infodir/%realname.info.gz ]; then
 		--info-file=%_infodir/%realname.info \
 		--info-dir=%_infodir \
 		--section=Development/Other \
-		--entry='* Autoconf: (autoconf).          Create source code configuration scripts'
+		--entry='* Autoconf: (%realname).          Create source code configuration scripts'
 fi
 
 %triggerpostun -- %realname
@@ -187,12 +164,12 @@ autoupdate ifnames %realname.info.gz %realname.1.gz autoheader.1.gz autom4te.1.g
 autoreconf.1.gz autoscan.1.gz autoupdate.1.gz config.guess.1.gz config.sub.1.gz \
 ifnames.1.gz %{realname}data
 
-if ! %__grep -Fqs '(autoconf)' %_infodir/dir; then
+if ! %__grep -Fqs '(%realname)' %_infodir/dir; then
 	%__install_info \
 		--info-file=%_infodir/%realname.info \
 		--info-dir=%_infodir \
 		--section=Development/Other \
-		--entry='* Autoconf: (autoconf).          Create source code configuration scripts'
+		--entry='* Autoconf: (%realname).          Create source code configuration scripts'
 fi
 
 %files
@@ -205,6 +182,9 @@ fi
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Thu Feb 24 2005 Dmitry V. Levin <ldv@altlinux.org> 2:2.59-alt4
+- Converted alternatives config file to new format (0.2.0).
+
 * Fri May 14 2004 Alexey Voinov <voins@altlinux.ru> 2:2.59-alt3
 - Some more fixes for "-Wall -Werror"
 
