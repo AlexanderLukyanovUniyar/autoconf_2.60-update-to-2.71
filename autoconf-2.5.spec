@@ -4,7 +4,7 @@
 
 Name: %realname%dialect
 Version: 2.57
-Release: alt1
+Release: alt2
 Serial: 2
 
 %set_compress_method gzip
@@ -21,15 +21,21 @@ Source: ftp://ftp.gnu.org/gnu/%realname/%srcname.tar.bz2
 Patch1: %realname-2.54-alt-texinfo.patch
 Patch2: %realname-2.54-alt-datadir.patch
 Patch3: %realname-2.56-alt-dnet.patch
+Patch4: %realname-2.57-alt-ac_extension.patch
+Patch5: %realname-2.57-alt-c_const.patch
+Patch6: %realname-2.57-alt-check_decls.patch
+Patch7: %realname-2.57-alt-header_stdc.patch
 
 Provides: %realname = %serial:%version-%release
 Obsoletes: %realname
 
-PreReq: autoconf-common
-Requires(post,preun): %__install_info, /usr/sbin/update-alternatives
+PreReq: autoconf-common, alternatives >= 0.0.6
+Requires(post): %install_info
+Requires(preun): %uninstall_info
 Requires: m4 >= 1.4, mktemp >= 1:1.3.1
 
-Prefix: %prefix
+# Automatically added by buildreq on Fri Oct 17 2003
+BuildRequires: libalternatives-devel
 
 %description
 GNU's Autoconf is a tool for configuring source code and Makefiles.
@@ -52,10 +58,14 @@ their use.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
 
 find -type f -print0 |
-	xargs -r0 %__grep -FZl 'mawk gawk' |
-	xargs -r0 %__subst 's/mawk gawk/gawk mawk/g'
+	xargs -r0 %__grep -FZl 'mawk gawk' -- |
+	xargs -r0 %__subst 's/mawk gawk/gawk mawk/g' --
 
 # patch texinfo file
 %__subst 's/(%realname)/(%realname%suff)/g;s/\(\* \([Aa]utoconf\|configure\)\):/\1%suff:/g' doc/%realname.texi
@@ -92,26 +102,55 @@ done
 
 %define _perl_lib_path %perl_vendor_privlib:%_datadir/%realname%suff
 
+%__install -d $RPM_BUILD_ROOT%_altdir
+cat>$RPM_BUILD_ROOT%_altdir/%name<<EOF
+<group name="candidate">
+    <option name="link">%_bindir/%realname-default</option>
+    <option name="real">%_bindir/%realname%suff</option>
+    <option name="weight" type="number">30</option>
+EOF
+for i in autoheader autom4te autoreconf autoscan autoupdate ifnames
+do
+cat>>$RPM_BUILD_ROOT%_altdir/%name<<EOF
+    <group name="slave">
+        <option name="link">%_bindir/$i-default</option>
+        <option name="real">%_bindir/$i%suff</option>
+    </group>
+EOF
+done
+cat>>$RPM_BUILD_ROOT%_altdir/%name<<EOF
+    <group name="slave">
+        <option name="link">%_infodir/%realname.info.gz</option>
+        <option name="real">%_infodir/%realname%suff.info.gz</option>
+    </group>
+EOF
+for i in %realname autoheader autom4te autoreconf autoscan autoupdate config.guess config.sub ifnames
+do
+cat>>$RPM_BUILD_ROOT%_altdir/%name<<EOF
+    <group name="slave">
+        <option name="link">%_man1dir/$i.1.gz</option>
+        <option name="real">%_man1dir/$i%suff.1.gz</option>
+    </group>
+EOF
+done
+cat>>$RPM_BUILD_ROOT%_altdir/%name<<EOF
+    <group name="slave">
+        <option name="link">%_datadir/%realname</option>
+        <option name="real">%_datadir/%realname%suff</option>
+    </group>
+</group>
+EOF
+
 %post
+if a=$(readlink -nf %_datadir/info/dir)
+then
+%__subst 's,%realname%dialect,%realname%suff,g' $a
+fi
 %install_info %realname%suff.info
-/usr/sbin/update-alternatives --install %_bindir/%realname-default %realname %_bindir/%realname%suff 30 \
-	--slave %_bindir/autoheader-default autoheader %_bindir/autoheader%suff \
-	--slave %_bindir/autom4te-default autom4te %_bindir/autom4te%suff \
-	--slave %_bindir/autoreconf-default autoreconf %_bindir/autoreconf%suff \
-	--slave %_bindir/autoscan-default autoscan %_bindir/autoscan%suff \
-	--slave %_bindir/autoupdate-default autoupdate %_bindir/autoupdate%suff \
-	--slave %_bindir/ifnames-default ifnames %_bindir/ifnames%suff \
-	--slave %_infodir/%realname.info.gz %realname.info.gz %_infodir/%realname%suff.info.gz \
-	--slave %_man1dir/%realname.1.gz %realname.1.gz %_man1dir/%realname%suff.1.gz \
-	--slave %_man1dir/autoheader.1.gz autoheader.1.gz %_man1dir/autoheader%suff.1.gz \
-	--slave %_man1dir/autom4te.1.gz autom4te.1.gz %_man1dir/autom4te%suff.1.gz \
-	--slave %_man1dir/autoreconf.1.gz autoreconf.1.gz %_man1dir/autoreconf%suff.1.gz \
-	--slave %_man1dir/autoscan.1.gz autoscan.1.gz %_man1dir/autoscan%suff.1.gz \
-	--slave %_man1dir/autoupdate.1.gz autoupdate.1.gz %_man1dir/autoupdate%suff.1.gz \
-	--slave %_man1dir/config.guess.1.gz config.guess.1.gz %_man1dir/config.guess%suff.1.gz \
-	--slave %_man1dir/config.sub.1.gz config.sub.1.gz %_man1dir/config.sub%suff.1.gz \
-	--slave %_man1dir/ifnames.1.gz ifnames.1.gz %_man1dir/ifnames%suff.1.gz \
-	--slave %_datadir/%realname %{realname}data %_datadir/%realname%suff
+%register_alternatives %name --  %realname autoheader autom4te autoreconf autoscan \
+autoupdate ifnames %realname.info.gz %realname.1.gz autoheader.1.gz autom4te.1.gz \
+autoreconf.1.gz autoscan.1.gz autoupdate.1.gz config.guess.1.gz config.sub.1.gz \
+ifnames.1.gz %{realname}data
 
 if ! %__grep -Fqs '(autoconf)' %_infodir/dir; then
 	%__install_info \
@@ -124,7 +163,7 @@ fi
 %preun
 [ $1 = 0 ] || exit 0
 %uninstall_info %realname%suff.info
-/usr/sbin/update-alternatives --remove %realname %_bindir/%realname%suff
+%unregister_alternatives %name
 if [ ! -e %_infodir/%realname.info.gz ]; then
 	%__install_info --delete \
 		--info-file=%_infodir/%realname.info \
@@ -134,24 +173,10 @@ if [ ! -e %_infodir/%realname.info.gz ]; then
 fi
 
 %triggerpostun -- %realname
-/usr/sbin/update-alternatives --install %_bindir/%realname-default %realname %_bindir/%realname%suff 30 \
-	--slave %_bindir/autoheader-default autoheader %_bindir/autoheader%suff \
-	--slave %_bindir/autom4te-default autom4te %_bindir/autom4te%suff \
-	--slave %_bindir/autoreconf-default autoreconf %_bindir/autoreconf%suff \
-	--slave %_bindir/autoscan-default autoscan %_bindir/autoscan%suff \
-	--slave %_bindir/autoupdate-default autoupdate %_bindir/autoupdate%suff \
-	--slave %_bindir/ifnames-default ifnames %_bindir/ifnames%suff \
-	--slave %_infodir/%realname.info.gz %realname.info.gz %_infodir/%realname%suff.info.gz \
-	--slave %_man1dir/%realname.1.gz %realname.1.gz %_man1dir/%realname%suff.1.gz \
-	--slave %_man1dir/autoheader.1.gz autoheader.1.gz %_man1dir/autoheader%suff.1.gz \
-	--slave %_man1dir/autom4te.1.gz autom4te.1.gz %_man1dir/autom4te%suff.1.gz \
-	--slave %_man1dir/autoreconf.1.gz autoreconf.1.gz %_man1dir/autoreconf%suff.1.gz \
-	--slave %_man1dir/autoscan.1.gz autoscan.1.gz %_man1dir/autoscan%suff.1.gz \
-	--slave %_man1dir/autoupdate.1.gz autoupdate.1.gz %_man1dir/autoupdate%suff.1.gz \
-	--slave %_man1dir/config.guess.1.gz config.guess.1.gz %_man1dir/config.guess%suff.1.gz \
-	--slave %_man1dir/config.sub.1.gz config.sub.1.gz %_man1dir/config.sub%suff.1.gz \
-	--slave %_man1dir/ifnames.1.gz ifnames.1.gz %_man1dir/ifnames%suff.1.gz \
-	--slave %_datadir/%realname %{realname}data %_datadir/%realname%suff
+%register_alternatives %name --  %realname autoheader autom4te autoreconf autoscan \
+autoupdate ifnames %realname.info.gz %realname.1.gz autoheader.1.gz autom4te.1.gz \
+autoreconf.1.gz autoscan.1.gz autoupdate.1.gz config.guess.1.gz config.sub.1.gz \
+ifnames.1.gz %{realname}data
 
 if ! %__grep -Fqs '(autoconf)' %_infodir/dir; then
 	%__install_info \
@@ -163,6 +188,7 @@ fi
 
 %files
 %config %_sysconfdir/buildreqs/packages/substitute.d/%name
+%_altdir/*
 %_bindir/*
 %_datadir/%realname%suff
 %_man1dir/*
@@ -170,6 +196,14 @@ fi
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Fri Oct 17 2003 Dmitry V. Levin <ldv@altlinux.org> 2:2.57-alt2
+- Updated package dependencies.
+- Corrected ac_extension order.
+- Partially fixed "-Wall -Werror" support (voins, #2913).
+
+* Wed Apr 09 2003 Stanislav Ievlev <inger@altlinux.ru> 2:2.57-alt1.1
+- move to new alternatives scheme
+
 * Sat Dec 14 2002 Dmitry V. Levin <ldv@altlinux.org> 2:2.57-alt1
 - Updated to 2.57
 
