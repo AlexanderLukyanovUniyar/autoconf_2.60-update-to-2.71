@@ -4,7 +4,7 @@
 
 Name: %realname%dialect
 Version: 2.59
-Release: alt1
+Release: alt2
 Serial: 2
 
 Summary: A GNU tool for automatically configuring source code
@@ -25,6 +25,7 @@ Patch3: %realname-2.57-alt-ac_extension.patch
 Patch4: %realname-2.57-alt-c_const.patch
 Patch5: %realname-2.57-alt-check_decls.patch
 Patch6: %realname-2.57-alt-header_stdc.patch
+Patch7: %realname-2.59-alt-ac_prog_cxxcpp.patch
 
 Provides: %realname = %serial:%version-%release
 Obsoletes: %realname
@@ -61,6 +62,7 @@ their use.
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 
 find -type f -name \*.orig -print -delete
 
@@ -197,6 +199,10 @@ fi
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Tue Jan 06 2004 Dmitry V. Levin <ldv@altlinux.org> 2:2.59-alt2
+- Changed AC_PROG_CXXCPP so it won't fail when no c++
+  preprocessor available.
+
 * Thu Nov 27 2003 Dmitry V. Levin <ldv@altlinux.org> 2:2.59-alt1
 - Updated to 2.59.
 
