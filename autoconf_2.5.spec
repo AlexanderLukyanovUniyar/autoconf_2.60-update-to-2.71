@@ -4,7 +4,7 @@
 
 Name: %realname%dialect
 Version: 2.59
-Release: alt2
+Release: alt3
 Serial: 2
 
 Summary: A GNU tool for automatically configuring source code
@@ -26,6 +26,9 @@ Patch4: %realname-2.57-alt-c_const.patch
 Patch5: %realname-2.57-alt-check_decls.patch
 Patch6: %realname-2.57-alt-header_stdc.patch
 Patch7: %realname-2.59-alt-ac_prog_cxxcpp.patch
+Patch8: %realname-2.59-alt-alloca.patch
+Patch9: %realname-2.59-alt-type-signal.patch
+Patch10: %realname-2.59-alt-lfltgb.patch
 
 Provides: %realname = %serial:%version-%release
 Obsoletes: %realname
@@ -63,6 +66,9 @@ their use.
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
+%patch9 -p1
+%patch10 -p1 -b .vns
 
 find -type f -name \*.orig -print -delete
 
@@ -199,6 +205,9 @@ fi
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Fri May 14 2004 Alexey Voinov <voins@altlinux.ru> 2:2.59-alt3
+- Some more fixes for "-Wall -Werror"
+
 * Tue Jan 06 2004 Dmitry V. Levin <ldv@altlinux.org> 2:2.59-alt2
 - Changed AC_PROG_CXXCPP so it won't fail when no c++
   preprocessor available.

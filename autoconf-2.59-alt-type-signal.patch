@@ -1,0 +1,11 @@
+--- autoconf-2.59/lib/autoconf/types.m4.vns	2003-05-22 16:05:14 +0400
++++ autoconf-2.59/lib/autoconf/types.m4	2004-05-12 20:58:21 +0400
+@@ -363,7 +363,7 @@
+ void (*signal ()) ();
+ #endif
+ ],
+-		 [int i;])],
++		 [int i; (void)i;])],
+ 		   [ac_cv_type_signal=void],
+ 		   [ac_cv_type_signal=int])])
+ AC_DEFINE_UNQUOTED(RETSIGTYPE, $ac_cv_type_signal,
