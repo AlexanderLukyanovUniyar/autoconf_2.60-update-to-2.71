@@ -3,7 +3,7 @@
 %define suff -2.5
 
 Name: %realname%dialect
-Version: 2.58
+Version: 2.59
 Release: alt1
 Serial: 2
 
@@ -197,6 +197,9 @@ fi
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Thu Nov 27 2003 Dmitry V. Levin <ldv@altlinux.org> 2:2.59-alt1
+- Updated to 2.59.
+
 * Sun Nov 16 2003 Dmitry V. Levin <ldv@altlinux.org> 2:2.58-alt1
 - Updated to 2.58.
 - Removed alt-dnet patch (no longer needed).

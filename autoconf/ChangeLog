@@ -1,3 +1,27 @@
+2003-11-06  Akim Demaille  <akim@epita.fr>
+
+	Version 2.59.
+
+2003-11-05  Alexandre Duret-Lutz  <adl@gnu.org>
+
+	* lib/autoconf/status.m4 (_AC_SRCPATHS): Fix use of AS_SET_CATFILE
+	so that ac_abs_builddir, ac_abs_top_builddir, ac_abs_srcdir,
+	and ac_abs_top_srcdir are absolute paths.
+	* lib/m4sugar/m4sh.m4 (AS_SET_CATFILE): Remove misleading comment.
+
+2003-11-05  Akim Demaille  <akim@epita.fr>
+
+	* configure.ac: Bump to 2.58a.
+
+2003-11-05  Kevin Ryde  <user42@zip.com.au>
+
+	* doc/autoconf.texi (Using Autotest): Avoid @strong{Note: ...}, since
+	it provokes a warning from makeinfo about looking like a cross
+	reference in info output.
+
+	* doc/autoconf.texi (Function Portability): Add notes on signal
+	handler return type, as per AC_TYPE_SIGNAL.
+
 2003-11-04  Akim Demaille  <akim@epita.fr>
 
 	Version 2.58.

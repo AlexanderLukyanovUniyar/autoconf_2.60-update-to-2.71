@@ -3,7 +3,7 @@ autoconf.texi.
 
 
 
-   This manual is for GNU Autoconf (version 2.58, 4 November 2003), a
+   This manual is for GNU Autoconf (version 2.59, 5 November 2003), a
 package for creating scripts to configure source code packages using
 templates and an M4 macro package.
 
@@ -55,7 +55,7 @@ Autoconf
 
 
 
-   This manual is for GNU Autoconf (version 2.58, 4 November 2003), a
+   This manual is for GNU Autoconf (version 2.59, 5 November 2003), a
 package for creating scripts to configure source code packages using
 templates and an M4 macro package.
 
@@ -1389,7 +1389,7 @@ Using them is optional.
      earlier than VERSION, print an error message to the standard error
      output and exit with failure (exit status is 63).  For example:
 
-          AC_PREREQ(2.58)
+          AC_PREREQ(2.59)
 
      This macro is the only macro that may be used before `AC_INIT', but
      for consistency, you are invited not to do so.
@@ -2985,6 +2985,17 @@ additions.  Please help us keeping it as complete as possible.
 
      On MINGW, a call `putenv("FOO=")' removes `FOO' from the
      environment, rather than inserting it with an empty value.
+
+`signal' handler
+     Normally `signal' takes a handler function with a return type of
+     `void', but some old systems required `int' instead.  Any actual
+     `int' value returned is not used, this is only a difference in the
+     function prototype demanded.
+
+     All systems we know of in current use take `void'.  Presumably
+     `int' was to support K&R C, where of course `void' is not
+     available.  `AC_TYPE_SIGNAL' (*note Particular Types::) can be
+     used to establish the correct type in all cases.
 
 `snprintf'
      The ISO C99 standard says that if the output array isn't big enough
@@ -5189,7 +5200,7 @@ actually depend on the current language (*note Language Choice::) to
 
    For instance executing (observe the double quotation!):
 
-     AC_INIT(Autoconf Documentation, 2.58, bug-autoconf@gnu.org)
+     AC_INIT(Autoconf Documentation, 2.59, bug-autoconf@gnu.org)
      AC_DEFINE([HELLO_WORLD], ["Hello, World\n"])
      AC_LANG_CONFTEST(
         [AC_LANG_SOURCE([[const char hw[] = "Hello, World\n";]])])
@@ -5204,8 +5215,8 @@ results in:
      
      #define PACKAGE_NAME "Autoconf Documentation"
      #define PACKAGE_TARNAME "autoconf-documentation"
-     #define PACKAGE_VERSION "2.58"
-     #define PACKAGE_STRING "Autoconf Documentation 2.58"
+     #define PACKAGE_VERSION "2.59"
+     #define PACKAGE_STRING "Autoconf Documentation 2.59"
      #define PACKAGE_BUGREPORT "bug-autoconf@gnu.org"
      #define HELLO_WORLD "Hello, World\n"
      # 1170 "configure" 2
@@ -5219,7 +5230,7 @@ results in:
 
    For instance:
 
-     AC_INIT(Autoconf Documentation, 2.58, bug-autoconf@gnu.org)
+     AC_INIT(Autoconf Documentation, 2.59, bug-autoconf@gnu.org)
      AC_DEFINE([HELLO_WORLD], ["Hello, World\n"])
      AC_LANG_CONFTEST(
      [AC_LANG_PROGRAM([[const char hw[] = "Hello, World\n";]],
@@ -5235,8 +5246,8 @@ results in:
      
      #define PACKAGE_NAME "Autoconf Documentation"
      #define PACKAGE_TARNAME "autoconf-documentation"
-     #define PACKAGE_VERSION "2.58"
-     #define PACKAGE_STRING "Autoconf Documentation 2.58"
+     #define PACKAGE_VERSION "2.59"
+     #define PACKAGE_STRING "Autoconf Documentation 2.59"
      #define PACKAGE_BUGREPORT "bug-autoconf@gnu.org"
      #define HELLO_WORLD "Hello, World\n"
      # 1170 "configure" 2
@@ -5300,7 +5311,7 @@ temptation of following the easiest path.
 
    For instance:
 
-     AC_INIT(Autoconf Documentation, 2.58, bug-autoconf@gnu.org)
+     AC_INIT(Autoconf Documentation, 2.59, bug-autoconf@gnu.org)
      AC_DEFINE([HELLO_WORLD], ["Hello, World\n"])
      AC_PREPROC_IFELSE(
         [AC_LANG_PROGRAM([[const char hw[] = "Hello, World\n";]],
@@ -12204,7 +12215,7 @@ File: autoconf.info,  Node: Using Autotest,  Next: FAQ,  Prev: Obsolete Construc
 Generating Test Suites with Autotest
 ************************************
 
-     *Note: This section describes an experimental feature which will
+     *N.B.: This section describes an experimental feature which will
      be part of Autoconf in a forthcoming release.  Although we believe
      Autotest is stabilizing, this documentation describes an interface which
      might change in the future: do not depend upon Autotest without
@@ -14478,6 +14489,7 @@ portability is discussed in this document.
 * setpgrp:                               Particular Functions.
 * setvbuf:                               Particular Functions.
 * shift:                                 Limitations of Builtins.
+* signal:                                Function Portability.
 * signal.h:                              Particular Types.
 * snprintf:                              Function Portability.
 * source:                                Limitations of Builtins.
@@ -14721,174 +14733,174 @@ Node: Files116825
 Node: Libraries117700
 Node: Library Functions120582
 Node: Function Portability121197
-Node: Particular Functions126040
-Node: Generic Functions139965
-Node: Header Files144822
-Node: Header Portability145447
-Node: Particular Headers148172
-Node: Generic Headers155716
-Node: Declarations158139
-Node: Particular Declarations158727
-Node: Generic Declarations158939
-Node: Structures161340
-Node: Particular Structures161947
-Node: Generic Structures163632
-Node: Types165093
-Node: Particular Types165605
-Node: Generic Types166931
-Node: Compilers and Preprocessors168330
-Node: Specific Compiler Characteristics169415
-Node: Generic Compiler Characteristics170540
-Node: C Compiler171983
-Node: C++ Compiler182791
-Node: Fortran Compiler184784
-Node: System Services199038
-Ref: System Services-Footnote-1202425
-Node: UNIX Variants202516
-Node: Writing Tests203927
-Node: Language Choice205948
-Ref: Language Choice-Footnote-1209270
-Node: Writing Test Programs209426
-Node: Guidelines210003
-Node: Test Functions211949
-Node: Generating Sources213531
-Node: Running the Preprocessor217317
-Node: Running the Compiler220446
-Node: Running the Linker221428
-Node: Run Time223219
-Node: Systemology226546
-Ref: Systemology-Footnote-1228154
-Ref: Systemology-Footnote-2228219
-Ref: Systemology-Footnote-3228257
-Ref: Systemology-Footnote-4228325
-Ref: Systemology-Footnote-5228441
-Node: Multiple Cases228510
-Node: Results229837
-Node: Defining Symbols230583
-Node: Setting Output Variables234086
-Node: Caching Results238676
-Node: Cache Variable Names242350
-Node: Cache Files243904
-Node: Cache Checkpointing245922
-Node: Printing Messages247291
-Node: Programming in M4250787
-Node: M4 Quotation251578
-Node: Active Characters252415
-Ref: Active Characters-Footnote-1253758
-Node: One Macro Call253780
-Node: Quotation and Nested Macros255331
-Node: Changequote is Evil258286
-Node: Quadrigraphs260810
-Node: Quotation Rule Of Thumb262859
-Node: Using autom4te265479
-Ref: Using autom4te-Footnote-1266124
-Node: autom4te Invocation266173
-Node: Customizing autom4te275130
-Node: Programming in M4sugar276362
-Node: Redefined M4 Macros276962
-Node: Evaluation Macros279075
-Node: Forbidden Patterns280109
-Node: Programming in M4sh281462
-Node: Writing Autoconf Macros283315
-Node: Macro Definitions284112
-Node: Macro Names285884
-Node: Reporting Messages288492
-Node: Dependencies Between Macros289838
-Node: Prerequisite Macros290454
-Node: Suggested Ordering293202
-Node: Obsoleting Macros294706
-Node: Coding Style295818
-Node: Portable Shell302837
-Ref: Portable Shell-Footnote-1305268
-Node: Shellology305336
-Ref: Shellology-Footnote-1309391
-Node: Here-Documents309487
-Node: File Descriptors311677
-Node: File System Conventions313823
-Ref: File System Conventions-Footnote-1317914
-Node: Shell Substitutions317988
-Node: Assignments324383
-Node: Parentheses326242
-Node: Special Shell Variables327060
-Node: Limitations of Builtins334404
-Node: Limitations of Usual Tools350822
-Node: Limitations of Make369869
-Node: Manual Configuration391602
-Node: Specifying Names392425
-Node: Canonicalizing394705
-Node: Using System Type396949
-Node: Site Configuration398747
-Node: External Software399574
-Node: Package Options402864
-Node: Pretty Help Strings405720
-Node: Site Details407700
-Node: Transforming Names408925
-Node: Transformation Options409998
-Node: Transformation Examples410461
-Node: Transformation Rules412166
-Node: Site Defaults413703
-Node: Running configure Scripts417619
-Node: Basic Installation418627
-Node: Compilers and Options421465
-Node: Multiple Architectures422110
-Node: Installation Names423099
-Node: Optional Features424287
-Node: System Type425061
-Node: Sharing Defaults426373
-Node: Defining Variables427001
-Node: configure Invocation427670
-Node: config.status Invocation428789
-Node: Obsolete Constructs432742
-Node: Obsolete config.status Use433688
-Node: acconfig.h435451
-Node: autoupdate Invocation437458
-Node: Obsolete Macros439139
-Node: Autoconf 1458408
-Node: Changed File Names459464
-Node: Changed Makefiles460206
-Node: Changed Macros461285
-Node: Changed Results462534
-Node: Changed Macro Writing464632
-Node: Autoconf 2.13465898
-Node: Changed Quotation467097
-Node: New Macros468967
-Node: Hosts and Cross-Compilation470622
-Node: AC_LIBOBJ vs LIBOBJS474948
-Ref: AC_LIBOBJ vs LIBOBJS-Footnote-1477481
-Node: AC_FOO_IFELSE vs AC_TRY_FOO477557
-Node: Using Autotest479554
-Node: Using an Autotest Test Suite481989
-Node: testsuite Scripts482272
-Node: Autotest Logs486717
-Node: Writing testsuite.at489043
-Node: testsuite Invocation493417
-Node: Making testsuite Scripts496563
-Node: FAQ500015
-Node: Distributing500750
-Node: Why GNU m4501789
-Node: Bootstrapping502681
-Node: Why Not Imake503281
-Node: Defining Directories508001
-Ref: Defining Directories-Footnote-1510062
-Ref: Defining Directories-Footnote-2510137
-Node: autom4te.cache510212
-Node: Present But Cannot Be Compiled512047
-Node: History515491
-Node: Genesis516272
-Node: Exodus517442
-Node: Leviticus520482
-Node: Numbers522002
-Node: Deuteronomy523907
-Node: Copying This Manual526568
-Node: GNU Free Documentation License526780
-Node: Indices549170
-Node: Environment Variable Index549788
-Node: Output Variable Index552732
-Node: Preprocessor Symbol Index559687
-Node: Autoconf Macro Index567615
-Node: M4 Macro Index586364
-Node: Autotest Macro Index587638
-Node: Program & Function Index588371
-Node: Concept Index597061
+Node: Particular Functions126558
+Node: Generic Functions140483
+Node: Header Files145340
+Node: Header Portability145965
+Node: Particular Headers148690
+Node: Generic Headers156234
+Node: Declarations158657
+Node: Particular Declarations159245
+Node: Generic Declarations159457
+Node: Structures161858
+Node: Particular Structures162465
+Node: Generic Structures164150
+Node: Types165611
+Node: Particular Types166123
+Node: Generic Types167449
+Node: Compilers and Preprocessors168848
+Node: Specific Compiler Characteristics169933
+Node: Generic Compiler Characteristics171058
+Node: C Compiler172501
+Node: C++ Compiler183309
+Node: Fortran Compiler185302
+Node: System Services199556
+Ref: System Services-Footnote-1202943
+Node: UNIX Variants203034
+Node: Writing Tests204445
+Node: Language Choice206466
+Ref: Language Choice-Footnote-1209788
+Node: Writing Test Programs209944
+Node: Guidelines210521
+Node: Test Functions212467
+Node: Generating Sources214049
+Node: Running the Preprocessor217835
+Node: Running the Compiler220964
+Node: Running the Linker221946
+Node: Run Time223737
+Node: Systemology227064
+Ref: Systemology-Footnote-1228672
+Ref: Systemology-Footnote-2228737
+Ref: Systemology-Footnote-3228775
+Ref: Systemology-Footnote-4228843
+Ref: Systemology-Footnote-5228959
+Node: Multiple Cases229028
+Node: Results230355
+Node: Defining Symbols231101
+Node: Setting Output Variables234604
+Node: Caching Results239194
+Node: Cache Variable Names242868
+Node: Cache Files244422
+Node: Cache Checkpointing246440
+Node: Printing Messages247809
+Node: Programming in M4251305
+Node: M4 Quotation252096
+Node: Active Characters252933
+Ref: Active Characters-Footnote-1254276
+Node: One Macro Call254298
+Node: Quotation and Nested Macros255849
+Node: Changequote is Evil258804
+Node: Quadrigraphs261328
+Node: Quotation Rule Of Thumb263377
+Node: Using autom4te265997
+Ref: Using autom4te-Footnote-1266642
+Node: autom4te Invocation266691
+Node: Customizing autom4te275648
+Node: Programming in M4sugar276880
+Node: Redefined M4 Macros277480
+Node: Evaluation Macros279593
+Node: Forbidden Patterns280627
+Node: Programming in M4sh281980
+Node: Writing Autoconf Macros283833
+Node: Macro Definitions284630
+Node: Macro Names286402
+Node: Reporting Messages289010
+Node: Dependencies Between Macros290356
+Node: Prerequisite Macros290972
+Node: Suggested Ordering293720
+Node: Obsoleting Macros295224
+Node: Coding Style296336
+Node: Portable Shell303355
+Ref: Portable Shell-Footnote-1305786
+Node: Shellology305854
+Ref: Shellology-Footnote-1309909
+Node: Here-Documents310005
+Node: File Descriptors312195
+Node: File System Conventions314341
+Ref: File System Conventions-Footnote-1318432
+Node: Shell Substitutions318506
+Node: Assignments324901
+Node: Parentheses326760
+Node: Special Shell Variables327578
+Node: Limitations of Builtins334922
+Node: Limitations of Usual Tools351340
+Node: Limitations of Make370387
+Node: Manual Configuration392120
+Node: Specifying Names392943
+Node: Canonicalizing395223
+Node: Using System Type397467
+Node: Site Configuration399265
+Node: External Software400092
+Node: Package Options403382
+Node: Pretty Help Strings406238
+Node: Site Details408218
+Node: Transforming Names409443
+Node: Transformation Options410516
+Node: Transformation Examples410979
+Node: Transformation Rules412684
+Node: Site Defaults414221
+Node: Running configure Scripts418137
+Node: Basic Installation419145
+Node: Compilers and Options421983
+Node: Multiple Architectures422628
+Node: Installation Names423617
+Node: Optional Features424805
+Node: System Type425579
+Node: Sharing Defaults426891
+Node: Defining Variables427519
+Node: configure Invocation428188
+Node: config.status Invocation429307
+Node: Obsolete Constructs433260
+Node: Obsolete config.status Use434206
+Node: acconfig.h435969
+Node: autoupdate Invocation437976
+Node: Obsolete Macros439657
+Node: Autoconf 1458926
+Node: Changed File Names459982
+Node: Changed Makefiles460724
+Node: Changed Macros461803
+Node: Changed Results463052
+Node: Changed Macro Writing465150
+Node: Autoconf 2.13466416
+Node: Changed Quotation467615
+Node: New Macros469485
+Node: Hosts and Cross-Compilation471140
+Node: AC_LIBOBJ vs LIBOBJS475466
+Ref: AC_LIBOBJ vs LIBOBJS-Footnote-1477999
+Node: AC_FOO_IFELSE vs AC_TRY_FOO478075
+Node: Using Autotest480072
+Node: Using an Autotest Test Suite482507
+Node: testsuite Scripts482790
+Node: Autotest Logs487235
+Node: Writing testsuite.at489561
+Node: testsuite Invocation493935
+Node: Making testsuite Scripts497081
+Node: FAQ500533
+Node: Distributing501268
+Node: Why GNU m4502307
+Node: Bootstrapping503199
+Node: Why Not Imake503799
+Node: Defining Directories508519
+Ref: Defining Directories-Footnote-1510580
+Ref: Defining Directories-Footnote-2510655
+Node: autom4te.cache510730
+Node: Present But Cannot Be Compiled512565
+Node: History516009
+Node: Genesis516790
+Node: Exodus517960
+Node: Leviticus521000
+Node: Numbers522520
+Node: Deuteronomy524425
+Node: Copying This Manual527086
+Node: GNU Free Documentation License527298
+Node: Indices549688
+Node: Environment Variable Index550306
+Node: Output Variable Index553250
+Node: Preprocessor Symbol Index560205
+Node: Autoconf Macro Index568133
+Node: M4 Macro Index586882
+Node: Autotest Macro Index588156
+Node: Program & Function Index588889
+Node: Concept Index597642
 
 End Tag Table
