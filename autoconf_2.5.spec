@@ -3,11 +3,9 @@
 %define suff -2.5
 
 Name: %realname%dialect
-Version: 2.57
-Release: alt2
+Version: 2.58
+Release: alt1
 Serial: 2
-
-%set_compress_method gzip
 
 Summary: A GNU tool for automatically configuring source code
 License: GPL
@@ -16,15 +14,17 @@ Url: http://www.gnu.org/software/%realname/
 Packager: Autoconf Development Team <autoconf@packages.altlinux.org>
 BuildArch: noarch
 
+%set_compress_method gzip
 %define srcname %realname-%version
+%define __spec_autodep_custom_pre export autom4te_perllibdir=%buildroot%_datadir/%realname%suff
+
 Source: ftp://ftp.gnu.org/gnu/%realname/%srcname.tar.bz2
-Patch1: %realname-2.54-alt-texinfo.patch
+Patch1: %realname-2.58-alt-texinfo.patch
 Patch2: %realname-2.54-alt-datadir.patch
-Patch3: %realname-2.56-alt-dnet.patch
-Patch4: %realname-2.57-alt-ac_extension.patch
-Patch5: %realname-2.57-alt-c_const.patch
-Patch6: %realname-2.57-alt-check_decls.patch
-Patch7: %realname-2.57-alt-header_stdc.patch
+Patch3: %realname-2.57-alt-ac_extension.patch
+Patch4: %realname-2.57-alt-c_const.patch
+Patch5: %realname-2.57-alt-check_decls.patch
+Patch6: %realname-2.57-alt-header_stdc.patch
 
 Provides: %realname = %serial:%version-%release
 Obsoletes: %realname
@@ -34,8 +34,8 @@ Requires(post): %install_info
 Requires(preun): %uninstall_info
 Requires: m4 >= 1.4, mktemp >= 1:1.3.1
 
-# Automatically added by buildreq on Fri Oct 17 2003
-BuildRequires: libalternatives-devel
+# Automatically added by buildreq on Mon Nov 17 2003
+BuildRequires: help2man libalternatives-devel
 
 %description
 GNU's Autoconf is a tool for configuring source code and Makefiles.
@@ -61,7 +61,8 @@ their use.
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
-%patch7 -p1
+
+find -type f -name \*.orig -print -delete
 
 find -type f -print0 |
 	xargs -r0 %__grep -FZl 'mawk gawk' -- |
@@ -196,6 +197,10 @@ fi
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Sun Nov 16 2003 Dmitry V. Levin <ldv@altlinux.org> 2:2.58-alt1
+- Updated to 2.58.
+- Removed alt-dnet patch (no longer needed).
+
 * Fri Oct 17 2003 Dmitry V. Levin <ldv@altlinux.org> 2:2.57-alt2
 - Updated package dependencies.
 - Corrected ac_extension order.

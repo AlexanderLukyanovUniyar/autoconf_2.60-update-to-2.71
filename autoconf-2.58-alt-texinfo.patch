@@ -1,0 +1,17 @@
+--- autoconf-2.58/doc/autoconf.texi.orig	2003-11-04 11:33:44 +0300
++++ autoconf-2.58/doc/autoconf.texi	2003-11-16 14:42:54 +0300
+@@ -208,13 +208,9 @@
+ 
+ 
+ 
+-@dircategory Software development
++@dircategory Development/Other
+ @direntry
+ * Autoconf: (autoconf).         Create source code configuration scripts.
+-@end direntry
+-
+-@dircategory Individual utilities
+-@direntry
+ * autoscan: (autoconf)autoscan Invocation.
+                                 Semi-automatic @file{configure.ac} writing
+ * ifnames: (autoconf)ifnames Invocation.        Listing conditionals in source.
