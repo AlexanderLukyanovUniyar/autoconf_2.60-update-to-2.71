@@ -1,0 +1,299 @@
+%define realname autoconf
+%define dialect _2.5
+%define suff -2.5
+
+Name: %realname%dialect
+Version: 2.57
+Release: alt1
+Serial: 2
+
+%set_compress_method gzip
+
+Summary: A GNU tool for automatically configuring source code
+License: GPL
+Group: Development/Other
+Url: http://www.gnu.org/software/%realname/
+Packager: Autoconf Development Team <autoconf@packages.altlinux.org>
+BuildArch: noarch
+
+%define srcname %realname-%version
+Source: ftp://ftp.gnu.org/gnu/%realname/%srcname.tar.bz2
+Patch1: %realname-2.54-alt-texinfo.patch
+Patch2: %realname-2.54-alt-datadir.patch
+Patch3: %realname-2.56-alt-dnet.patch
+
+Provides: %realname = %serial:%version-%release
+Obsoletes: %realname
+
+PreReq: autoconf-common
+Requires(post,preun): %__install_info, /usr/sbin/update-alternatives
+Requires: m4 >= 1.4, mktemp >= 1:1.3.1
+
+Prefix: %prefix
+
+%description
+GNU's Autoconf is a tool for configuring source code and Makefiles.
+Using Autoconf, programmers can create portable and configurable
+packages, since the person building the package is allowed to
+specify various configuration options.
+
+You should install Autoconf if you are developing software and you'd
+like to use it to create shell scripts which will configure your
+source code packages.  If you are installing Autoconf, you will also
+need to install the GNU m4 package.
+
+Note that the Autoconf package is not required for the end user who
+may be configuring software with an Autoconf-generated script;
+Autoconf is only required for the generation of the scripts, not
+their use.
+
+%prep
+%setup -q -n %srcname
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+
+find -type f -print0 |
+	xargs -r0 %__grep -FZl 'mawk gawk' |
+	xargs -r0 %__subst 's/mawk gawk/gawk mawk/g'
+
+# patch texinfo file
+%__subst 's/(%realname)/(%realname%suff)/g;s/\(\* \([Aa]utoconf\|configure\)\):/\1%suff:/g' doc/%realname.texi
+
+%build
+export ac_cv_prog_EMACS=no
+%configure --program-suffix=%suff
+%make_build
+
+%install
+%makeinstall
+
+# We don't want to include the standards.info stuff in the package,
+# since it comes from binutils.
+%__rm -f $RPM_BUILD_ROOT%_infodir/standards*
+
+# Some more helpful scripts.
+%__rm -f $RPM_BUILD_ROOT%_datadir/%realname/INSTALL
+%__mv $RPM_BUILD_ROOT%_datadir/%realname $RPM_BUILD_ROOT%_datadir/%realname%suff
+
+%__mkdir_p $RPM_BUILD_ROOT%_sysconfdir/buildreqs/packages/substitute.d
+echo %realname >$RPM_BUILD_ROOT%_sysconfdir/buildreqs/packages/substitute.d/%name
+
+%__mv $RPM_BUILD_ROOT%_infodir/%realname.info $RPM_BUILD_ROOT%_infodir/%realname%suff.info
+
+for f in $RPM_BUILD_ROOT%_bindir/*%suff; do
+	%__ln_s "${f##*/}" "${f%%%suff}%dialect"
+done
+
+# Fix $RPM_BUILD_DIR references.
+#find $RPM_BUILD_ROOT -type f -print0 |
+#	xargs -r0 %__grep -FZl $RPM_BUILD_DIR/%srcname/lib/m4sugar |
+#	xargs -r0 %__subst "s,$RPM_BUILD_DIR/%srcname/lib/m4sugar,%_datadir/%realname%suff/m4sugar,g"
+
+%define _perl_lib_path %perl_vendor_privlib:%_datadir/%realname%suff
+
+%post
+%install_info %realname%suff.info
+/usr/sbin/update-alternatives --install %_bindir/%realname-default %realname %_bindir/%realname%suff 30 \
+	--slave %_bindir/autoheader-default autoheader %_bindir/autoheader%suff \
+	--slave %_bindir/autom4te-default autom4te %_bindir/autom4te%suff \
+	--slave %_bindir/autoreconf-default autoreconf %_bindir/autoreconf%suff \
+	--slave %_bindir/autoscan-default autoscan %_bindir/autoscan%suff \
+	--slave %_bindir/autoupdate-default autoupdate %_bindir/autoupdate%suff \
+	--slave %_bindir/ifnames-default ifnames %_bindir/ifnames%suff \
+	--slave %_infodir/%realname.info.gz %realname.info.gz %_infodir/%realname%suff.info.gz \
+	--slave %_man1dir/%realname.1.gz %realname.1.gz %_man1dir/%realname%suff.1.gz \
+	--slave %_man1dir/autoheader.1.gz autoheader.1.gz %_man1dir/autoheader%suff.1.gz \
+	--slave %_man1dir/autom4te.1.gz autom4te.1.gz %_man1dir/autom4te%suff.1.gz \
+	--slave %_man1dir/autoreconf.1.gz autoreconf.1.gz %_man1dir/autoreconf%suff.1.gz \
+	--slave %_man1dir/autoscan.1.gz autoscan.1.gz %_man1dir/autoscan%suff.1.gz \
+	--slave %_man1dir/autoupdate.1.gz autoupdate.1.gz %_man1dir/autoupdate%suff.1.gz \
+	--slave %_man1dir/config.guess.1.gz config.guess.1.gz %_man1dir/config.guess%suff.1.gz \
+	--slave %_man1dir/config.sub.1.gz config.sub.1.gz %_man1dir/config.sub%suff.1.gz \
+	--slave %_man1dir/ifnames.1.gz ifnames.1.gz %_man1dir/ifnames%suff.1.gz \
+	--slave %_datadir/%realname %{realname}data %_datadir/%realname%suff
+
+if ! %__grep -Fqs '(autoconf)' %_infodir/dir; then
+	%__install_info \
+		--info-file=%_infodir/%realname.info \
+		--info-dir=%_infodir \
+		--section=Development/Other \
+		--entry='* Autoconf: (autoconf).          Create source code configuration scripts'
+fi
+
+%preun
+[ $1 = 0 ] || exit 0
+%uninstall_info %realname%suff.info
+/usr/sbin/update-alternatives --remove %realname %_bindir/%realname%suff
+if [ ! -e %_infodir/%realname.info.gz ]; then
+	%__install_info --delete \
+		--info-file=%_infodir/%realname.info \
+		--info-dir=%_infodir \
+		--section=Development/Other \
+		--entry='* Autoconf: (autoconf).          Create source code configuration scripts'
+fi
+
+%triggerpostun -- %realname
+/usr/sbin/update-alternatives --install %_bindir/%realname-default %realname %_bindir/%realname%suff 30 \
+	--slave %_bindir/autoheader-default autoheader %_bindir/autoheader%suff \
+	--slave %_bindir/autom4te-default autom4te %_bindir/autom4te%suff \
+	--slave %_bindir/autoreconf-default autoreconf %_bindir/autoreconf%suff \
+	--slave %_bindir/autoscan-default autoscan %_bindir/autoscan%suff \
+	--slave %_bindir/autoupdate-default autoupdate %_bindir/autoupdate%suff \
+	--slave %_bindir/ifnames-default ifnames %_bindir/ifnames%suff \
+	--slave %_infodir/%realname.info.gz %realname.info.gz %_infodir/%realname%suff.info.gz \
+	--slave %_man1dir/%realname.1.gz %realname.1.gz %_man1dir/%realname%suff.1.gz \
+	--slave %_man1dir/autoheader.1.gz autoheader.1.gz %_man1dir/autoheader%suff.1.gz \
+	--slave %_man1dir/autom4te.1.gz autom4te.1.gz %_man1dir/autom4te%suff.1.gz \
+	--slave %_man1dir/autoreconf.1.gz autoreconf.1.gz %_man1dir/autoreconf%suff.1.gz \
+	--slave %_man1dir/autoscan.1.gz autoscan.1.gz %_man1dir/autoscan%suff.1.gz \
+	--slave %_man1dir/autoupdate.1.gz autoupdate.1.gz %_man1dir/autoupdate%suff.1.gz \
+	--slave %_man1dir/config.guess.1.gz config.guess.1.gz %_man1dir/config.guess%suff.1.gz \
+	--slave %_man1dir/config.sub.1.gz config.sub.1.gz %_man1dir/config.sub%suff.1.gz \
+	--slave %_man1dir/ifnames.1.gz ifnames.1.gz %_man1dir/ifnames%suff.1.gz \
+	--slave %_datadir/%realname %{realname}data %_datadir/%realname%suff
+
+if ! %__grep -Fqs '(autoconf)' %_infodir/dir; then
+	%__install_info \
+		--info-file=%_infodir/%realname.info \
+		--info-dir=%_infodir \
+		--section=Development/Other \
+		--entry='* Autoconf: (autoconf).          Create source code configuration scripts'
+fi
+
+%files
+%config %_sysconfdir/buildreqs/packages/substitute.d/%name
+%_bindir/*
+%_datadir/%realname%suff
+%_man1dir/*
+%_infodir/*.info*
+%doc AUTHORS NEWS README TODO
+
+%changelog
+* Sat Dec 14 2002 Dmitry V. Levin <ldv@altlinux.org> 2:2.57-alt1
+- Updated to 2.57
+
+* Sun Nov 17 2002 Dmitry V. Levin <ldv@altlinux.org> 2:2.56-alt1
+- 2.56
+
+* Mon Oct 28 2002 Dmitry V. Levin <ldv@altlinux.org> 2:2.54-alt2
+- Removed libdnet checks.
+- Explicitly disabled build of autoconf mode for emacs.
+- Changed suffix, compatibility symlinks added (#0001192).
+- Added autoconf-common support.
+- Raised alternatives priority.
+
+* Tue Sep 17 2002 Mikhail Zabaluev <mhz@altlinux.ru> 2.54-alt1
+- 2.54
+
+* Sat May 18 2002 Dmitry V. Levin <ldv@altlinux.org> 2.53-alt4
+- Fixed typo in provides.
+
+* Wed May 15 2002 Alexey Voinov <voins@altlinux.ru> 2.53-alt3
+- Use configure --program-suffix to add suffixes to (almost) all files.
+- .alt-datadir patch fixes Makefile.ins to use /usr/share/autoconf_2.5
+- Simplified %install section.
+
+* Wed Apr 17 2002 Dmitry V. Levin <ldv@alt-linux.org> 2.53-alt2
+- Set compress method to "gzip".
+- Set dircategory to "Development/Other".
+- Added more files to alternatives support.
+
+* Sat Apr 06 2002 Alexey Voinov <voins@voins.program.ru> 2.53-alt1
+- fork from 2:2.13-alt4
+- new version (2.53)
+- URL corrected
+- support for *.info and man pages (update-)alternatives.
+
+* Tue Mar 19 2002 Dmitry V. Levin <ldv@alt-linux.org> 2:2.13-alt4
+- Renamed to autoconf_2.13
+- Added update-alternatives support (voins).
+
+* Wed Feb 06 2002 Dmitry V. Levin <ldv@alt-linux.org> 2:2.13-alt3
+- Fixed acspecific to avoid -lelf usage for getloadavg.
+
+* Mon Aug 27 2001 Dmitry V. Levin <ldv@altlinux.ru> 2.13-alt2
+- Rebuilt.
+
+* Thu Aug 23 2001 Dmitry V. Levin <ldv@altlinux.ru> 2.13-alt1
+- Revert back to stable version.
+- Reworked tmp files handling.
+- Merged RH patches:
+  + acgeneral.m4: fixed exit status;
+  + autoscan.pl: patched to get a better choice of init file (#42071),
+    to test for CPP after CC (#42072) and to detect C++ source and g++ (#42073).
+  + acspecific.m4: include various standard C headers as needed
+    by various autoconf tests (#19114);
+  + acgeneral.m4, acspecific.m4: back-ported _AC_PROG_CXX_EXIT_DECLARATION
+    from version 2.50 to make detection of C++ exit() declaration prototype
+    platform independent. The check is done in AC_PROG_CXX with the result
+    stored in "confdefs.h". The exit() prototype in AC_TRY_RUN_NATIVE is no
+    longer needed.
+
+* Mon Aug 20 2001 Dmitry V. Levin <ldv@altlinux.ru> 2.52b-alt1
+- 2.52b
+
+* Fri Aug 17 2001 Dmitry V. Levin <ldv@altlinux.ru> 2.52-alt1
+- 2.52
+- Added manpages from debian.
+
+* Sun Dec 24 2000 Dmitry V. Levin <ldv@fandra.org> 2.13-ipl5mdk
+- Fixed exit function prototype for gcc >= 2.96.
+
+* Wed Jul 19 2000 Dmitry V. Levin <ldv@fandra.org> 2.13-ipl4mdk
+- RE adaptions.
+
+* Tue Jul 18 2000 Guillaume Cottenceau <gc@mandrakesoft.com> 2.13-4mdk
+- macros for install-info
+
+* Mon Jul 10 2000 Guillaume Cottenceau <gc@mandrakesoft.com> 2.13-3mdk
+- cleanup and macros
+
+* Fri Mar 31 2000 Guillaume Cottenceau <gc@mandrakesoft.com> 2.13-2mdk
+- new groups
+
+* Mon Mar  6 2000 Chmouel Boudjnah <chmouel@mandrakesoft.com> 2.13-1mdk
+- Back to last 2.13 and stable version, add a serial.
+
+* Wed Oct 27 1999 Chmouel Boudjnah <chmouel@mandrakesoft.com>
+- Merge change of Jeff package.
+
+* Thu May 13 1999 Bernhard Rosenkraenzer <bero@mandrakesoft.com>
+- Mandrake adaptions
+- 2.14.1
+
+* Fri Mar 26 1999 Cristian Gafton <gafton@redhat.com>
+- add patch to help autoconf clean after itself and not leave /tmp clobbered
+  with acin.* and acout.* files (can you say annoying?)
+
+* Sun Mar 21 1999 Cristian Gafton <gafton@redhat.com>
+- auto rebuild in the new build environment (release 4)
+- use gawk, not mawk
+
+* Thu Mar 18 1999 Preston Brown <pbrown@redhat.com>
+- moved /usr/lib/autoconf to /usr/share/autoconf (with automake)
+
+* Wed Feb 24 1999 Preston Brown <pbrown@redhat.com>
+- Injected new description and group.
+
+* Tue Jan 12 1999 Jeff Johnson <jbj@redhat.com>
+- update to 2.13.
+
+* Fri Dec 18 1998 Cristian Gafton <gafton@redhat.com>
+- build against glibc 2.1
+
+* Mon Oct 05 1998 Cristian Gafton <gafton@redhat.com>
+- requires perl
+
+* Thu Aug 27 1998 Cristian Gafton <gafton@redhat.com>
+- patch for fixing /tmp race conditions
+
+* Sun Oct 19 1997 Erik Troan <ewt@redhat.com>
+- spec file cleanups
+- made a noarch package
+- uses autoconf
+- uses install-info
+
+* Thu Jul 17 1997 Erik Troan <ewt@redhat.com>
+- built with glibc
+

@@ -1,0 +1,48 @@
+diff -urk.orig autoconf-2.54.orig/bin/Makefile.am autoconf-2.54/bin/Makefile.am
+--- autoconf-2.54.orig/bin/Makefile.am	2002-09-05 13:23:12 +0400
++++ autoconf-2.54/bin/Makefile.am	2002-10-27 19:22:22 +0300
+@@ -37,7 +37,7 @@
+ 	-e 's,@SHELL\@,$(SHELL),g' \
+ 	-e 's,@PERL\@,$(PERL),g' \
+ 	-e 's,@bindir\@,$(bindir),g' \
+-	-e 's,@datadir\@,$(pkgdatadir),g' \
++	-e 's,@datadir\@,$(pkgdatadir)-2.5,g' \
+ 	-e 's,@prefix\@,$(prefix),g' \
+ 	-e 's,@autoconf-name\@,'`echo autoconf | sed '$(transform)'`',g' \
+ 	-e 's,@autoheader-name\@,'`echo autoheader | sed '$(transform)'`',g' \
+diff -urk.orig autoconf-2.54.orig/bin/Makefile.in autoconf-2.54/bin/Makefile.in
+--- autoconf-2.54.orig/bin/Makefile.in	2002-09-13 12:15:20 +0400
++++ autoconf-2.54/bin/Makefile.in	2002-10-27 19:22:22 +0300
+@@ -107,7 +107,7 @@
+ 	-e 's,@SHELL\@,$(SHELL),g' \
+ 	-e 's,@PERL\@,$(PERL),g' \
+ 	-e 's,@bindir\@,$(bindir),g' \
+-	-e 's,@datadir\@,$(pkgdatadir),g' \
++	-e 's,@datadir\@,$(pkgdatadir)-2.5,g' \
+ 	-e 's,@prefix\@,$(prefix),g' \
+ 	-e 's,@autoconf-name\@,'`echo autoconf | sed '$(transform)'`',g' \
+ 	-e 's,@autoheader-name\@,'`echo autoheader | sed '$(transform)'`',g' \
+diff -urk.orig autoconf-2.54.orig/lib/Makefile.am autoconf-2.54/lib/Makefile.am
+--- autoconf-2.54.orig/lib/Makefile.am	2002-02-05 11:16:36 +0300
++++ autoconf-2.54/lib/Makefile.am	2002-10-27 19:22:22 +0300
+@@ -25,7 +25,7 @@
+ 	-e 's,@SHELL\@,$(SHELL),g' \
+ 	-e 's,@PERL\@,$(PERL),g' \
+ 	-e 's,@bindir\@,$(bindir),g' \
+-	-e 's,@datadir\@,$(pkgdatadir),g' \
++	-e 's,@datadir\@,$(pkgdatadir)-2.5,g' \
+ 	-e 's,@prefix\@,$(prefix),g' \
+ 	-e 's,@autoconf-name\@,'`echo autoconf | sed '$(transform)'`',g' \
+ 	-e 's,@autoheader-name\@,'`echo autoheader | sed '$(transform)'`',g' \
+diff -urk.orig autoconf-2.54.orig/lib/Makefile.in autoconf-2.54/lib/Makefile.in
+--- autoconf-2.54.orig/lib/Makefile.in	2002-09-13 12:15:21 +0400
++++ autoconf-2.54/lib/Makefile.in	2002-10-27 19:22:22 +0300
+@@ -99,7 +99,7 @@
+ 	-e 's,@SHELL\@,$(SHELL),g' \
+ 	-e 's,@PERL\@,$(PERL),g' \
+ 	-e 's,@bindir\@,$(bindir),g' \
+-	-e 's,@datadir\@,$(pkgdatadir),g' \
++	-e 's,@datadir\@,$(pkgdatadir)-2.5,g' \
+ 	-e 's,@prefix\@,$(prefix),g' \
+ 	-e 's,@autoconf-name\@,'`echo autoconf | sed '$(transform)'`',g' \
+ 	-e 's,@autoheader-name\@,'`echo autoheader | sed '$(transform)'`',g' \
