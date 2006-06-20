@@ -4,7 +4,7 @@
 
 Name: %realname%dialect
 Version: 2.59
-Release: alt4
+Release: alt5
 Serial: 2
 
 Summary: A GNU tool for automatically configuring source code
@@ -18,17 +18,15 @@ BuildArch: noarch
 %define srcname %realname-%version
 %define __spec_autodep_custom_pre export autom4te_perllibdir=%buildroot%_datadir/%realname%suff
 
-Source: ftp://ftp.gnu.org/gnu/%realname/%srcname.tar.bz2
-Patch1: %realname-2.58-alt-texinfo.patch
-Patch2: %realname-2.54-alt-datadir.patch
-Patch3: %realname-2.57-alt-ac_extension.patch
-Patch4: %realname-2.57-alt-c_const.patch
-Patch5: %realname-2.57-alt-check_decls.patch
-Patch6: %realname-2.57-alt-header_stdc.patch
-Patch7: %realname-2.59-alt-ac_prog_cxxcpp.patch
-Patch8: %realname-2.59-alt-alloca.patch
-Patch9: %realname-2.59-alt-type-signal.patch
-Patch10: %realname-2.59-alt-lfltgb.patch
+Source: ftp://ftp.gnu.org/gnu/autoconf/%srcname.tar
+Patch1: autoconf-2.58-alt-texinfo.patch
+Patch2: autoconf-2.59-alt-datadir.patch
+Patch3: autoconf-2.59-alt-warnings.patch
+Patch4: autoconf-2.59-alt-_AC_PATH_X_XMKMF.patch
+Patch5: autoconf-2.59-alt-AC_PROG_CXXCPP.patch
+Patch6: autoconf-2.59-alt-AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN.patch
+Patch7: autoconf-2.59-rh-_AC_PATH_X_DIRECT.patch
+Patch8: autoconf-2.59-owl-tmp.patch
 
 Provides: %realname = %serial:%version-%release
 Obsoletes: %realname
@@ -38,8 +36,7 @@ Requires(post): %install_info
 Requires(preun): %uninstall_info
 Requires: m4 >= 1.4, mktemp >= 1:1.3.1
 
-# Automatically added by buildreq on Mon Nov 17 2003
-BuildRequires: help2man libalternatives-devel
+BuildRequires: help2man, alternatives >= 0:0.2.0-alt0.12
 
 %description
 GNU's Autoconf is a tool for configuring source code and Makefiles.
@@ -67,13 +64,11 @@ their use.
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
-%patch9 -p1
-%patch10 -p1
 
 find -type f -name \*.orig -delete -print
 
 find -type f -print0 |
-	xargs -r0 %__grep -FZl 'mawk gawk' -- |
+	xargs -r0 grep -FZl 'mawk gawk' -- |
 	xargs -r0 %__subst 's/mawk gawk/gawk mawk/g' --
 
 # patch texinfo file
@@ -89,44 +84,39 @@ export ac_cv_prog_EMACS=no
 
 # We don't want to include the standards.info stuff in the package,
 # since it comes from binutils.
-%__rm -f $RPM_BUILD_ROOT%_infodir/standards*
+rm -f %buildroot%_infodir/standards*
 
 # Some more helpful scripts.
-%__rm -f $RPM_BUILD_ROOT%_datadir/%realname/INSTALL
-%__mv $RPM_BUILD_ROOT%_datadir/%realname $RPM_BUILD_ROOT%_datadir/%realname%suff
+rm -f %buildroot%_datadir/%realname/INSTALL
+mv %buildroot%_datadir/%realname %buildroot%_datadir/%realname%suff
 
-%__mkdir_p $RPM_BUILD_ROOT%_sysconfdir/buildreqs/packages/substitute.d
-echo %realname >$RPM_BUILD_ROOT%_sysconfdir/buildreqs/packages/substitute.d/%name
+mkdir -p %buildroot%_sysconfdir/buildreqs/packages/substitute.d
+echo %realname >%buildroot%_sysconfdir/buildreqs/packages/substitute.d/%name
 
-%__mv $RPM_BUILD_ROOT%_infodir/%realname.info $RPM_BUILD_ROOT%_infodir/%realname%suff.info
+mv %buildroot%_infodir/%realname.info %buildroot%_infodir/%realname%suff.info
 
-for f in $RPM_BUILD_ROOT%_bindir/*%suff; do
-	%__ln_s "${f##*/}" "${f%%%suff}%dialect"
+for f in %buildroot%_bindir/*%suff; do
+	ln -s "${f##*/}" "${f%%%suff}%dialect"
 done
-
-# Fix $RPM_BUILD_DIR references.
-#find $RPM_BUILD_ROOT -type f -print0 |
-#	xargs -r0 %__grep -FZl $RPM_BUILD_DIR/%srcname/lib/m4sugar |
-#	xargs -r0 %__subst "s,$RPM_BUILD_DIR/%srcname/lib/m4sugar,%_datadir/%realname%suff/m4sugar,g"
 
 %define _perl_lib_path %perl_vendor_privlib:%_datadir/%realname%suff
 
-%__mkdir_p $RPM_BUILD_ROOT%_altdir
+mkdir -p %buildroot%_altdir
 
-cat >$RPM_BUILD_ROOT%_altdir/%name <<EOF
+cat >%buildroot%_altdir/%name <<EOF
 %_bindir/%realname-default	%_bindir/%realname%suff	30
 %_datadir/%realname	%_datadir/%realname%suff	%_bindir/%realname%suff
 %_infodir/%realname.info.gz	%_infodir/%realname%suff.info.gz	%_bindir/%realname%suff
 EOF
 
 for i in autoheader autom4te autoreconf autoscan autoupdate ifnames; do
-cat >>$RPM_BUILD_ROOT%_altdir/%name <<EOF
+cat >>%buildroot%_altdir/%name <<EOF
 %_bindir/$i-default	%_bindir/$i%suff	%_bindir/%realname%suff
 EOF
 done
 
 for i in %realname autoheader autom4te autoreconf autoscan autoupdate config.guess config.sub ifnames; do
-cat >>$RPM_BUILD_ROOT%_altdir/%name <<EOF
+cat >>%buildroot%_altdir/%name <<EOF
 %_man1dir/$i.1.gz	%_man1dir/$i%suff.1.gz	%_bindir/%realname%suff
 EOF
 done
@@ -182,6 +172,13 @@ fi
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Tue Jun 20 2006 Dmitry V. Levin <ldv@altlinux.org> 2:2.59-alt5
+- Merged all warning fixes to single patch.
+- Applied Owl patch to use mktemp in a fail-close way.
+- Applied RH patch to _AC_PATH_X_DIRECT macro:
+  + check for Xlib.h instead of Intrinsic.h to find X11 headers location;
+  + try to link with libX11 instead of libXt to find X11 libraries location.
+
 * Thu Feb 24 2005 Dmitry V. Levin <ldv@altlinux.org> 2:2.59-alt4
 - Converted alternatives config file to new format (0.2.0).
 
