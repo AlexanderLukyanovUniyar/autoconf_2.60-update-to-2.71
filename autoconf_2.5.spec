@@ -3,9 +3,9 @@
 %define suff -2.5
 
 Name: %realname%dialect
-Version: 2.59
-Release: alt7
-Serial: 2
+Version: 2.60
+Release: alt1
+Epoch: 2
 
 Summary: A GNU tool for automatically configuring source code
 License: GPL
@@ -29,7 +29,7 @@ Patch8: autoconf-2.59-owl-tmp.patch
 Patch9: autoconf-2.59-alt-intltool.patch
 Patch10: autoconf-2.59-alt-stubs.patch
 
-Provides: %realname = %serial:%version-%release
+Provides: %realname = %epoch:%version-%release
 Obsoletes: %realname
 
 PreReq: autoconf-common, alternatives >= 0:0.2.0-alt0.12
@@ -175,6 +175,9 @@ fi
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Tue Jul 17 2007 Alex V. Myltsev <avm@altlinux.ru> 2:2.60-alt1
+- 2.60 (straightforward version bump).
+
 * Fri Nov 02 2007 Dmitry V. Levin <ldv@altlinux.org> 2:2.59-alt7
 - Patched AC_LANG_FUNC_LINK_TRY to ask GNU C headers to include stubs.
   This is required for better glibc-devel >= 2.5-alt5 support.
