@@ -4,7 +4,7 @@
  3 files changed, 34 insertions(+), 1 deletions(-)
 
 diff --git a/autoconf/lib/autoconf/c.m4 b/autoconf/lib/autoconf/c.m4
-index fbe1564..3ac0f04 100644
+index 2a28a3b..f4c5f81 100644
 --- a/autoconf/lib/autoconf/c.m4
 +++ b/autoconf/lib/autoconf/c.m4
 @@ -253,6 +253,25 @@ choke me
@@ -46,22 +46,22 @@ index fbe1564..3ac0f04 100644
  # ---------------------------------------------------
  m4_copy([AC_LANG_BOOL_COMPILE_TRY(C)], [AC_LANG_BOOL_COMPILE_TRY(C++)])
 diff --git a/autoconf/lib/autoconf/functions.m4 b/autoconf/lib/autoconf/functions.m4
-index 3ad6b62..9dfda98 100644
+index ec22aa9..d31bd12 100644
 --- a/autoconf/lib/autoconf/functions.m4
 +++ b/autoconf/lib/autoconf/functions.m4
 @@ -69,7 +69,9 @@ AC_DEFUN([AC_CHECK_FUNC],
- AC_CACHE_CHECK([for $1], ac_var,
+ AC_CACHE_CHECK([for $1], [ac_var],
  [AC_LINK_IFELSE([AC_LANG_FUNC_LINK_TRY([$1])],
- 		[AS_VAR_SET(ac_var, yes)],
--		[AS_VAR_SET(ac_var, no)])])
+ 		[AS_VAR_SET([ac_var], [yes])],
+-		[AS_VAR_SET([ac_var], [no])])])
 +		[AC_LINK_IFELSE([AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN([$1])],
-+				[AS_VAR_SET(ac_var, yes)],
-+				[AS_VAR_SET(ac_var, no)])])])
- AS_IF([test AS_VAR_GET(ac_var) = yes], [$2], [$3])dnl
++				[AS_VAR_SET([ac_var], [yes])],
++				[AS_VAR_SET([ac_var], [no])])])])
+ AS_IF([test AS_VAR_GET([ac_var]) = yes], [$2], [$3])dnl
  AS_VAR_POPDEF([ac_var])dnl
  ])# AC_CHECK_FUNC
 diff --git a/autoconf/lib/autoconf/lang.m4 b/autoconf/lib/autoconf/lang.m4
-index a5f5db3..cb36d22 100644
+index 9816633..ee05287 100644
 --- a/autoconf/lib/autoconf/lang.m4
 +++ b/autoconf/lib/autoconf/lang.m4
 @@ -254,6 +254,13 @@ AC_DEFUN([AC_LANG_FUNC_LINK_TRY],

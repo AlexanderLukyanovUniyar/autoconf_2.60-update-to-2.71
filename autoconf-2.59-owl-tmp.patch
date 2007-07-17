@@ -1,14 +1,14 @@
- autoconf/config/config.guess      |   10 +++-------
+ autoconf/build-aux/config.guess   |   10 +++-------
  autoconf/configure                |   18 +++---------------
  autoconf/lib/Autom4te/General.pm  |   11 +----------
  autoconf/lib/autoconf/specific.m4 |   15 +--------------
  autoconf/lib/m4sugar/m4sh.m4      |   21 ++++++++-------------
  5 files changed, 16 insertions(+), 59 deletions(-)
 
-diff --git a/autoconf/config/config.guess b/autoconf/config/config.guess
-index 7924ac0..96880f5 100755
---- a/autoconf/config/config.guess
-+++ b/autoconf/config/config.guess
+diff --git a/autoconf/build-aux/config.guess b/autoconf/build-aux/config.guess
+index eeb9aef..79f686c 100755
+--- a/autoconf/build-aux/config.guess
++++ b/autoconf/build-aux/config.guess
 @@ -104,13 +104,9 @@ trap 'exit 1' 1 2 15
  # Portable tmp directory creation inspired by the Autoconf team.
  
@@ -27,10 +27,10 @@ index 7924ac0..96880f5 100755
  tmpfiles="$dummy.c $dummy.o $dummy.rel $dummy" ;
  case $CC_FOR_BUILD,$HOST_CC,$CC in
 diff --git a/autoconf/configure b/autoconf/configure
-index 45b1aaa..2f75e11 100755
+index fed2eac..83a29be 100755
 --- a/autoconf/configure
 +++ b/autoconf/configure
-@@ -3409,23 +3409,11 @@ $debug ||
+@@ -3474,23 +3474,11 @@ $debug ||
    tmp=
    trap 'exit_status=$?
    { test -z "$tmp" || test ! -d "$tmp" || rm -fr "$tmp"; } && exit $exit_status
@@ -58,10 +58,10 @@ index 45b1aaa..2f75e11 100755
  #
  # Set up the sed scripts for CONFIG_FILES section.
 diff --git a/autoconf/lib/Autom4te/General.pm b/autoconf/lib/Autom4te/General.pm
-index d06f4d5..ed635ef 100644
+index 3a13734..59178df 100644
 --- a/autoconf/lib/Autom4te/General.pm
 +++ b/autoconf/lib/Autom4te/General.pm
-@@ -311,20 +311,11 @@ C<$debug>.
+@@ -296,20 +296,11 @@ C<$debug>.
  sub mktmpdir ($)
  {
    my ($signature) = @_;
@@ -84,10 +84,10 @@ index d06f4d5..ed635ef 100644
      if $debug;
  }
 diff --git a/autoconf/lib/autoconf/specific.m4 b/autoconf/lib/autoconf/specific.m4
-index 8512bcd..8979d91 100644
+index 40bbfd4..c55cce7 100644
 --- a/autoconf/lib/autoconf/specific.m4
 +++ b/autoconf/lib/autoconf/specific.m4
-@@ -191,17 +191,6 @@ fi
+@@ -196,17 +196,6 @@ fi
  
  # AC_SYS_LONG_FILE_NAMES
  # ----------------------
@@ -105,7 +105,7 @@ index 8512bcd..8979d91 100644
  AC_DEFUN([AC_SYS_LONG_FILE_NAMES],
  [AC_CACHE_CHECK(for long file names, ac_cv_sys_long_file_names,
  [ac_cv_sys_long_file_names=yes
-@@ -220,9 +209,7 @@ for ac_dir in . "$TMPDIR" /tmp /var/tmp /usr/tmp "$prefix/lib" "$exec_prefix/lib
+@@ -225,9 +214,7 @@ for ac_dir in . "$TMPDIR" /tmp /var/tmp /usr/tmp "$prefix/lib" "$exec_prefix/lib
      . | /* | ?:[[\\/]]*) ;; #(
      *) continue;;
    esac
@@ -117,10 +117,10 @@ index 8512bcd..8979d91 100644
    ac_tf2=$ac_xdir/conftest9012346
    touch "$ac_tf1" 2>/dev/null && test -f "$ac_tf1" && test ! -f "$ac_tf2" ||
 diff --git a/autoconf/lib/m4sugar/m4sh.m4 b/autoconf/lib/m4sugar/m4sh.m4
-index f81d86a..3eeae31 100644
+index 9fa40b1..48279a5 100644
 --- a/autoconf/lib/m4sugar/m4sh.m4
 +++ b/autoconf/lib/m4sugar/m4sh.m4
-@@ -1143,20 +1143,15 @@ m4_define([AS_LITERAL_IF],
+@@ -1174,20 +1174,15 @@ m4_define([AS_LITERAL_IF],
  # Create as safely as possible a temporary directory in DIRECTORY
  # which name is inspired by PREFIX (should be 2-4 chars max).
  m4_define([AS_TMPDIR],

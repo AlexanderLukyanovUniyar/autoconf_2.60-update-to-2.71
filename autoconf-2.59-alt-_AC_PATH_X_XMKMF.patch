@@ -2,7 +2,7 @@
  1 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/autoconf/lib/autoconf/libs.m4 b/autoconf/lib/autoconf/libs.m4
-index 2964b27..4a1301b 100644
+index d70babf..a392c16 100644
 --- a/autoconf/lib/autoconf/libs.m4
 +++ b/autoconf/lib/autoconf/libs.m4
 @@ -203,7 +203,7 @@ _ACEOF
@@ -20,6 +20,6 @@ index 2964b27..4a1301b 100644
    # Don't even attempt the hair of trying to link an X program!
 -  for ac_extension in a so sl; do
 +  for ac_extension in so sl a; do
-     if test -r "$ac_dir/libXt.$ac_extension"; then
+     if test -r "$ac_dir/libX11.$ac_extension"; then
        ac_x_libraries=$ac_dir
        break 2

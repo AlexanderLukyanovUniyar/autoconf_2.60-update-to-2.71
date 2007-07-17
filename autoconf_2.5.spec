@@ -24,7 +24,6 @@ Patch2: autoconf-2.59-alt-datadir.patch
 Patch4: autoconf-2.59-alt-_AC_PATH_X_XMKMF.patch
 Patch5: autoconf-2.59-alt-AC_PROG_CXXCPP.patch
 Patch6: autoconf-2.59-alt-AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN.patch
-Patch7: autoconf-2.59-rh-_AC_PATH_X_DIRECT.patch
 Patch8: autoconf-2.59-owl-tmp.patch
 Patch9: autoconf-2.59-alt-intltool.patch
 Patch10: autoconf-2.59-alt-stubs.patch
@@ -62,7 +61,6 @@ their use.
 %patch4 -p2
 %patch5 -p2
 %patch6 -p2
-%patch7 -p2
 %patch8 -p2
 %patch9 -p1
 %patch10 -p1
