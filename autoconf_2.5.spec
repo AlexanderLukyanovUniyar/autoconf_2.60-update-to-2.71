@@ -79,7 +79,8 @@ find -type f -print0 |
 %build
 export ac_cv_prog_EMACS=no
 %configure --program-suffix=%suff
-%make_build
+# Starting with 2.60, parallel builds are broken
+%make
 
 %install
 %makeinstall
