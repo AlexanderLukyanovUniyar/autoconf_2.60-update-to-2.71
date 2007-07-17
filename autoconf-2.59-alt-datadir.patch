@@ -1,48 +1,58 @@
-diff -upk.orig autoconf-2.59.orig/bin/Makefile.am autoconf-2.59/bin/Makefile.am
---- autoconf-2.59.orig/bin/Makefile.am	2003-09-25 09:25:31 +0000
-+++ autoconf-2.59/bin/Makefile.am	2006-06-20 17:15:53 +0000
-@@ -39,7 +39,7 @@ edit = sed \
- 	-e 's,@SHELL\@,$(SHELL),g' \
- 	-e 's,@PERL\@,$(PERL),g' \
- 	-e 's,@bindir\@,$(bindir),g' \
--	-e 's,@datadir\@,$(pkgdatadir),g' \
-+	-e 's,@datadir\@,$(pkgdatadir)-2.5,g' \
- 	-e 's,@prefix\@,$(prefix),g' \
- 	-e 's,@autoconf-name\@,'`echo autoconf | sed '$(transform)'`',g' \
- 	-e 's,@autoheader-name\@,'`echo autoheader | sed '$(transform)'`',g' \
-diff -upk.orig autoconf-2.59.orig/bin/Makefile.in autoconf-2.59/bin/Makefile.in
---- autoconf-2.59.orig/bin/Makefile.in	2003-11-06 09:33:26 +0000
-+++ autoconf-2.59/bin/Makefile.in	2006-06-20 17:15:53 +0000
-@@ -189,7 +189,7 @@ edit = sed \
- 	-e 's,@SHELL\@,$(SHELL),g' \
- 	-e 's,@PERL\@,$(PERL),g' \
- 	-e 's,@bindir\@,$(bindir),g' \
--	-e 's,@datadir\@,$(pkgdatadir),g' \
-+	-e 's,@datadir\@,$(pkgdatadir)-2.5,g' \
- 	-e 's,@prefix\@,$(prefix),g' \
- 	-e 's,@autoconf-name\@,'`echo autoconf | sed '$(transform)'`',g' \
- 	-e 's,@autoheader-name\@,'`echo autoheader | sed '$(transform)'`',g' \
-diff -upk.orig autoconf-2.59.orig/lib/Makefile.am autoconf-2.59/lib/Makefile.am
---- autoconf-2.59.orig/lib/Makefile.am	2003-06-25 13:37:54 +0000
-+++ autoconf-2.59/lib/Makefile.am	2006-06-20 17:15:53 +0000
+ autoconf/bin/Makefile.am |    2 +-
+ autoconf/bin/Makefile.in |    2 +-
+ autoconf/lib/Makefile.am |    2 +-
+ autoconf/lib/Makefile.in |    2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/autoconf/bin/Makefile.am b/autoconf/bin/Makefile.am
+index f648585..1a24a8c 100644
+--- a/autoconf/bin/Makefile.am
++++ b/autoconf/bin/Makefile.am
+@@ -40,7 +40,7 @@ edit = sed \
+ 	-e 's|@SHELL[@]|$(SHELL)|g' \
+ 	-e 's|@PERL[@]|$(PERL)|g' \
+ 	-e 's|@bindir[@]|$(bindir)|g' \
+-	-e 's|@datadir[@]|$(pkgdatadir)|g' \
++	-e 's|@datadir[@]|$(pkgdatadir)-2.5|g' \
+ 	-e 's|@prefix[@]|$(prefix)|g' \
+ 	-e 's|@autoconf-name[@]|'`echo autoconf | sed '$(transform)'`'|g' \
+ 	-e 's|@autoheader-name[@]|'`echo autoheader | sed '$(transform)'`'|g' \
+diff --git a/autoconf/bin/Makefile.in b/autoconf/bin/Makefile.in
+index 096f4c0..79ac92f 100644
+--- a/autoconf/bin/Makefile.in
++++ b/autoconf/bin/Makefile.in
+@@ -204,7 +204,7 @@ edit = sed \
+ 	-e 's|@SHELL[@]|$(SHELL)|g' \
+ 	-e 's|@PERL[@]|$(PERL)|g' \
+ 	-e 's|@bindir[@]|$(bindir)|g' \
+-	-e 's|@datadir[@]|$(pkgdatadir)|g' \
++	-e 's|@datadir[@]|$(pkgdatadir)-2.5|g' \
+ 	-e 's|@prefix[@]|$(prefix)|g' \
+ 	-e 's|@autoconf-name[@]|'`echo autoconf | sed '$(transform)'`'|g' \
+ 	-e 's|@autoheader-name[@]|'`echo autoheader | sed '$(transform)'`'|g' \
+diff --git a/autoconf/lib/Makefile.am b/autoconf/lib/Makefile.am
+index 8936ff2..eb547d8 100644
+--- a/autoconf/lib/Makefile.am
++++ b/autoconf/lib/Makefile.am
 @@ -25,7 +25,7 @@ edit = sed \
- 	-e 's,@SHELL\@,$(SHELL),g' \
- 	-e 's,@PERL\@,$(PERL),g' \
- 	-e 's,@bindir\@,$(bindir),g' \
--	-e 's,@datadir\@,$(pkgdatadir),g' \
-+	-e 's,@datadir\@,$(pkgdatadir)-2.5,g' \
- 	-e 's,@prefix\@,$(prefix),g' \
- 	-e 's,@autoconf-name\@,'`echo autoconf | sed '$(transform)'`',g' \
- 	-e 's,@autoheader-name\@,'`echo autoheader | sed '$(transform)'`',g' \
-diff -upk.orig autoconf-2.59.orig/lib/Makefile.in autoconf-2.59/lib/Makefile.in
---- autoconf-2.59.orig/lib/Makefile.in	2003-11-06 09:33:27 +0000
-+++ autoconf-2.59/lib/Makefile.in	2006-06-20 17:15:53 +0000
-@@ -126,7 +126,7 @@ edit = sed \
- 	-e 's,@SHELL\@,$(SHELL),g' \
- 	-e 's,@PERL\@,$(PERL),g' \
- 	-e 's,@bindir\@,$(bindir),g' \
--	-e 's,@datadir\@,$(pkgdatadir),g' \
-+	-e 's,@datadir\@,$(pkgdatadir)-2.5,g' \
- 	-e 's,@prefix\@,$(prefix),g' \
- 	-e 's,@autoconf-name\@,'`echo autoconf | sed '$(transform)'`',g' \
- 	-e 's,@autoheader-name\@,'`echo autoheader | sed '$(transform)'`',g' \
+ 	-e 's|@SHELL[@]|$(SHELL)|g' \
+ 	-e 's|@PERL[@]|$(PERL)|g' \
+ 	-e 's|@bindir[@]|$(bindir)|g' \
+-	-e 's|@datadir[@]|$(pkgdatadir)|g' \
++	-e 's|@datadir[@]|$(pkgdatadir)-2.5|g' \
+ 	-e 's|@prefix[@]|$(prefix)|g' \
+ 	-e 's|@autoconf-name[@]|'`echo autoconf | sed '$(transform)'`'|g' \
+ 	-e 's|@autoheader-name[@]|'`echo autoheader | sed '$(transform)'`'|g' \
+diff --git a/autoconf/lib/Makefile.in b/autoconf/lib/Makefile.in
+index 2c85f89..d2fb71d 100644
+--- a/autoconf/lib/Makefile.in
++++ b/autoconf/lib/Makefile.in
+@@ -143,7 +143,7 @@ edit = sed \
+ 	-e 's|@SHELL[@]|$(SHELL)|g' \
+ 	-e 's|@PERL[@]|$(PERL)|g' \
+ 	-e 's|@bindir[@]|$(bindir)|g' \
+-	-e 's|@datadir[@]|$(pkgdatadir)|g' \
++	-e 's|@datadir[@]|$(pkgdatadir)-2.5|g' \
+ 	-e 's|@prefix[@]|$(prefix)|g' \
+ 	-e 's|@autoconf-name[@]|'`echo autoconf | sed '$(transform)'`'|g' \
+ 	-e 's|@autoheader-name[@]|'`echo autoheader | sed '$(transform)'`'|g' \

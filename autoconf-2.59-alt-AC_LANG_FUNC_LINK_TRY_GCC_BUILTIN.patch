@@ -1,7 +1,14 @@
---- autoconf-2.59/lib/autoconf/c.m4.vns	2004-05-14 11:40:48 +0400
-+++ autoconf-2.59/lib/autoconf/c.m4	2004-05-14 12:06:51 +0400
-@@ -226,6 +226,25 @@
- ], [return f != $1;])])
+ autoconf/lib/autoconf/c.m4         |   24 ++++++++++++++++++++++++
+ autoconf/lib/autoconf/functions.m4 |    4 +++-
+ autoconf/lib/autoconf/lang.m4      |    7 +++++++
+ 3 files changed, 34 insertions(+), 1 deletions(-)
+
+diff --git a/autoconf/lib/autoconf/c.m4 b/autoconf/lib/autoconf/c.m4
+index fbe1564..3ac0f04 100644
+--- a/autoconf/lib/autoconf/c.m4
++++ b/autoconf/lib/autoconf/c.m4
+@@ -253,6 +253,25 @@ choke me
+ ], [return $1 ();])])
  
  
 +# AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN(C)(FUNCTION)
@@ -25,8 +32,8 @@
 +
  # AC_LANG_BOOL_COMPILE_TRY(C)(PROLOGUE, EXPRESSION)
  # -------------------------------------------------
- # Be sure to use this array to avoid `unused' warnings, which are even
-@@ -292,6 +311,11 @@
+ # Return a program that is valid if EXPRESSION is nonzero.
+@@ -321,6 +340,11 @@ m4_copy([AC_LANG_CALL(C)], [AC_LANG_CALL(C++)])
  m4_copy([AC_LANG_FUNC_LINK_TRY(C)], [AC_LANG_FUNC_LINK_TRY(C++)])
  
  
@@ -38,9 +45,26 @@
  # AC_LANG_BOOL_COMPILE_TRY(C++)(PROLOGUE, EXPRESSION)
  # ---------------------------------------------------
  m4_copy([AC_LANG_BOOL_COMPILE_TRY(C)], [AC_LANG_BOOL_COMPILE_TRY(C++)])
---- autoconf-2.59/lib/autoconf/lang.m4.vns	2003-10-23 11:45:07 +0400
-+++ autoconf-2.59/lib/autoconf/lang.m4	2004-05-14 11:40:48 +0400
-@@ -250,6 +250,13 @@
+diff --git a/autoconf/lib/autoconf/functions.m4 b/autoconf/lib/autoconf/functions.m4
+index 3ad6b62..9dfda98 100644
+--- a/autoconf/lib/autoconf/functions.m4
++++ b/autoconf/lib/autoconf/functions.m4
+@@ -69,7 +69,9 @@ AC_DEFUN([AC_CHECK_FUNC],
+ AC_CACHE_CHECK([for $1], ac_var,
+ [AC_LINK_IFELSE([AC_LANG_FUNC_LINK_TRY([$1])],
+ 		[AS_VAR_SET(ac_var, yes)],
+-		[AS_VAR_SET(ac_var, no)])])
++		[AC_LINK_IFELSE([AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN([$1])],
++				[AS_VAR_SET(ac_var, yes)],
++				[AS_VAR_SET(ac_var, no)])])])
+ AS_IF([test AS_VAR_GET(ac_var) = yes], [$2], [$3])dnl
+ AS_VAR_POPDEF([ac_var])dnl
+ ])# AC_CHECK_FUNC
+diff --git a/autoconf/lib/autoconf/lang.m4 b/autoconf/lib/autoconf/lang.m4
+index a5f5db3..cb36d22 100644
+--- a/autoconf/lib/autoconf/lang.m4
++++ b/autoconf/lib/autoconf/lang.m4
+@@ -254,6 +254,13 @@ AC_DEFUN([AC_LANG_FUNC_LINK_TRY],
  _AC_LANG_DISPATCH([$0], _AC_LANG, $@)])
  
  
@@ -54,16 +78,3 @@
  # AC_LANG_BOOL_COMPILE_TRY(PROLOGUE, EXPRESSION)
  # ----------------------------------------------
  # Produce a program that compiles with success iff the boolean EXPRESSION
---- autoconf-2.59/lib/autoconf/functions.m4.vns	2004-05-14 11:40:48 +0400
-+++ autoconf-2.59/lib/autoconf/functions.m4	2004-05-14 11:40:48 +0400
-@@ -68,7 +68,9 @@
- AC_CACHE_CHECK([for $1], ac_var,
- [AC_LINK_IFELSE([AC_LANG_FUNC_LINK_TRY([$1])],
- 		[AS_VAR_SET(ac_var, yes)],
--		[AS_VAR_SET(ac_var, no)])])
-+		[AC_LINK_IFELSE([AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN([$1])],
-+				[AS_VAR_SET(ac_var, yes)],
-+				[AS_VAR_SET(ac_var, no)])])])
- AS_IF([test AS_VAR_GET(ac_var) = yes], [$2], [$3])dnl
- AS_VAR_POPDEF([ac_var])dnl
- ])# AC_CHECK_FUNC

@@ -1,13 +1,22 @@
---- autoconf-2.59/config/config.guess.orig	Thu Oct 23 14:28:51 2003
-+++ autoconf-2.59/config/config.guess	Thu Feb 26 01:02:38 2004
-@@ -101,13 +101,9 @@
+ autoconf/config/config.guess      |   10 +++-------
+ autoconf/configure                |   18 +++---------------
+ autoconf/lib/Autom4te/General.pm  |   11 +----------
+ autoconf/lib/autoconf/specific.m4 |   15 +--------------
+ autoconf/lib/m4sugar/m4sh.m4      |   21 ++++++++-------------
+ 5 files changed, 16 insertions(+), 59 deletions(-)
+
+diff --git a/autoconf/config/config.guess b/autoconf/config/config.guess
+index 7924ac0..96880f5 100755
+--- a/autoconf/config/config.guess
++++ b/autoconf/config/config.guess
+@@ -104,13 +104,9 @@ trap 'exit 1' 1 2 15
  # Portable tmp directory creation inspired by the Autoconf team.
  
  set_cc_for_build='
 -trap "exitcode=\$?; (rm -f \$tmpfiles 2>/dev/null; rmdir \$tmp 2>/dev/null) && exit \$exitcode" 0 ;
 -trap "rm -f \$tmpfiles 2>/dev/null; rmdir \$tmp 2>/dev/null; exit 1" 1 2 13 15 ;
 -: ${TMPDIR=/tmp} ;
-- { tmp=`(umask 077 && mktemp -d -q "$TMPDIR/cgXXXXXX") 2>/dev/null` && test -n "$tmp" && test -d "$tmp" ; } ||
+- { tmp=`(umask 077 && mktemp -d "$TMPDIR/cgXXXXXX") 2>/dev/null` && test -n "$tmp" && test -d "$tmp" ; } ||
 - { test -n "$RANDOM" && tmp=$TMPDIR/cg$$-$RANDOM && (umask 077 && mkdir $tmp) ; } ||
 - { tmp=$TMPDIR/cg-$$ && (umask 077 && mkdir $tmp) && echo "Warning: creating insecure temp directory" >&2 ; } ||
 - { echo "$me: cannot create a temporary directory in $TMPDIR" >&2 ; exit 1 ; } ;
@@ -17,9 +26,42 @@
  dummy=$tmp/dummy ;
  tmpfiles="$dummy.c $dummy.o $dummy.rel $dummy" ;
  case $CC_FOR_BUILD,$HOST_CC,$CC in
---- autoconf-2.59/lib/Autom4te/General.pm.orig	Thu Aug 21 17:45:30 2003
-+++ autoconf-2.59/lib/Autom4te/General.pm	Thu Feb 26 01:06:11 2004
-@@ -305,19 +305,10 @@
+diff --git a/autoconf/configure b/autoconf/configure
+index 45b1aaa..2f75e11 100755
+--- a/autoconf/configure
++++ b/autoconf/configure
+@@ -3409,23 +3409,11 @@ $debug ||
+   tmp=
+   trap 'exit_status=$?
+   { test -z "$tmp" || test ! -d "$tmp" || rm -fr "$tmp"; } && exit $exit_status
+-' 0
+-  trap '{ (exit 1); exit 1; }' 1 2 13 15
++' EXIT
++  trap '{ (exit 1); exit 1; }' PIPE HUP INT TERM
+ }
+ # Create a (secure) tmp directory for tmp files.
+-
+-{
+-  tmp=`(umask 077 && mktemp -d "./confXXXXXX") 2>/dev/null` &&
+-  test -n "$tmp" && test -d "$tmp"
+-}  ||
+-{
+-  tmp=./conf$$-$RANDOM
+-  (umask 077 && mkdir "$tmp")
+-} ||
+-{
+-   echo "$me: cannot create a temporary directory in ." >&2
+-   { (exit 1); exit 1; }
+-}
++tmp="`mktemp -d ./conf.XXXXXXXXXX`" || exit 1
+ 
+ #
+ # Set up the sed scripts for CONFIG_FILES section.
+diff --git a/autoconf/lib/Autom4te/General.pm b/autoconf/lib/Autom4te/General.pm
+index d06f4d5..ed635ef 100644
+--- a/autoconf/lib/Autom4te/General.pm
++++ b/autoconf/lib/Autom4te/General.pm
+@@ -311,20 +311,11 @@ C<$debug>.
  sub mktmpdir ($)
  {
    my ($signature) = @_;
@@ -27,52 +69,25 @@
  
    # If mktemp supports dirs, use it.
 -  $tmp = `(umask 077 &&
--	   mktemp -d -q "$TMPDIR/${signature}XXXXXX") 2>/dev/null`;
+-	   mktemp -d "$TMPDIR/${signature}XXXXXX") 2>/dev/null`;
 +  $tmp = `mktemp -dt ${signature}XXXXXXXXXX` or die;
    chomp $tmp;
--
+ 
 -  if (!$tmp || ! -d $tmp)
 -    {
 -      $tmp = "$TMPDIR/$signature" . int (rand 10000) . ".$$";
 -      mkdir $tmp, 0700
 -	or croak "$me: cannot create $tmp: $!\n";
 -    }
- 
+-
    print STDERR "$me:$$: working in $tmp\n"
      if $debug;
---- autoconf-2.59/lib/m4sugar/m4sh.m4.orig	Thu Feb 26 00:46:37 2004
-+++ autoconf-2.59/lib/m4sugar/m4sh.m4	Thu Feb 26 00:51:18 2004
-@@ -818,24 +818,12 @@
- [# Create a temporary directory, and hook for its removal unless debugging.
- $debug ||
- {
--  trap 'exit_status=$?; rm -rf $tmp && exit $exit_status' 0
--  trap 'AS_EXIT([1])' 1 2 13 15
-+  trap 'exit_status=$?; rm -rf $tmp && exit $exit_status' EXIT
-+  trap 'AS_EXIT([1])' PIPE HUP INT TERM
  }
- 
- # Create a (secure) tmp directory for tmp files.
--m4_if([$2], [], [: ${TMPDIR=/tmp}])
--{
--  tmp=`(umask 077 && mktemp -d -q "m4_default([$2], [$TMPDIR])/$1XXXXXX") 2>/dev/null` &&
--  test -n "$tmp" && test -d "$tmp"
--}  ||
--{
--  tmp=m4_default([$2], [$TMPDIR])/$1$$-$RANDOM
--  (umask 077 && mkdir $tmp)
--} ||
--{
--   echo "$me: cannot create a temporary directory in m4_default([$2], [$TMPDIR])" >&2
--   AS_EXIT
--}dnl
-+tmp="`mktemp -dt cs.XXXXXXXXXX`" || exit 1
- ])# AS_TMPDIR
- 
- 
---- autoconf-2.59/lib/autoconf/specific.m4.orig	Tue Sep  9 08:38:11 2003
-+++ autoconf-2.59/lib/autoconf/specific.m4	Thu Feb 26 01:11:44 2004
-@@ -193,17 +193,6 @@
+diff --git a/autoconf/lib/autoconf/specific.m4 b/autoconf/lib/autoconf/specific.m4
+index 8512bcd..8979d91 100644
+--- a/autoconf/lib/autoconf/specific.m4
++++ b/autoconf/lib/autoconf/specific.m4
+@@ -191,17 +191,6 @@ fi
  
  # AC_SYS_LONG_FILE_NAMES
  # ----------------------
@@ -90,45 +105,47 @@
  AC_DEFUN([AC_SYS_LONG_FILE_NAMES],
  [AC_CACHE_CHECK(for long file names, ac_cv_sys_long_file_names,
  [ac_cv_sys_long_file_names=yes
-@@ -223,10 +212,7 @@
-   ac_tmpdirs='/tmp /var/tmp /usr/tmp'
- fi
- for ac_dir in  . $ac_tmpdirs `eval echo $prefix/lib $exec_prefix/lib` ; do
--  test -d $ac_dir || continue
--  test -w $ac_dir || continue # It is less confusing to not echo anything here.
+@@ -220,9 +209,7 @@ for ac_dir in . "$TMPDIR" /tmp /var/tmp /usr/tmp "$prefix/lib" "$exec_prefix/lib
+     . | /* | ?:[[\\/]]*) ;; #(
+     *) continue;;
+   esac
+-  test -w "$ac_dir/." || continue # It is less confusing to not echo anything here.
 -  ac_xdir=$ac_dir/cf$$
--  (umask 077 && mkdir $ac_xdir 2>/dev/null) || continue
+-  (umask 077 && mkdir "$ac_xdir" 2>/dev/null) || continue
 +  ac_xdir="`mktemp -p $ac_dir -dq cfXXXXXX`" || continue
    ac_tf1=$ac_xdir/conftest9012345
    ac_tf2=$ac_xdir/conftest9012346
-   (echo 1 >$ac_tf1) 2>/dev/null
---- autoconf-2.59/configure.orig	Thu Nov  6 09:33:28 2003
-+++ autoconf-2.59/configure	Thu Feb 26 01:17:31 2004
-@@ -2652,24 +2652,12 @@
- # Create a temporary directory, and hook for its removal unless debugging.
- $debug ||
+   touch "$ac_tf1" 2>/dev/null && test -f "$ac_tf1" && test ! -f "$ac_tf2" ||
+diff --git a/autoconf/lib/m4sugar/m4sh.m4 b/autoconf/lib/m4sugar/m4sh.m4
+index f81d86a..3eeae31 100644
+--- a/autoconf/lib/m4sugar/m4sh.m4
++++ b/autoconf/lib/m4sugar/m4sh.m4
+@@ -1143,20 +1143,15 @@ m4_define([AS_LITERAL_IF],
+ # Create as safely as possible a temporary directory in DIRECTORY
+ # which name is inspired by PREFIX (should be 2-4 chars max).
+ m4_define([AS_TMPDIR],
+-[# Create a (secure) tmp directory for tmp files.
+-m4_if([$2], [], [: ${TMPDIR=/tmp}])
++[# Create a temporary directory, and hook for its removal unless debugging.
++$debug ||
  {
--  trap 'exit_status=$?; rm -rf $tmp && exit $exit_status' 0
--  trap '{ (exit 1); exit 1; }' 1 2 13 15
-+  trap 'exit_status=$?; rm -rf $tmp && exit $exit_status' EXIT
-+  trap '{ (exit 1); exit 1; }'  PIPE HUP INT TERM
- }
- 
- # Create a (secure) tmp directory for tmp files.
--
--{
--  tmp=`(umask 077 && mktemp -d -q "./confstatXXXXXX") 2>/dev/null` &&
+-  tmp=`(umask 077 && mktemp -d "m4_default([$2], [$TMPDIR])/$1XXXXXX") 2>/dev/null` &&
 -  test -n "$tmp" && test -d "$tmp"
 -}  ||
 -{
--  tmp=./confstat$$-$RANDOM
--  (umask 077 && mkdir $tmp)
+-  tmp=m4_default([$2], [$TMPDIR])/$1$$-$RANDOM
+-  (umask 077 && mkdir "$tmp")
 -} ||
 -{
--   echo "$me: cannot create a temporary directory in ." >&2
--   { (exit 1); exit 1; }
--}
-+tmp="`mktemp -d ./confstat.XXXXXXXXXX`" || exit 1
+-   echo "$me: cannot create a temporary directory in m4_default([$2], [$TMPDIR])" >&2
+-   AS_EXIT
+-}dnl
++  trap 'exit_status=$?; rm -rf $tmp && exit $exit_status' EXIT
++  trap 'AS_EXIT([1])' PIPE HUP INT TERM
++}
++
++# Create a (secure) tmp directory for tmp files.
++tmp="`mktemp -dt cs.XXXXXXXXXX`" || exit 1
+ ])# AS_TMPDIR
  
- _ACEOF
  

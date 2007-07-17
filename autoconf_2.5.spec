@@ -21,7 +21,6 @@ BuildArch: noarch
 Source: ftp://ftp.gnu.org/gnu/autoconf/%srcname.tar
 Patch1: autoconf-2.58-alt-texinfo.patch
 Patch2: autoconf-2.59-alt-datadir.patch
-Patch3: autoconf-2.59-alt-warnings.patch
 Patch4: autoconf-2.59-alt-_AC_PATH_X_XMKMF.patch
 Patch5: autoconf-2.59-alt-AC_PROG_CXXCPP.patch
 Patch6: autoconf-2.59-alt-AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN.patch
@@ -56,14 +55,13 @@ their use.
 
 %prep
 %setup -q -n %srcname
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
+%patch1 -p2
+%patch2 -p2
+%patch4 -p2
+%patch5 -p2
+%patch6 -p2
+%patch7 -p2
+%patch8 -p2
 
 find -type f -name \*.orig -delete -print
 

@@ -1,7 +1,11 @@
-diff -uprk.orig autoconf-2.59.orig/lib/autoconf/c.m4 autoconf-2.59/lib/autoconf/c.m4
---- autoconf-2.59.orig/lib/autoconf/c.m4	2004-01-06 17:22:47 +0300
-+++ autoconf-2.59/lib/autoconf/c.m4	2004-01-06 19:06:05 +0300
-@@ -624,23 +624,33 @@ AC_ARG_VAR([CXXCPP],   [C++ preprocessor
+ autoconf/lib/autoconf/c.m4 |   18 ++++++++++++++----
+ 1 files changed, 14 insertions(+), 4 deletions(-)
+
+diff --git a/autoconf/lib/autoconf/c.m4 b/autoconf/lib/autoconf/c.m4
+index dead340..fbe1564 100644
+--- a/autoconf/lib/autoconf/c.m4
++++ b/autoconf/lib/autoconf/c.m4
+@@ -699,23 +699,33 @@ AC_ARG_VAR([CXXCPP],   [C++ preprocessor])dnl
  _AC_ARG_VAR_CPPFLAGS()dnl
  AC_LANG_PUSH(C++)dnl
  AC_MSG_CHECKING([how to run the C++ preprocessor])

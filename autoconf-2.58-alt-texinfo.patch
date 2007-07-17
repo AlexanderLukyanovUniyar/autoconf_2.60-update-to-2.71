@@ -1,6 +1,11 @@
---- autoconf-2.58/doc/autoconf.texi.orig	2003-11-04 11:33:44 +0300
-+++ autoconf-2.58/doc/autoconf.texi	2003-11-16 14:42:54 +0300
-@@ -208,13 +208,9 @@
+ autoconf/doc/autoconf.texi |    6 +-----
+ 1 files changed, 1 insertions(+), 5 deletions(-)
+
+diff --git a/autoconf/doc/autoconf.texi b/autoconf/doc/autoconf.texi
+index 086487d..907b743 100644
+--- a/autoconf/doc/autoconf.texi
++++ b/autoconf/doc/autoconf.texi
+@@ -203,13 +203,9 @@ published by the Free Software Foundation raise funds for
  
  
  
