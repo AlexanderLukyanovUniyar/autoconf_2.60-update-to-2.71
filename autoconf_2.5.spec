@@ -4,7 +4,7 @@
 
 Name: %realname%dialect
 Version: 2.59
-Release: alt5
+Release: alt6
 Serial: 2
 
 Summary: A GNU tool for automatically configuring source code
@@ -27,6 +27,7 @@ Patch5: autoconf-2.59-alt-AC_PROG_CXXCPP.patch
 Patch6: autoconf-2.59-alt-AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN.patch
 Patch7: autoconf-2.59-rh-_AC_PATH_X_DIRECT.patch
 Patch8: autoconf-2.59-owl-tmp.patch
+Patch9: autoconf-2.59-alt-intltool.patch
 
 Provides: %realname = %serial:%version-%release
 Obsoletes: %realname
@@ -64,6 +65,7 @@ their use.
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
 
 find -type f -name \*.orig -delete -print
 
@@ -172,6 +174,9 @@ fi
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Thu Oct 18 2007 Alexey Rusakov <ktirf@altlinux.org> 2:2.59-alt6
+- Added intltool support to autoreconf.
+
 * Tue Jun 20 2006 Dmitry V. Levin <ldv@altlinux.org> 2:2.59-alt5
 - Merged all warning fixes to single patch.
 - Applied Owl patch to use mktemp in a fail-close way.
