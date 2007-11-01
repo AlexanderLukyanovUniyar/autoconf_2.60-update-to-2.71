@@ -1,0 +1,12 @@
+--- autoconf/lib/autoconf/c.m4
++++ autoconf/lib/autoconf/c.m4
+@@ -191,6 +191,9 @@ m4_define([AC_LANG_FUNC_LINK_TRY(C)],
+    For example, HP-UX 11i <limits.h> declares gettimeofday.  */
+ #define $1 innocuous_$1
+ 
++/* Tell GNU C headers to include stubs.  */
++#define __need_GNU_STUBS_H
++
+ /* System header to define __stub macros and hopefully few prototypes,
+     which can conflict with char $1 (); below.
+     Prefer <limits.h> to <assert.h> if __STDC__ is defined, since

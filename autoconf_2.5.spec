@@ -4,7 +4,7 @@
 
 Name: %realname%dialect
 Version: 2.59
-Release: alt6
+Release: alt7
 Serial: 2
 
 Summary: A GNU tool for automatically configuring source code
@@ -28,6 +28,7 @@ Patch6: autoconf-2.59-alt-AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN.patch
 Patch7: autoconf-2.59-rh-_AC_PATH_X_DIRECT.patch
 Patch8: autoconf-2.59-owl-tmp.patch
 Patch9: autoconf-2.59-alt-intltool.patch
+Patch10: autoconf-2.59-alt-stubs.patch
 
 Provides: %realname = %serial:%version-%release
 Obsoletes: %realname
@@ -66,6 +67,7 @@ their use.
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
+%patch10 -p1
 
 find -type f -name \*.orig -delete -print
 
@@ -174,6 +176,10 @@ fi
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Fri Nov 02 2007 Dmitry V. Levin <ldv@altlinux.org> 2:2.59-alt7
+- Patched AC_LANG_FUNC_LINK_TRY to ask GNU C headers to include stubs.
+  This is required for better glibc-devel >= 2.5-alt5 support.
+
 * Thu Oct 18 2007 Alexey Rusakov <ktirf@altlinux.org> 2:2.59-alt6
 - Added intltool support to autoreconf.
 
