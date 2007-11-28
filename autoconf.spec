@@ -1,9 +1,9 @@
 %define realname autoconf
-%define dialect _2.5
-%define suff -2.5
+%define dialect _2.6
+%define suff -2.6
 
 Name: %realname%dialect
-Version: 2.60
+Version: 2.61
 Release: alt1
 Epoch: 2
 
@@ -173,8 +173,8 @@ fi
 %doc AUTHORS NEWS README TODO
 
 %changelog
-* Tue Jul 17 2007 Alex V. Myltsev <avm@altlinux.ru> 2:2.60-alt1
-- 2.60 (straightforward version bump).
+* Wed Nov 28 2007 Alex V. Myltsev <avm@altlinux.ru> 2:2.61-alt1
+- 2.61 (straightforward version bump).
 
 * Fri Nov 02 2007 Dmitry V. Levin <ldv@altlinux.org> 2:2.59-alt7
 - Patched AC_LANG_FUNC_LINK_TRY to ask GNU C headers to include stubs.
