@@ -62,7 +62,7 @@ their use.
 %patch5 -p2
 %patch6 -p2
 %patch8 -p2
-%patch9 -p1
+%patch9 -p2
 %patch10 -p1
 
 find -type f -name \*.orig -delete -print
