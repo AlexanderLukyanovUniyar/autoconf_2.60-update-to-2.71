@@ -20,7 +20,7 @@ BuildArch: noarch
 
 Source: ftp://ftp.gnu.org/gnu/autoconf/%srcname.tar
 Patch1: autoconf-2.58-alt-texinfo.patch
-Patch2: autoconf-2.59-alt-datadir.patch
+Patch2: autoconf-2.6x-alt-datadir.patch
 Patch4: autoconf-2.59-alt-_AC_PATH_X_XMKMF.patch
 Patch5: autoconf-2.59-alt-AC_PROG_CXXCPP.patch
 Patch6: autoconf-2.59-alt-AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN.patch
