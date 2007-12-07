@@ -105,7 +105,7 @@ done
 mkdir -p %buildroot%_altdir
 
 cat >%buildroot%_altdir/%name <<EOF
-%_bindir/%realname-default	%_bindir/%realname%suff	30
+%_bindir/%realname-default	%_bindir/%realname%suff	40
 %_datadir/%realname	%_datadir/%realname%suff	%_bindir/%realname%suff
 %_infodir/%realname.info.gz	%_infodir/%realname%suff.info.gz	%_bindir/%realname%suff
 EOF
