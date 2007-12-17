@@ -1,5 +1,5 @@
 %define realname autoconf
-%define dialect _2.6
+%define dialect _2.60
 %define suff -2.6
 
 Name: %realname%dialect
