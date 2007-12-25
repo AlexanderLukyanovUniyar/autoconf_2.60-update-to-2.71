@@ -4,7 +4,7 @@
 
 Name: %realname%dialect
 Version: 2.61
-Release: alt1
+Release: alt2
 Epoch: 2
 
 Summary: A GNU tool for automatically configuring source code
@@ -69,10 +69,11 @@ find -type f -name \*.orig -delete -print
 
 find -type f -print0 |
 	xargs -r0 grep -FZl 'mawk gawk' -- |
-	xargs -r0 %__subst 's/mawk gawk/gawk mawk/g' --
+	xargs -r0 sed -i 's/mawk gawk/gawk mawk/g' --
 
 # patch texinfo file
-%__subst 's/(%realname)/(%realname%suff)/g;s/\(\* \([Aa]utoconf\|configure\)\):/\1%suff:/g' doc/%realname.texi
+sed -i '/@direntry/,/@end direntry/ s/^\(\*[[:space:]]\+[[:alnum:].]\+\)\(:[[:space:]]\+\)(%realname)/\1%suff\2(%realname%suff)/' \
+	doc/autoconf.texi
 
 %build
 export ac_cv_prog_EMACS=no
@@ -124,7 +125,7 @@ done
 
 %post
 if a="$(readlink -ne %_datadir/info/dir)"; then
-	%__subst 's,%realname%dialect,%realname%suff,g' "$a"
+	sed -i 's,%realname%dialect,%realname%suff,g' "$a"
 fi
 %install_info %realname%suff.info
 %register_alternatives %name
@@ -173,6 +174,9 @@ fi
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Tue Dec 25 2007 Dmitry V. Levin <ldv@altlinux.org> 2:2.61-alt2
+- Fixed texinfo direntry.
+
 * Wed Nov 28 2007 Alex V. Myltsev <avm@altlinux.ru> 2:2.61-alt1
 - 2.61 (straightforward version bump).
 
