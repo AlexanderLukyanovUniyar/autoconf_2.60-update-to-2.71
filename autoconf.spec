@@ -4,7 +4,7 @@
 
 Name: %realname%dialect
 Version: 2.61
-Release: alt2
+Release: alt3
 Epoch: 2
 
 Summary: A GNU tool for automatically configuring source code
@@ -176,6 +176,11 @@ fi
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Thu Jan 10 2008 Alex V. Myltsev <avm@altlinux.ru> 2:2.61-alt3
+- Fixed "set_autoconf_version 2.60".
+- Restored the AC_PATH_XTRA patch.
+- Pulled from upstream the fix for _AC_PATH_SEPARATOR_PREPARE.
+
 * Tue Dec 25 2007 Dmitry V. Levin <ldv@altlinux.org> 2:2.61-alt2
 - Fixed texinfo direntry.
 
