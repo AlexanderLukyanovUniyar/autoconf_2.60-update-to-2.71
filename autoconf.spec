@@ -1,6 +1,6 @@
 %define realname autoconf
 %define dialect _2.60
-%define suff -2.6
+%define suff -2.60
 
 Name: %realname%dialect
 Version: 2.61
