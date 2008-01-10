@@ -27,6 +27,7 @@ Patch6: autoconf-2.59-alt-AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN.patch
 Patch8: autoconf-2.59-owl-tmp.patch
 Patch9: autoconf-2.59-alt-intltool.patch
 Patch10: autoconf-2.59-alt-stubs.patch
+Patch11: autoconf-2.61-alt-AC_PATH_XTRA.patch
 
 Provides: %realname = %epoch:%version-%release
 Obsoletes: %realname
@@ -64,6 +65,7 @@ their use.
 %patch8 -p2
 %patch9 -p2
 %patch10 -p1
+%patch11 -p2
 
 find -type f -name \*.orig -delete -print
 

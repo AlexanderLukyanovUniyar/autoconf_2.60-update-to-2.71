@@ -1,0 +1,22 @@
+Test /usr/X11R6/lib/X11/*.a before /usr/X11R6/lib/*.a.
+The first test then fails, and short-circuiting means
+that the second one is not run at all, so buildreq
+does not pick up extra dependencies.
+
+Patch by at@ (see altbug #6797 for more information.)
+
+diff --git a/autoconf/lib/autoconf/libs.m4 b/autoconf/lib/autoconf/libs.m4
+index d70babf..b44e901 100644
+--- a/autoconf/lib/autoconf/libs.m4
++++ b/autoconf/lib/autoconf/libs.m4
+@@ -204,8 +204,8 @@ _ACEOF
+     done
+     # Open Windows xmkmf reportedly sets LIBDIR instead of USRLIBDIR.
+     for ac_extension in so sl a; do
+-      if test ! -f "$ac_im_usrlibdir/libX11.$ac_extension" &&
+-	 test -f "$ac_im_libdir/libX11.$ac_extension"; then
++      if test -f "$ac_im_libdir/libX11.$ac_extension" &&
++	 test ! -f "$ac_im_usrlibdir/libX11.$ac_extension"; then
+ 	ac_im_usrlibdir=$ac_im_libdir; break
+       fi
+     done
