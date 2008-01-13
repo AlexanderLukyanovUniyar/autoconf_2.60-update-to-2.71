@@ -4,7 +4,7 @@
 
 Name: %realname%dialect
 Version: 2.61
-Release: alt3
+Release: alt4
 Epoch: 2
 
 Summary: A GNU tool for automatically configuring source code
@@ -177,6 +177,9 @@ fi
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Sun Jan 13 2008 Alex V. Myltsev <avm@altlinux.ru> 2:2.61-alt4
+- Unbroke the datadir patch. (This is getting tiresome.)
+
 * Thu Jan 10 2008 Alex V. Myltsev <avm@altlinux.ru> 2:2.61-alt3
 - Fixed "set_autoconf_version 2.60".
 - Restored the AC_PATH_XTRA patch.
