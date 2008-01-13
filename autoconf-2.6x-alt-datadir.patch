@@ -13,7 +13,7 @@ index f648585..1a24a8c 100644
  	-e 's|@PERL[@]|$(PERL)|g' \
  	-e 's|@bindir[@]|$(bindir)|g' \
 -	-e 's|@datadir[@]|$(pkgdatadir)|g' \
-+	-e 's|@datadir[@]|$(pkgdatadir)-2.6|g' \
++	-e 's|@datadir[@]|$(pkgdatadir)@RPM_AUTOCONF_SUFFIX@|g' \
  	-e 's|@prefix[@]|$(prefix)|g' \
  	-e 's|@autoconf-name[@]|'`echo autoconf | sed '$(transform)'`'|g' \
  	-e 's|@autoheader-name[@]|'`echo autoheader | sed '$(transform)'`'|g' \
@@ -26,7 +26,7 @@ index 096f4c0..79ac92f 100644
  	-e 's|@PERL[@]|$(PERL)|g' \
  	-e 's|@bindir[@]|$(bindir)|g' \
 -	-e 's|@datadir[@]|$(pkgdatadir)|g' \
-+	-e 's|@datadir[@]|$(pkgdatadir)-2.6|g' \
++	-e 's|@datadir[@]|$(pkgdatadir)@RPM_AUTOCONF_SUFFIX@|g' \
  	-e 's|@prefix[@]|$(prefix)|g' \
  	-e 's|@autoconf-name[@]|'`echo autoconf | sed '$(transform)'`'|g' \
  	-e 's|@autoheader-name[@]|'`echo autoheader | sed '$(transform)'`'|g' \
@@ -39,7 +39,7 @@ index 8936ff2..eb547d8 100644
  	-e 's|@PERL[@]|$(PERL)|g' \
  	-e 's|@bindir[@]|$(bindir)|g' \
 -	-e 's|@datadir[@]|$(pkgdatadir)|g' \
-+	-e 's|@datadir[@]|$(pkgdatadir)-2.6|g' \
++	-e 's|@datadir[@]|$(pkgdatadir)@RPM_AUTOCONF_SUFFIX@|g' \
  	-e 's|@prefix[@]|$(prefix)|g' \
  	-e 's|@autoconf-name[@]|'`echo autoconf | sed '$(transform)'`'|g' \
  	-e 's|@autoheader-name[@]|'`echo autoheader | sed '$(transform)'`'|g' \
@@ -52,7 +52,7 @@ index 2c85f89..d2fb71d 100644
  	-e 's|@PERL[@]|$(PERL)|g' \
  	-e 's|@bindir[@]|$(bindir)|g' \
 -	-e 's|@datadir[@]|$(pkgdatadir)|g' \
-+	-e 's|@datadir[@]|$(pkgdatadir)-2.6|g' \
++	-e 's|@datadir[@]|$(pkgdatadir)@RPM_AUTOCONF_SUFFIX@|g' \
  	-e 's|@prefix[@]|$(prefix)|g' \
  	-e 's|@autoconf-name[@]|'`echo autoconf | sed '$(transform)'`'|g' \
  	-e 's|@autoheader-name[@]|'`echo autoheader | sed '$(transform)'`'|g' \

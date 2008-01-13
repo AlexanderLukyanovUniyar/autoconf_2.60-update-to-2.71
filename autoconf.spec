@@ -58,6 +58,7 @@ their use.
 %prep
 %setup -q -n %srcname
 %patch1 -p2
+sed -i s,@RPM_AUTOCONF_SUFFIX@,%suff, %PATCH2
 %patch2 -p2
 %patch4 -p2
 %patch5 -p2
