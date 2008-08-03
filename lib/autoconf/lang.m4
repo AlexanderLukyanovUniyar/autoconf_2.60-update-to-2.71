@@ -254,6 +254,13 @@ AC_DEFUN([AC_LANG_FUNC_LINK_TRY],
 _AC_LANG_DISPATCH([$0], _AC_LANG, $@)])
 
 
+# AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN(FUNCTION, TYPE)
+# -------------------------------
+AC_DEFUN([AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN],
+[m4_ifval([$1], [], [m4_warn([syntax], [$0: no function given])])dnl
+_AC_LANG_DISPATCH([$0], _AC_LANG, $@)])
+
+
 # AC_LANG_BOOL_COMPILE_TRY(PROLOGUE, EXPRESSION)
 # ----------------------------------------------
 # Produce a program that compiles with success iff the boolean EXPRESSION

@@ -253,6 +253,25 @@ choke me
 ], [return $1 ();])])
 
 
+# AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN(C)(FUNCTION)
+# ----------------------------------
+# This will test if function is available as
+# gcc3 builtin.
+#
+m4_define([AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN(C)],
+[AC_LANG_PROGRAM(
+[#ifndef __GNUC__
+choke me
+#else
+#undef $1
+/* Declare this function with same prototype as __builtin_$1.
+  This removes warning about conflicting type with builtin */
+__typeof__(__builtin_$1) $1;
+
+__typeof__(__builtin_$1) *f = $1;
+#endif
+], [return f != __builtin_$1;])])
+
 # AC_LANG_BOOL_COMPILE_TRY(C)(PROLOGUE, EXPRESSION)
 # -------------------------------------------------
 # Return a program that is valid if EXPRESSION is nonzero.
@@ -319,6 +338,11 @@ m4_copy([AC_LANG_CALL(C)], [AC_LANG_CALL(C++)])
 # AC_LANG_FUNC_LINK_TRY(C++)(FUNCTION)
 # ------------------------------------
 m4_copy([AC_LANG_FUNC_LINK_TRY(C)], [AC_LANG_FUNC_LINK_TRY(C++)])
+
+
+# AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN(C++)(FUNCTION)
+# ------------------------------------
+m4_copy([AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN(C)], [AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN(C++)])
 
 
 # AC_LANG_BOOL_COMPILE_TRY(C++)(PROLOGUE, EXPRESSION)
