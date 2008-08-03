@@ -15,10 +15,11 @@ Packager: Autoconf Development Team <autoconf@packages.altlinux.org>
 BuildArch: noarch
 
 %set_compress_method gzip
-%define srcname %realname-%version
+%define srcname %realname-%version-%release
 %define __spec_autodep_custom_pre export autom4te_perllibdir=%buildroot%_datadir/%realname%suff
 
-Source: ftp://ftp.gnu.org/gnu/autoconf/%srcname.tar
+# ftp://ftp.gnu.org/gnu/autoconf/autoconf-%version.tar.gz
+Source: %srcname.tar
 Patch1: autoconf-2.58-alt-texinfo.patch
 Patch2: autoconf-2.6x-alt-datadir.patch
 Patch4: autoconf-2.59-alt-_AC_PATH_X_XMKMF.patch
