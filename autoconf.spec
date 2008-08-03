@@ -3,15 +3,15 @@
 %define suff -2.60
 
 Name: %realname%dialect
-Version: 2.61
-Release: alt4
+Version: 2.62
+Release: alt1
 Epoch: 2
 
 Summary: A GNU tool for automatically configuring source code
 License: GPL
 Group: Development/Other
 Url: http://www.gnu.org/software/%realname/
-Packager: Autoconf Development Team <autoconf@packages.altlinux.org>
+Packager: Dmitry V. Levin <ldv@altlinux.org>
 BuildArch: noarch
 
 %set_compress_method gzip
@@ -25,9 +25,7 @@ Provides: %realname = %epoch:%version-%release
 Obsoletes: %realname
 
 PreReq: autoconf-common, alternatives >= 0:0.2.0-alt0.12
-Requires(post): %install_info
-Requires(preun): %uninstall_info
-Requires: m4 >= 1.4, mktemp >= 1:1.3.1
+Requires: m4 >= 1.4.5, mktemp >= 1:1.3.1
 
 BuildRequires: help2man, alternatives >= 0:0.2.0-alt0.12
 
@@ -63,6 +61,7 @@ sed -i '/@direntry/,/@end direntry/ s/^\(\*[[:space:]]\+[[:alnum:].]\+\)\(:[[:sp
 
 %build
 export ac_cv_prog_EMACS=no
+autoreconf -iv
 %configure --program-suffix=%suff
 # Starting with 2.60, parallel builds are broken
 %make
@@ -116,7 +115,7 @@ fi
 %install_info %realname%suff.info
 %register_alternatives %name
 
-if ! %__grep -Fqs '(%realname)' %_infodir/dir; then
+if ! grep -Fqs '(%realname)' %_infodir/dir; then
 	%__install_info \
 		--info-file=%_infodir/%realname.info \
 		--info-dir=%_infodir \
@@ -142,7 +141,7 @@ autoupdate ifnames %realname.info.gz %realname.1.gz autoheader.1.gz autom4te.1.g
 autoreconf.1.gz autoscan.1.gz autoupdate.1.gz config.guess.1.gz config.sub.1.gz \
 ifnames.1.gz %{realname}data
 
-if ! %__grep -Fqs '(%realname)' %_infodir/dir; then
+if ! grep -Fqs '(%realname)' %_infodir/dir; then
 	%__install_info \
 		--info-file=%_infodir/%realname.info \
 		--info-dir=%_infodir \
@@ -160,6 +159,9 @@ fi
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Sun Aug 03 2008 Dmitry V. Levin <ldv@altlinux.org> 2:2.62-alt1
+- Updated to v2.62-1-gc4a32a0.
+
 * Sun Jan 13 2008 Alex V. Myltsev <avm@altlinux.ru> 2:2.61-alt4
 - Unbroke the datadir patch. (This is getting tiresome.)
 
