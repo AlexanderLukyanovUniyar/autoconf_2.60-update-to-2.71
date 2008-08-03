@@ -20,7 +20,6 @@ BuildArch: noarch
 
 # ftp://ftp.gnu.org/gnu/autoconf/autoconf-%version.tar.gz
 Source: %srcname.tar
-Patch5: autoconf-2.59-alt-AC_PROG_CXXCPP.patch
 Patch6: autoconf-2.59-alt-AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN.patch
 Patch8: autoconf-2.59-owl-tmp.patch
 Patch9: autoconf-2.59-alt-intltool.patch
@@ -58,7 +57,6 @@ their use.
 find -type f -print0 |
 	xargs -r0 fgrep -lZ @RPM_AUTOCONF_SUFFIX@ -- |
 	xargs -r0 sed -i s,@RPM_AUTOCONF_SUFFIX@,%suff, --
-%patch5 -p2
 %patch6 -p2
 %patch8 -p2
 %patch9 -p2
