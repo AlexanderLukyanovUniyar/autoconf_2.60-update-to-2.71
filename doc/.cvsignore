@@ -1,15 +1,28 @@
-*.AC *.ACs
-*.AT *.ATs
-*.cp *.cps
-*.cv *.cvs
-*.ev *.evs
-*.fn *.fns
-*.MS *.MSs
-*.ov *.ovs
-*.pr *.prs
-*.vr *.vrs
+*.AC
+*.ACs
+*.AT
+*.ATs
+*.cp
+*.cps
+*.cv
+*.cvs
+*.ev
+*.evs
+*.fn
+*.fns
+*.MS
+*.MSs
+*.ov
+*.ovs
+*.pr
+*.prs
+*.vr
+*.vrs
 *.ky
-*.aux *.dvi *.info *.log
+*.aux
+*.dvi
+*.info
+*.log
 Makefile
 autoconf
 *.pdf

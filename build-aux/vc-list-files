@@ -1,12 +1,15 @@
 #!/bin/sh
-# List the specified version-controlled files.
+# List version-controlled file names.
 
-# Copyright (C) 2006 Free Software Foundation, Inc.
+# Print a version string.
+scriptversion=2008-04-03.17
 
-# This program is free software; you can redistribute it and/or modify
+# Copyright (C) 2006-2008 Free Software Foundation, Inc.
+
+# This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,46 +17,86 @@
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software Foundation,
-# Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 # List the specified version-controlled files.
-# With no argument, list them all.
-# This script must be run solely from the top of a $srcdir build directory.
+# With no argument, list them all.  With a single DIRECTORY argument,
+# list the version-controlled files in that directory.
 
-# If there's an argument, it must be a single, "."-relative directory name,
-# with no trailing slashes.  In mercurial mode, it's used as part of a
-# "grep" pattern (prepend "^", append "/"), and in cvs mode, it's simply
-# used as an argument to the cvsu script.
+# If there's an argument, it must be a single, "."-relative directory name.
+# cvsu is part of the cvsutils package: http://www.red-bean.com/cvsutils/
 
-include_prefix=
-case $# in
-  0) ;;
-  1) include_prefix=$1 ;;
-  *) echo "$0: too many arguments" 1>&2; exit 1 ;;
+postprocess=
+case $1 in
+  --help) cat <<EOF
+Usage: $0 [-C SRCDIR] [DIR]
+
+Output a list of version-controlled files in DIR (default .), relative to
+SRCDIR (default .).  SRCDIR must be the top directory of a checkout.
+
+Options:
+  --help     print this help, then exit
+  --version  print version number, then exit
+  -C SRCDIR  change directory to SRCDIR before generating list
+
+Report bugs and patches to <bug-gnulib@gnu.org>.
+EOF
+    exit ;;
+
+  --version)
+    year=`echo "$scriptversion" | sed 's/[^0-9].*//'`
+    cat <<EOF
+vc-list-files $scriptversion
+Copyright (C) $year Free Software Foundation, Inc,
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+EOF
+    exit ;;
+
+  -C)
+    test "$2" = . || postprocess="| sed 's|^|$2/|'"
+    cd "$2" || exit 1
+    shift; shift ;;
 esac
 
+dir=
+case $# in
+  0) ;;
+  1) dir=$1 ;;
+  *) echo "$0: too many arguments" 1>&2
+     echo "Usage: $0 [-C srcdir] [DIR]" 1>&2; exit 1;;
+esac
+
+test "x$dir" = x && dir=.
+
 if test -d .git; then
-  if test "x$include_prefix" = x; then
-    git-ls-files | cut -d ' ' -f 3
-  else
-    git-ls-files | cut -d ' ' -f 3 | grep "^$include_prefix/"
-  fi
+  eval exec git ls-files '"$dir"' $postprocess
 elif test -d .hg; then
-  if test "x$include_prefix" = x; then
-    hg manifest | cut -d ' ' -f 3
+  eval exec hg locate '"$dir/*"' $postprocess
+elif test -d CVS; then
+  if test -x build-aux/cvsu; then
+    eval build-aux/cvsu --find --types=AFGM '"$dir"' $postprocess
+  elif (cvsu --help) >/dev/null 2>&1; then
+    eval cvsu --find --types=AFGM '"$dir"' $postprocess
   else
-    hg manifest | cut -d ' ' -f 3 | grep "^$include_prefix/"
+    eval awk -F/ \''{			\
+	if (!$1 && $3 !~ /^-/) {	\
+	  f=FILENAME;			\
+	  sub(/CVS\/Entries/, "", f);	\
+	  print f $2;			\
+	}}'\''				\
+      $(find ${*-*} -name Entries -print) /dev/null' $postprocess
   fi
-elif test -x build-aux/cvsu; then
-  build-aux/cvsu --find --types=AFGM $include_prefix
 else
-  awk -F/ '{				\
-      if (!$1 && $3 !~ /^-/) {		\
-	f=FILENAME;			\
-	sub(/CVS\/Entries/, "", f);	\
-	print f $2;			\
-      }}'				\
-    $(find ${*-*} -name Entries -print) /dev/null;
+  echo "$0: Failed to determine type of version control used in `pwd`" 1>&2
+  exit 1
 fi
+
+# Local variables:
+# eval: (add-hook 'write-file-hooks 'time-stamp)
+# time-stamp-start: "scriptversion="
+# time-stamp-format: "%:y-%02m-%02d.%02H"
+# time-stamp-end: "$"
+# End:

@@ -1,7 +1,8 @@
 # autoconf -- create `configure' using m4 macros
-# Copyright (C) 2001, 2002, 2003, 2004, 2006 Free Software Foundation, Inc.
+# Copyright (C) 2001, 2002, 2003, 2004, 2006, 2007 Free Software
+# Foundation, Inc.
 
-# This program is free software; you can redistribute it and/or modify
+# This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2, or (at your option)
 # any later version.
@@ -55,7 +56,7 @@ my @export_vars =
 # Functions we define and export.
 my @export_subs =
   qw (&debug
-      &getopt &mktmpdir
+      &getopt &shell_quote &mktmpdir
       &uniq);
 
 # Functions we forward (coming from modules we use).
@@ -282,6 +283,31 @@ sub getopt (%)
   setup_channel 'verb', silent => !$verbose;
 }
 
+
+=item C<shell_quote ($file_name)>
+
+Quote C<$file_name> for the shell.
+
+=cut
+
+# $FILE_NAME
+# shell_quote ($FILE_NAME)
+# ------------------------
+# If the string $S is a well-behaved file name, simply return it.
+# If it contains white space, quotes, etc., quote it, and return
+# the new string.
+sub shell_quote($)
+{
+  my ($s) = @_;
+  if ($s =~ m![^\w+/.,-]!)
+    {
+      # Convert each single quote to '\''
+      $s =~ s/\'/\'\\\'\'/g;
+      # Then single quote the string.
+      $s = "'$s'";
+    }
+  return $s;
+}
 
 =item C<mktmpdir ($signature)>
 
