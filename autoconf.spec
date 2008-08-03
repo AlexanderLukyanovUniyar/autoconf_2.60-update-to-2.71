@@ -20,7 +20,6 @@ BuildArch: noarch
 
 # ftp://ftp.gnu.org/gnu/autoconf/autoconf-%version.tar.gz
 Source: %srcname.tar
-Patch8: autoconf-2.59-owl-tmp.patch
 
 Provides: %realname = %epoch:%version-%release
 Obsoletes: %realname
@@ -53,9 +52,6 @@ their use.
 find -type f -print0 |
 	xargs -r0 fgrep -lZ @RPM_AUTOCONF_SUFFIX@ -- |
 	xargs -r0 sed -i s,@RPM_AUTOCONF_SUFFIX@,%suff, --
-%patch8 -p2
-
-find -type f -name \*.orig -delete -print
 
 find -type f -print0 |
 	xargs -r0 grep -FZl 'mawk gawk' -- |

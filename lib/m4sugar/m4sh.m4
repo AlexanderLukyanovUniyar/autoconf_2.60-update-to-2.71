@@ -1174,20 +1174,15 @@ m4_define([AS_LITERAL_IF],
 # Create as safely as possible a temporary directory in DIRECTORY
 # which name is inspired by PREFIX (should be 2-4 chars max).
 m4_define([AS_TMPDIR],
-[# Create a (secure) tmp directory for tmp files.
-m4_if([$2], [], [: ${TMPDIR=/tmp}])
+[# Create a temporary directory, and hook for its removal unless debugging.
+$debug ||
 {
-  tmp=`(umask 077 && mktemp -d "m4_default([$2], [$TMPDIR])/$1XXXXXX") 2>/dev/null` &&
-  test -n "$tmp" && test -d "$tmp"
-}  ||
-{
-  tmp=m4_default([$2], [$TMPDIR])/$1$$-$RANDOM
-  (umask 077 && mkdir "$tmp")
-} ||
-{
-   echo "$me: cannot create a temporary directory in m4_default([$2], [$TMPDIR])" >&2
-   AS_EXIT
-}dnl
+  trap 'exit_status=$?; rm -rf $tmp && exit $exit_status' EXIT
+  trap 'AS_EXIT([1])' PIPE HUP INT TERM
+}
+
+# Create a (secure) tmp directory for tmp files.
+tmp="`mktemp -dt cs.XXXXXXXXXX`" || exit 1
 ])# AS_TMPDIR
 
 

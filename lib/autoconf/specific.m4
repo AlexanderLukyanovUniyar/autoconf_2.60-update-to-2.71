@@ -196,17 +196,6 @@ fi
 
 # AC_SYS_LONG_FILE_NAMES
 # ----------------------
-# Security: use a temporary directory as the most portable way of
-# creating files in /tmp securely.  Removing them leaves a race
-# condition, set -C is not portably guaranteed to use O_EXCL, so still
-# leaves a race, and not all systems have the `mktemp' utility.  We
-# still test for existence first in case of broken systems where the
-# mkdir succeeds even when the directory exists.  Broken systems may
-# retain a race, but they probably have other security problems
-# anyway; this should be secure on well-behaved systems.  In any case,
-# use of `mktemp' is probably inappropriate here since it would fail in
-# attempting to create different file names differing after the 14th
-# character on file systems without long file names.
 AC_DEFUN([AC_SYS_LONG_FILE_NAMES],
 [AC_CACHE_CHECK(for long file names, ac_cv_sys_long_file_names,
 [ac_cv_sys_long_file_names=yes
@@ -225,9 +214,7 @@ for ac_dir in . "$TMPDIR" /tmp /var/tmp /usr/tmp "$prefix/lib" "$exec_prefix/lib
     . | /* | ?:[[\\/]]*) ;; #(
     *) continue;;
   esac
-  test -w "$ac_dir/." || continue # It is less confusing to not echo anything here.
-  ac_xdir=$ac_dir/cf$$
-  (umask 077 && mkdir "$ac_xdir" 2>/dev/null) || continue
+  ac_xdir="`mktemp -p $ac_dir -dq cfXXXXXX`" || continue
   ac_tf1=$ac_xdir/conftest9012345
   ac_tf2=$ac_xdir/conftest9012346
   touch "$ac_tf1" 2>/dev/null && test -f "$ac_tf1" && test ! -f "$ac_tf2" ||

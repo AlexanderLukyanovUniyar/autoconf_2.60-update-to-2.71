@@ -3474,23 +3474,11 @@ $debug ||
   tmp=
   trap 'exit_status=$?
   { test -z "$tmp" || test ! -d "$tmp" || rm -fr "$tmp"; } && exit $exit_status
-' 0
-  trap '{ (exit 1); exit 1; }' 1 2 13 15
+' EXIT
+  trap '{ (exit 1); exit 1; }' PIPE HUP INT TERM
 }
 # Create a (secure) tmp directory for tmp files.
-
-{
-  tmp=`(umask 077 && mktemp -d "./confXXXXXX") 2>/dev/null` &&
-  test -n "$tmp" && test -d "$tmp"
-}  ||
-{
-  tmp=./conf$$-$RANDOM
-  (umask 077 && mkdir "$tmp")
-} ||
-{
-   echo "$me: cannot create a temporary directory in ." >&2
-   { (exit 1); exit 1; }
-}
+tmp="`mktemp -d ./conf.XXXXXXXXXX`" || exit 1
 
 #
 # Set up the sed scripts for CONFIG_FILES section.

@@ -1,2 +1,1 @@
-copy: *.patch
 tar: . name=autoconf-@version@-@release@ base=autoconf-@version@-@release@

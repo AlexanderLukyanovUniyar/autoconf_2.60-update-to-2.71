@@ -296,19 +296,10 @@ C<$debug>.
 sub mktmpdir ($)
 {
   my ($signature) = @_;
-  my $TMPDIR = $ENV{'TMPDIR'} || '/tmp';
 
   # If mktemp supports dirs, use it.
-  $tmp = `(umask 077 &&
-	   mktemp -d "$TMPDIR/${signature}XXXXXX") 2>/dev/null`;
+  $tmp = `mktemp -dt ${signature}XXXXXXXXXX` or die;
   chomp $tmp;
-
-  if (!$tmp || ! -d $tmp)
-    {
-      $tmp = "$TMPDIR/$signature" . int (rand 10000) . ".$$";
-      mkdir $tmp, 0700
-	or croak "$me: cannot create $tmp: $!\n";
-    }
 
   print STDERR "$me:$$: working in $tmp\n"
     if $debug;
