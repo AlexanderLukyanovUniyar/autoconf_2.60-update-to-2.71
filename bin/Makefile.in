@@ -211,7 +211,7 @@ edit = sed \
 	-e 's|@SHELL[@]|$(SHELL)|g' \
 	-e 's|@PERL[@]|$(PERL)|g' \
 	-e 's|@bindir[@]|$(bindir)|g' \
-	-e 's|@datadir[@]|$(pkgdatadir)|g' \
+	-e 's|@datadir[@]|$(pkgdatadir)@RPM_AUTOCONF_SUFFIX@|g' \
 	-e 's|@prefix[@]|$(prefix)|g' \
 	-e 's|@autoconf-name[@]|'`echo autoconf | sed '$(transform)'`'|g' \
 	-e 's|@autoheader-name[@]|'`echo autoheader | sed '$(transform)'`'|g' \
