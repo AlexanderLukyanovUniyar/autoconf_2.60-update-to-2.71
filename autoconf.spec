@@ -20,7 +20,6 @@ BuildArch: noarch
 
 # ftp://ftp.gnu.org/gnu/autoconf/autoconf-%version.tar.gz
 Source: %srcname.tar
-Patch1: autoconf-2.58-alt-texinfo.patch
 Patch2: autoconf-2.6x-alt-datadir.patch
 Patch4: autoconf-2.59-alt-_AC_PATH_X_XMKMF.patch
 Patch5: autoconf-2.59-alt-AC_PROG_CXXCPP.patch
@@ -58,7 +57,6 @@ their use.
 
 %prep
 %setup -q -n %srcname
-%patch1 -p2
 sed -i s,@RPM_AUTOCONF_SUFFIX@,%suff, %PATCH2
 %patch2 -p2
 %patch4 -p2
