@@ -204,8 +204,8 @@ _ACEOF
     done
     # Open Windows xmkmf reportedly sets LIBDIR instead of USRLIBDIR.
     for ac_extension in so sl a; do
-      if test ! -f "$ac_im_usrlibdir/libX11.$ac_extension" &&
-	 test -f "$ac_im_libdir/libX11.$ac_extension"; then
+      if test -f "$ac_im_libdir/libX11.$ac_extension" &&
+	 test ! -f "$ac_im_usrlibdir/libX11.$ac_extension"; then
 	ac_im_usrlibdir=$ac_im_libdir; break
       fi
     done
