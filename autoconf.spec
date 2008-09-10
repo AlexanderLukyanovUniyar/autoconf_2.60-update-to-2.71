@@ -3,7 +3,7 @@
 %define suff -2.60
 
 Name: %realname%dialect
-Version: 2.62
+Version: 2.63
 Release: alt1
 Epoch: 2
 
@@ -159,6 +159,9 @@ fi
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Wed Sep 10 2008 Dmitry V. Levin <ldv@altlinux.org> 2:2.63-alt1
+- Updated to v2.63.
+
 * Sun Aug 03 2008 Dmitry V. Levin <ldv@altlinux.org> 2:2.62-alt1
 - Updated to v2.62-1-gc4a32a0.
 
