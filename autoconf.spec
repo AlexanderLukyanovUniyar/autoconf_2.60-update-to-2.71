@@ -56,7 +56,7 @@ find -type f -print0 |
 	xargs -r0 sed -i 's/mawk gawk/gawk mawk/g' --
 
 # patch texinfo file
-sed -i '/@direntry/,/@end direntry/ s/^\(\*[[:space:]]\+[[:alnum:].]\+\)\(:[[:space:]]\+\)(%realname)/\1%suff\2(%realname%suff)/' \
+sed -i '/@direntry/,/@end direntry/ s/^\(\*[[:space:]]\+[[:alnum:].-]\+\)\(:[[:space:]]\+\)(%realname)/\1%suff\2(%realname%suff)/' \
 	doc/autoconf.texi
 
 %build
