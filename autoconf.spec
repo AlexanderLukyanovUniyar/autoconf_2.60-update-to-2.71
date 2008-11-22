@@ -4,11 +4,11 @@
 
 Name: %realname%dialect
 Version: 2.63
-Release: alt1
+Release: alt2
 Epoch: 2
 
 Summary: A GNU tool for automatically configuring source code
-License: GPL
+License: GPLv2+
 Group: Development/Other
 Url: http://www.gnu.org/software/%realname/
 Packager: Dmitry V. Levin <ldv@altlinux.org>
@@ -128,6 +128,10 @@ fi
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Fri Nov 21 2008 Dmitry V. Levin <ldv@altlinux.org> 2:2.63-alt2
+- autoreconf: Pass -I to aclocal (upstream; closes: #11438).
+- Switched to alternatives-0.4.
+
 * Wed Sep 10 2008 Dmitry V. Levin <ldv@altlinux.org> 2:2.63-alt1
 - Updated to v2.63.
 
