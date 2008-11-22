@@ -24,10 +24,10 @@ Source: %srcname.tar
 Provides: %realname = %epoch:%version-%release
 Obsoletes: %realname
 
-PreReq: autoconf-common, alternatives >= 0:0.2.0-alt0.12
+PreReq: autoconf-common, alternatives >= 0:0.4
 Requires: m4 >= 1.4.5, mktemp >= 1:1.3.1
 
-BuildRequires: help2man, alternatives >= 0:0.2.0-alt0.12
+BuildRequires: help2man, alternatives >= 0:0.4
 
 %description
 GNU's Autoconf is a tool for configuring source code and Makefiles.
@@ -113,41 +113,10 @@ if a="$(readlink -ne %_datadir/info/dir)"; then
 	sed -i 's,%realname%dialect,%realname%suff,g' "$a"
 fi
 %install_info %realname%suff.info
-%register_alternatives %name
-
-if ! grep -Fqs '(%realname)' %_infodir/dir; then
-	%__install_info \
-		--info-file=%_infodir/%realname.info \
-		--info-dir=%_infodir \
-		--section=Development/Other \
-		--entry='* Autoconf: (%realname).          Create source code configuration scripts'
-fi
 
 %preun
 [ $1 = 0 ] || exit 0
 %uninstall_info %realname%suff.info
-%unregister_alternatives %name
-if [ ! -e %_infodir/%realname.info.gz ]; then
-	%__install_info --delete \
-		--info-file=%_infodir/%realname.info \
-		--info-dir=%_infodir \
-		--section=Development/Other \
-		--entry='* Autoconf: (%realname).          Create source code configuration scripts'
-fi
-
-%triggerpostun -- %realname
-%register_alternatives %name --  %realname autoheader autom4te autoreconf autoscan \
-autoupdate ifnames %realname.info.gz %realname.1.gz autoheader.1.gz autom4te.1.gz \
-autoreconf.1.gz autoscan.1.gz autoupdate.1.gz config.guess.1.gz config.sub.1.gz \
-ifnames.1.gz %{realname}data
-
-if ! grep -Fqs '(%realname)' %_infodir/dir; then
-	%__install_info \
-		--info-file=%_infodir/%realname.info \
-		--info-dir=%_infodir \
-		--section=Development/Other \
-		--entry='* Autoconf: (%realname).          Create source code configuration scripts'
-fi
 
 %files
 %config %_sysconfdir/buildreqs/packages/substitute.d/%name
