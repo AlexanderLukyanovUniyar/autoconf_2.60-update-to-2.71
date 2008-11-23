@@ -115,7 +115,6 @@ fi
 %install_info %realname%suff.info
 
 %preun
-[ $1 = 0 ] || exit 0
 %uninstall_info %realname%suff.info
 
 %files
