@@ -124,6 +124,8 @@ my $symlink = 0;
 my $aclocal_supports_force = 0;
 # Does automake support --force-missing?
 my $automake_supports_force_missing = 0;
+# Does libtoolize support --install?
+my $libtoolize_supports_install = 0;
 
 my @prepend_include;
 my @include;
@@ -185,6 +187,7 @@ sub parse_args ()
 
   $aclocal_supports_force = `$aclocal --help 2>/dev/null` =~ /--force/;
   $automake_supports_force_missing = `$automake --help 2>/dev/null` =~ /--force-missing/;
+  $libtoolize_supports_install = `$libtoolize --help 2>/dev/null` =~ /--install/;
 
   # Dispatch autoreconf's option to the tools.
   # --include;
@@ -213,6 +216,8 @@ sub parse_args ()
 	if $automake_supports_force_missing;
       $autopoint  .= ' --force';
       $libtoolize .= ' --force';
+      $libtoolize .= ' --install'
+	if $libtoolize_supports_install;
       $intltoolize .= ' --force';
     }
   else
