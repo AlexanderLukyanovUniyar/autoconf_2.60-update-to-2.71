@@ -4,7 +4,7 @@
 
 Name: %realname%dialect
 Version: 2.63
-Release: alt2
+Release: alt3
 Epoch: 2
 
 Summary: A GNU tool for automatically configuring source code
@@ -127,6 +127,9 @@ fi
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Mon Apr 27 2009 Dmitry V. Levin <ldv@altlinux.org> 2:2.63-alt3
+- autoreconf: Pass --install to libtoolize.
+
 * Fri Nov 21 2008 Dmitry V. Levin <ldv@altlinux.org> 2:2.63-alt2
 - autoreconf: Pass -I to aclocal (upstream; closes: #11438).
 - Switched to alternatives-0.4.
