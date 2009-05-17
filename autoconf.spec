@@ -108,15 +108,6 @@ cat >>%buildroot%_altdir/%name <<EOF
 EOF
 done
 
-%post
-if a="$(readlink -ne %_datadir/info/dir)"; then
-	sed -i 's,%realname%dialect,%realname%suff,g' "$a"
-fi
-%install_info %realname%suff.info
-
-%preun
-%uninstall_info %realname%suff.info
-
 %files
 %config %_sysconfdir/buildreqs/packages/substitute.d/%name
 %_altdir/*
