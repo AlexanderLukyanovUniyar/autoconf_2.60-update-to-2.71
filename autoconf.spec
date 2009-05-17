@@ -4,7 +4,7 @@
 
 Name: %realname%dialect
 Version: 2.63
-Release: alt3
+Release: alt4
 Epoch: 2
 
 Summary: A GNU tool for automatically configuring source code
@@ -118,6 +118,9 @@ done
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Sun May 17 2009 Dmitry V. Levin <ldv@altlinux.org> 2:2.63-alt4
+- Removed obsolete %%install_info/%%uninstall_info calls.
+
 * Mon Apr 27 2009 Dmitry V. Levin <ldv@altlinux.org> 2:2.63-alt3
 - autoreconf: Pass --install to libtoolize.
 
