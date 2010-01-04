@@ -1574,8 +1574,9 @@ been updated, or finally, simply in order to install the @acronym{GNU} Build
 System in a fresh tree.
 
 @command{autoreconf} runs @command{autoconf}, @command{autoheader},
-@command{aclocal}, @command{automake}, @command{libtoolize}, and
-@command{autopoint} (when appropriate) repeatedly to update the
+@command{aclocal}, @command{automake}, @command{libtoolize},
+@command{autopoint}, @command{intltoolize}, and @command{gtkdocize}
+(when appropriate) repeatedly to update the
 @acronym{GNU} Build System in the specified directories and their
 subdirectories (@pxref{Subdirectories}).  By default, it only remakes
 those files that are older than their sources.  The environment variables

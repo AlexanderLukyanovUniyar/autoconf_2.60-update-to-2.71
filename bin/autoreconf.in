@@ -58,9 +58,9 @@ use strict;
 $help = "Usage: $0 [OPTION]... [DIRECTORY]...
 
 Run `autoconf' (and `autoheader', `aclocal', `automake', `autopoint'
-(formerly `gettextize'), `libtoolize', and `intltoolize' where appropriate)
-repeatedly to remake the GNU Build System files in specified
-DIRECTORIES and their subdirectories (defaulting to `.').
+(formerly `gettextize'), `libtoolize', `intltoolize', and `gtkdocize'
+where appropriate) repeatedly to remake the GNU Build System files in
+specified DIRECTORIES and their subdirectories (defaulting to `.').
 
 By default, it only remakes those files that are older than their
 sources.  If you install new versions of the GNU Build System,
@@ -114,6 +114,7 @@ my $aclocal    = $ENV{'ACLOCAL'}    || 'aclocal';
 my $libtoolize = $ENV{'LIBTOOLIZE'} || 'libtoolize';
 my $autopoint  = $ENV{'AUTOPOINT'}  || 'autopoint';
 my $intltoolize = $ENV{'INTLTOOLIZE'} || 'intltoolize';
+my $gtkdocize  = $ENV{'GTKDOCIZE'}  || 'gtkdocize';
 my $make       = $ENV{'MAKE'}       || 'make';
 
 # --install -- as --add-missing in other tools.
@@ -178,6 +179,7 @@ sub parse_args ()
 		    $automake, $aclocal,
 		    $autopoint,
 		    $intltoolize,
+		    $gtkdocize,
 		    $libtoolize)
 	{
 	  xsystem ("$prog --version | sed 1q >&2");
@@ -204,6 +206,7 @@ sub parse_args ()
       $automake   .= ' --copy' unless $symlink;
       $libtoolize .= ' --copy' unless $symlink;
       $intltoolize .= ' --copy' unless $symlink;
+      $gtkdocize .= ' --copy' unless $symlink;
     }
   # --force;
   if ($force)
@@ -460,6 +463,7 @@ sub autoreconf_current_directory ()
   my $uses_autoheader;
   my $uses_automake;
   my $uses_intltool;
+  my $uses_gtkdoc;
   my @subdir;
   verb "$configure_ac: tracing";
   my $traces = new Autom4te::XFile
@@ -477,6 +481,7 @@ sub autoreconf_current_directory ()
 	     'AM_GNU_GETTEXT',
 	     'AM_INIT_AUTOMAKE',
 	     'IT_PROG_INTLTOOL',
+	     'GTK_DOC_CHECK',
 	    )
      . ' |');
   while ($_ = $traces->getline)
@@ -489,6 +494,7 @@ sub autoreconf_current_directory ()
       $uses_autoheader = 1          if /AC_CONFIG_HEADERS/;
       $uses_automake = 1            if /AM_INIT_AUTOMAKE/;
       $uses_intltool = 1            if /IT_PROG_INTLTOOL/;
+      $uses_gtkdoc = 1              if /GTK_DOC_CHECK/;
       push @subdir, split (' ', $1) if /AC_CONFIG_SUBDIRS:(.*)/ && $recursive;
     }
 
@@ -563,7 +569,7 @@ sub autoreconf_current_directory ()
     }
   elsif ($install)
     {
-      xsystem_hint ("intltoolize is needed because this package uses Libtool", $intltoolize);
+      xsystem_hint ("intltoolize is needed because this package uses Intltool", $intltoolize);
       $rerun_aclocal = 1;
     }
   else
@@ -571,6 +577,24 @@ sub autoreconf_current_directory ()
       verb "$configure_ac: not running intltoolize: --install not given";
     }
 
+
+  # ------------------ #
+  # Running gtkdocize. #
+  # ------------------ #
+
+  if (!$uses_gtkdoc)
+    {
+      verb "$configure_ac: not using gtk-doc";
+    }
+  elsif ($install)
+    {
+      xsystem_hint ("gtkdocize is needed because this package uses gtk-doc", $gtkdocize);
+      $rerun_aclocal = 1;
+    }
+  else
+    {
+      verb "$configure_ac: not running gtkdocize: --install not given";
+    }
 
 
   # ------------------- #
