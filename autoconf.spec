@@ -3,8 +3,8 @@
 %define suff -2.60
 
 Name: %realname%dialect
-Version: 2.63
-Release: alt4
+Version: 2.65
+Release: alt1
 Epoch: 2
 
 Summary: A GNU tool for automatically configuring source code
@@ -118,6 +118,10 @@ done
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Tue Jan 05 2010 Dmitry V. Levin <ldv@altlinux.org> 2:2.65-alt1
+- Updated to v2.65-19-g6c11abd (closes: #21744).
+- autoreconf: Added gtkdocize support.
+
 * Sun May 17 2009 Dmitry V. Levin <ldv@altlinux.org> 2:2.63-alt4
 - Removed obsolete %%install_info/%%uninstall_info calls.
 
