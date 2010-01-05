@@ -1,7 +1,6 @@
-# Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008 Free Software
-# Foundation, Inc.
+# Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008  Free Software Foundation, Inc.
 
-# This program is free software: you can redistribute it and/or modify
+# This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2, or (at your option)
 # any later version.
@@ -12,9 +11,7 @@
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-# 02110-1301, USA.
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ###############################################################
 # The main copy of this file is in Automake's CVS repository. #
@@ -50,7 +47,9 @@ use vars qw (@ISA @EXPORT);
 @EXPORT = qw (&open_quote &contents
 	      &find_file &mtime
 	      &update_file &up_to_date_p
-	      &xsystem &xsystem_hint &xqx &dir_has_case_matching_file &reset_dir_cache);
+	      &xsystem &xsystem_hint &xqx
+	      &dir_has_case_matching_file &reset_dir_cache
+	      &set_dir_cache_file);
 
 
 =item C<open_quote ($file_name)>
@@ -417,6 +416,19 @@ Clear C<dir_has_case_matching_file>'s cache for C<$dirname>.
 sub reset_dir_cache ($)
 {
   delete $_directory_cache{$_[0]};
+}
+
+=item C<set_dir_cache_file ($dirname, $file_name)>
+
+State that C<$dirname> contains C<$file_name> now.
+
+=cut
+
+sub set_dir_cache_file ($$)
+{
+  my ($dirname, $file_name) = @_;
+  $_directory_cache{$dirname}{$file_name} = 1
+    if exists $_directory_cache{$dirname};
 }
 
 1; # for require

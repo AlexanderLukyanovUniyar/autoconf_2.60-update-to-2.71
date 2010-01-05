@@ -1,7 +1,7 @@
 # Make Autoconf.
 
-# Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2006, 2007, 2008 Free
-# Software Foundation, Inc.
+# Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2006, 2007, 2008,
+# 2009 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,8 +24,9 @@ SUBDIRS = bin . lib doc tests man
 ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIST = ChangeLog.0 ChangeLog.1 ChangeLog.2 \
-	     BUGS COPYINGv3 \
+	     BUGS COPYINGv3 COPYING.EXCEPTION \
 	     GNUmakefile maint.mk cfg.mk \
+	     build-aux/gendocs.sh \
 	     build-aux/git-version-gen \
 	     build-aux/announce-gen build-aux/gnupload \
 	     .prev-version .version
@@ -34,10 +35,10 @@ EXTRA_DIST = ChangeLog.0 ChangeLog.1 ChangeLog.2 \
 ## INSTALL.  ##
 ## --------- ##
 
-pkgdata_DATA = $(srcdir)/INSTALL
 AM_MAKEINFOFLAGS = --no-headers --no-validate --no-split
 
 if MAKE_CASE_SENSITIVE
+pkgdata_DATA = $(srcdir)/INSTALL
 
 MAINTAINERCLEANFILES = $(srcdir)/INSTALL
 $(srcdir)/INSTALL: $(top_srcdir)/doc/install.texi
@@ -45,42 +46,6 @@ $(srcdir)/INSTALL: $(top_srcdir)/doc/install.texi
 	  $(top_srcdir)/doc/install.texi
 endif
 
-## maintainer-check ##
-maintainer-check: maintainer-check-tests
-maintainer-check-tests: all
-	cd tests && $(MAKE) $(AM_MAKEFLAGS) maintainer-check
-
-
-## ----------------------------------- ##
-## Updating Perl files from Automake.  ##
-## ----------------------------------- ##
-
-WGET = wget
-WGETFLAGS = -C off
-
-## Fetch the latest versions of files we care about.
-automake_gitweb = \
-  http://git.savannah.gnu.org/gitweb/?p=automake.git;a=blob_plain;hb=HEAD;
-autom4te_files = \
-  Autom4te/Configure_ac.pm \
-  Autom4te/Channels.pm \
-  Autom4te/FileUtils.pm \
-  Autom4te/Struct.pm \
-  Autom4te/XFile.pm
-
-autom4te-update:
-	rm -f -r Fetchdir > /dev/null 2>&1
-	mkdir -p Fetchdir/Autom4te
-	for file in $(autom4te_files); do \
-	  infile=`echo $$file | sed 's/Autom4te/Automake/g'`; \
-	  $(WGET) $(WGET_FLAGS) \
-	    "$(automake_gitweb)f=lib/$$infile" \
-	    -O "Fetchdir/$$file" || exit; \
-	done
-	perl -pi -e 's/Automake::/Autom4te::/g' Fetchdir/Autom4te/*.pm
-	for file in $(autom4te_files); do \
-	  $(move_if_change) Fetchdir/$$file $(srcdir)/lib/$$file || exit; \
-	done
 
 # Version string management.  There are two files to be aware of:
 # .tarball-version - present only in a distribution tarball, and not in
@@ -109,3 +74,32 @@ dist-hook:
 # TODO remove this once automake vs. AC_CONFIG_LINKS issue is fixed.
 distclean-local:
 	if test x"$(VPATH)" != x ; then rm -f GNUmakefile ; fi
+
+# Perl coverage statistics.
+PERL_COVERAGE_DB = `pwd`/cover_db
+PERL_COVERAGE_FLAGS = -MDevel::Cover=-db,$(PERL_COVERAGE_DB),-silent,on,-summary,off
+PERL_COVER = cover
+
+check-coverage-run: all
+	$(mkinstalldirs) $(PERL_COVERAGE_DB)
+	PERL5OPT="$(PERL_COVERAGE_FLAGS)"; export PERL5OPT; \
+	$(MAKE) $(AM_MAKEFLAGS) check
+
+check-coverage-report:
+	@if test ! -d $(PERL_COVERAGE_DB); then \
+	  echo "No coverage database found in \`$(PERL_COVERAGE_DB)'." >&2; \
+	  echo "Please run \`make check-coverage' first" >&2; \
+	  exit 1; \
+	fi
+	$(PERL_COVER) $(PERL_COVERAGE_DB) $(PERL_COVER_FLAGS)
+
+# We don't use direct dependencies here because we'd like to be able
+# to invoke the report even after interrupted check-coverage.
+check-coverage: check-coverage-run
+	$(MAKE) $(AM_MAKEFLAGS) check-coverage-report
+
+clean-local: clean-coverage
+clean-coverage:
+	rm -rf $(PERL_COVERAGE_DB)
+
+.PHONY: check-coverage check-coverage-run check-coverage-report clean-coverage

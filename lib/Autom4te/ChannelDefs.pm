@@ -1,9 +1,10 @@
-# Copyright (C) 2002, 2003, 2006, 2008 Free Software Foundation, Inc.
+# Copyright (C) 2002, 2003, 2006, 2008, 2009 Free Software Foundation,
+# Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -11,9 +12,7 @@
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-# 02110-1301, USA.
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package Autom4te::ChannelDefs;
 
@@ -135,7 +134,7 @@ Informative messages.
 # Do not forget to update &usage and the manual
 # if you add or change a warning channel.
 
-register_channel 'fatal', type => 'fatal';
+register_channel 'fatal', type => 'fatal', ordered => 0;
 register_channel 'error', type => 'error';
 register_channel 'error-gnu', type => 'error';
 register_channel 'error-gnu/warn', type => 'error';
@@ -144,7 +143,8 @@ register_channel 'automake', type => 'fatal', backtrace => 1,
   header => ("####################\n" .
 	     "## Internal Error ##\n" .
 	     "####################\n"),
-  footer => "\nPlease contact <bug-automake\@gnu.org>.";
+  footer => "\nPlease contact <bug-automake\@gnu.org>.",
+  ordered => 0;
 
 register_channel 'cross', type => 'warning', silent => 1;
 register_channel 'gnu', type => 'warning';
@@ -154,7 +154,7 @@ register_channel 'portability', type => 'warning', silent => 1;
 register_channel 'syntax', type => 'warning';
 register_channel 'unsupported', type => 'warning';
 
-register_channel 'verb', type => 'debug', silent => 1;
+register_channel 'verb', type => 'debug', silent => 1, ordered => 0;
 register_channel 'note', type => 'debug', silent => 0;
 
 =head2 FUNCTIONS

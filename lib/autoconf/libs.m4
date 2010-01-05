@@ -1,50 +1,29 @@
 # This file is part of Autoconf.                       -*- Autoconf -*-
 # Checking for libraries.
 # Copyright (C) 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001,
-# 2002, 2003, 2004, 2005, 2006, 2008 Free Software Foundation, Inc.
+# 2002, 2003, 2004, 2005, 2006, 2008, 2009 Free Software Foundation,
+# Inc.
 
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
+# This file is part of Autoconf.  This program is free
+# software; you can redistribute it and/or modify it under the
+# terms of the GNU General Public License as published by the
+# Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
+# Under Section 7 of GPL version 3, you are granted additional
+# permissions described in the Autoconf Configure Script Exception,
+# version 3.0, as published by the Free Software Foundation.
+#
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-# 02110-1301, USA.
+# and a copy of the Autoconf Configure Script Exception along with
+# this program; see the files COPYINGv3 and COPYING.EXCEPTION
+# respectively.  If not, see <http://www.gnu.org/licenses/>.
 
-# As a special exception, the Free Software Foundation gives unlimited
-# permission to copy, distribute and modify the configure scripts that
-# are the output of Autoconf.  You need not follow the terms of the GNU
-# General Public License when using or distributing such scripts, even
-# though portions of the text of Autoconf appear in them.  The GNU
-# General Public License (GPL) does govern all other use of the material
-# that constitutes the Autoconf program.
-#
-# Certain portions of the Autoconf source text are designed to be copied
-# (in certain cases, depending on the input) into the output of
-# Autoconf.  We call these the "data" portions.  The rest of the Autoconf
-# source text consists of comments plus executable code that decides which
-# of the data portions to output in any given case.  We call these
-# comments and executable code the "non-data" portions.  Autoconf never
-# copies any of the non-data portions into its output.
-#
-# This special exception to the GPL applies to versions of Autoconf
-# released by the Free Software Foundation.  When you make and
-# distribute a modified version of Autoconf, you may extend this special
-# exception to the GPL to apply to your modified version as well, *unless*
-# your modified version has the potential to copy into its output some
-# of the text that was the non-data portion of the version that you started
-# with.  (In other words, unless your change moves or copies text from
-# the non-data portions to the data portions.)  If your modification has
-# such potential, you must delete any notice of this special exception
-# to the GPL from your modified version.
-#
 # Written by David MacKenzie, with help from
 # Franc,ois Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
 # Roland McGrath, Noah Friedman, david d zuhn, and many others.
@@ -79,16 +58,16 @@ for ac_lib in '' $2; do
     LIBS="-l$ac_lib $5 $ac_func_search_save_LIBS"
   fi
   AC_LINK_IFELSE([], [AS_VAR_SET([ac_Search], [$ac_res])])
-  AS_VAR_SET_IF([ac_Search], [break])dnl
+  AS_VAR_SET_IF([ac_Search], [break])
 done
-AS_VAR_SET_IF([ac_Search], , [AS_VAR_SET([ac_Search], [no])])dnl
+AS_VAR_SET_IF([ac_Search], , [AS_VAR_SET([ac_Search], [no])])
 rm conftest.$ac_ext
 LIBS=$ac_func_search_save_LIBS])
-ac_res=AS_VAR_GET([ac_Search])
+AS_VAR_COPY([ac_res], [ac_Search])
 AS_IF([test "$ac_res" != no],
   [test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
   $3],
-      [$4])dnl
+      [$4])
 AS_VAR_POPDEF([ac_Search])dnl
 ])
 
@@ -134,7 +113,7 @@ AS_VAR_IF([ac_Lib], [yes],
       [m4_default([$3], [AC_DEFINE_UNQUOTED(AS_TR_CPP(HAVE_LIB$1))
   LIBS="-l$1 $LIBS"
 ])],
-      [$4])dnl
+      [$4])
 AS_VAR_POPDEF([ac_Lib])dnl
 ])# AC_CHECK_LIB
 
@@ -236,21 +215,25 @@ m4_define([_AC_PATH_X_DIRECT],
 # Check X11 before X11Rn because it is often a symlink to the current release.
 ac_x_header_dirs='
 /usr/X11/include
+/usr/X11R7/include
 /usr/X11R6/include
 /usr/X11R5/include
 /usr/X11R4/include
 
 /usr/include/X11
+/usr/include/X11R7
 /usr/include/X11R6
 /usr/include/X11R5
 /usr/include/X11R4
 
 /usr/local/X11/include
+/usr/local/X11R7/include
 /usr/local/X11R6/include
 /usr/local/X11R5/include
 /usr/local/X11R4/include
 
 /usr/local/include/X11
+/usr/local/include/X11R7
 /usr/local/include/X11R6
 /usr/local/include/X11R5
 /usr/local/include/X11R4

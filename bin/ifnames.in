@@ -8,12 +8,12 @@ eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
 # ifnames - print the identifiers used in C preprocessor conditionals
 
 # Copyright (C) 1994, 1995, 1999, 2000, 2001, 2002, 2003, 2005, 2006,
-# 2007, 2008 Free Software Foundation, Inc.
+# 2007, 2008, 2009 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,9 +21,7 @@ eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-# 02110-1301, USA.
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Reads from stdin if no files are given.
 # Writes to stdout.
@@ -33,8 +31,8 @@ eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
 
 BEGIN
 {
-  my $datadir = $ENV{'autom4te_perllibdir'} || '@datadir@';
-  unshift @INC, $datadir;
+  my $pkgdatadir = $ENV{'autom4te_perllibdir'} || '@pkgdatadir@';
+  unshift @INC, $pkgdatadir;
 
   # Override SHELL.  On DJGPP SHELL may not be set to a shell
   # that can handle redirection and quote arguments correctly,
@@ -61,6 +59,8 @@ space-separated list of the files in which that identifier occurs.
   -V, --version   print version number, then exit
 
 Report bugs to <bug-autoconf\@gnu.org>.
+GNU Autoconf home page: <http://www.gnu.org/software/autoconf/>.
+General help using GNU software: <http://www.gnu.org/gethelp/>.
 ";
 
 
@@ -68,8 +68,8 @@ Report bugs to <bug-autoconf\@gnu.org>.
 # --------
 $version = "ifnames (@PACKAGE_NAME@) @VERSION@
 Copyright (C) @RELEASE_YEAR@ Free Software Foundation, Inc.
-License GPLv2+: GNU GPL version 2 or later
-<http://gnu.org/licenses/old-licenses/gpl-2.0.html>
+License GPLv3+/Autoconf: GNU GPL version 3 or later
+<http://gnu.org/licenses/gpl.html>, <http://gnu.org/licenses/exceptions.html>
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
 

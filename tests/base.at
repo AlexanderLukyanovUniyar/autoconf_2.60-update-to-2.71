@@ -2,13 +2,13 @@
 
 AT_BANNER([Autoconf base layer.])
 
-# Copyright (C) 2000, 2001, 2003, 2005, 2006, 2007 Free Software
-# Foundation, Inc.
+# Copyright (C) 2000, 2001, 2003, 2005, 2006, 2007, 2008, 2009 Free
+# Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,9 +16,7 @@ AT_BANNER([Autoconf base layer.])
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-# 02110-1301, USA.
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 ## ------------------------------- ##
@@ -28,6 +26,7 @@ AT_BANNER([Autoconf base layer.])
 # Check that dependencies are always properly honored.
 
 AT_SETUP([AC_REQUIRE: topological sort])
+AT_KEYWORDS([m4@&t@_require])
 
 AT_DATA([configure.ac],
 [[define([REQUIRE_AND_CHECK],
@@ -71,6 +70,7 @@ AT_CLEANUP
 # Check that the message mentions AC_DEFUN, not m4_defun.
 
 AT_SETUP([AC_REQUIRE: error message])
+AT_KEYWORDS([m4@&t@_require])
 AT_DATA([configure.ac],
 [[AC_REQUIRE([AC_PROG_CC])
 ]])
@@ -88,6 +88,7 @@ AT_CLEANUP
 ## ----------------------------------------------- ##
 
 AT_SETUP([AC_REQUIRE & AC_DEFUN_ONCE: [Require, expand]])
+AT_KEYWORDS([m4@&t@_require m4@&t@_require_once])
 
 AT_DATA([configure.ac],
 [[AC_DEFUN([TEST],
@@ -116,10 +117,7 @@ case $multi_test:$single_test in
 esac
 ]])
 
-AT_CHECK_AUTOCONF([], 0, [],
-[configure.ac:17: warning: SINGLE_TEST invoked multiple times
-configure.ac:18: warning: SINGLE_TEST invoked multiple times
-])
+AT_CHECK_AUTOCONF([], 0, [])
 
 AT_CHECK_CONFIGURE
 
@@ -132,6 +130,7 @@ AT_CLEANUP
 ## ----------------------------------------------- ##
 
 AT_SETUP([AC_REQUIRE & AC_DEFUN_ONCE: [Expand, require]])
+AT_KEYWORDS([m4@&t@_require m4@&t@_require_once])
 
 AT_DATA([configure.ac],
 [[AC_DEFUN([TEST],
@@ -161,9 +160,7 @@ case $multi_test:$single_test in
 esac
 ]])
 
-AT_CHECK_AUTOCONF([], 0, [],
-[configure.ac:16: warning: SINGLE_TEST invoked multiple times
-])
+AT_CHECK_AUTOCONF([], 0, [])
 AT_CHECK_CONFIGURE
 
 AT_CLEANUP
@@ -175,6 +172,7 @@ AT_CLEANUP
 ## ------------------------- ##
 
 AT_SETUP([AC_REQUIRE & AC_PROVIDE])
+AT_KEYWORDS([m4@&t@_require])
 
 AT_DATA([configure.ac],
 [[AC_DEFUN([TEST],
@@ -196,6 +194,27 @@ esac
 
 AT_CHECK_AUTOCONF
 AT_CHECK_CONFIGURE
+
+AT_CLEANUP
+
+
+## -------- ##
+## AC_INIT. ##
+## -------- ##
+
+# Make sure AC_INIT sets PACKAGE_TARNAME properly.
+
+AT_SETUP([AC_INIT])
+
+AT_DATA([configure.ac],
+[[AC_INIT([GNU fu], [1.0], [bug-fu@gnu.org])
+]])
+
+AT_CHECK_AUTOCONF
+AT_CHECK_CONFIGURE([-q])
+
+# Ensure we get the expected definition:
+AT_CHECK([grep "^PACKAGE_TARNAME='fu'\$" configure], [], [ignore])
 
 AT_CLEANUP
 
@@ -294,15 +313,14 @@ AT_CLEANUP
 
 AT_SETUP([Input/Output])
 
-m4_pattern_allow([^AS_(MESSAGE|ORIGINAL_STDIN)_FD$])
 AT_DATA([configure.ac],
 [[AC_INIT
-cat <&AS_ORIGINAL_STDIN_FD >&AS_MESSAGE_FD
+cat <&AS@&t@_ORIGINAL_STDIN_FD >&AS@&t@_MESSAGE_FD
 ]])
 AT_CHECK_AUTOCONF
-AT_CHECK([echo Hello | ./configure | grep -v 'configure: loading site script '],, [Hello
+AT_CHECK([echo Hello | CONFIG_SITE=/dev/null ./configure $configure_options | grep -v 'configure: loading site script '],, [Hello
 ])
-AT_CHECK([echo Hello | ./configure --silent])
+AT_CHECK([echo Hello | CONFIG_SITE=/dev/null ./configure $configure_options --silent])
 
 AT_CLEANUP
 
@@ -321,6 +339,10 @@ echo "$@"
 AT_CHECK_AUTOCONF
 AT_CHECK_CONFIGURE([FOO=bar --enable-baz --without-zork --silent], [0], [stdout], [ignore])
 AT_CHECK([grep 'FOO=bar --enable-baz --without-zork --silent' stdout], [0], [ignore], [ignore])
+
+dnl check that syntax error is detected
+AT_CHECK_CONFIGURE([=], [1], [], [ignore], [ignore])
+AT_CHECK_CONFIGURE([1=2], [1], [], [ignore], [ignore])
 
 AT_CLEANUP
 

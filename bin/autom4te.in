@@ -6,13 +6,13 @@ eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
     if 0;
 
 # autom4te - Wrapper around M4 libraries.
-# Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2008 Free Software
-# Foundation, Inc.
+# Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2008, 2009 Free
+# Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,15 +20,13 @@ eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-# 02110-1301, USA.
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 BEGIN
 {
-  my $datadir = $ENV{'autom4te_perllibdir'} || '@datadir@';
-  unshift @INC, $datadir;
+  my $pkgdatadir = $ENV{'autom4te_perllibdir'} || '@pkgdatadir@';
+  unshift @INC, $pkgdatadir;
 
   # Override SHELL.  On DJGPP SHELL may not be set to a shell
   # that can handle redirection and quote arguments correctly,
@@ -47,7 +45,7 @@ use File::Basename;
 use strict;
 
 # Data directory.
-my $datadir = $ENV{'AC_MACRODIR'} || '@datadir@';
+my $pkgdatadir = $ENV{'AC_MACRODIR'} || '@pkgdatadir@';
 
 # $LANGUAGE{LANGUAGE} -- Automatic options for LANGUAGE.
 my %language;
@@ -67,6 +65,8 @@ my $icache;
 my $tcache;
 my $ocache;
 my $icache_file;
+
+my $flock_implemented = '@PERL_FLOCK@';
 
 # The macros to trace mapped to their format, as specified by the
 # user.
@@ -198,6 +198,8 @@ SEP can be empty for the default (comma for \@ and *, colon for %),
 a single character for that character, or {STRING} to use a string.
 
 Report bugs to <bug-autoconf\@gnu.org>.
+GNU Autoconf home page: <http://www.gnu.org/software/autoconf/>.
+General help using GNU software: <http://www.gnu.org/gethelp/>.
 ";
 
 # $VERSION
@@ -205,8 +207,8 @@ Report bugs to <bug-autoconf\@gnu.org>.
 $version =  <<"EOF";
 autom4te (@PACKAGE_NAME@) @VERSION@
 Copyright (C) @RELEASE_YEAR@ Free Software Foundation, Inc.
-License GPLv2+: GNU GPL version 2 or later
-<http://gnu.org/licenses/old-licenses/gpl-2.0.html>
+License GPLv3+/Autoconf: GNU GPL version 3 or later
+<http://gnu.org/licenses/gpl.html>, <http://gnu.org/licenses/exceptions.html>
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
 
@@ -461,12 +463,12 @@ sub handle_m4 ($@)
   #
   # We don't output directly to the cache files, to avoid problems
   # when we are interrupted (that leaves corrupted files).
-  xsystem ("$m4"
+  xsystem ("$m4 @M4_GNU@"
 	   . join (' --include=', '', map { shell_quote ($_) } @include)
 	   . ' --debug=aflq'
 	   . (!exists $ENV{'AUTOM4TE_NO_FATAL'} ? ' --fatal-warning' : '')
 	   . " @M4_DEBUGFILE@=" . shell_quote ("$tcache" . $req->id . "t")
-	   . join (' --trace=',   '', sort @macro)
+	   . join (' --trace=', '', map { shell_quote ($_) } sort @macro)
 	   . " " . files_to_options (@ARGV)
 	   . " > " . shell_quote ("$ocache" . $req->id . "t"));
 
@@ -748,10 +750,7 @@ sub handle_traces ($$%)
   # Note that the second pattern is `newline, tab or space'.  Don't lose
   # the tab!
   define([at_flatten],
-  [at_patsubst(at_patsubst(at_patsubst(at_patsubst([[[[$1]]]], [\\\n]),
-				       [[\n\t ]+], [ ]),
-			   [ *\(.\)$], [\1]),
-	       [^ *\(.*\)], [[\1]])])
+  [at_patsubst(at_patsubst([[[$1]]], [\\\n]), [[\n\t ]+], [ ])])
 
   define([at_args],    [at_shift(at_shift(at_shift(at_shift(at_shift($@)))))])
   define([at_at],      [_$0([$1], at_args($@))])
@@ -956,7 +955,7 @@ sub freeze ($)
 ## -------------- ##
 
 mktmpdir ('am4t');
-load_configuration ($ENV{'AUTOM4TE_CFG'} || "$datadir/autom4te.cfg");
+load_configuration ($ENV{'AUTOM4TE_CFG'} || "$pkgdatadir/autom4te.cfg");
 load_configuration ("$ENV{'HOME'}/.autom4te.cfg")
   if exists $ENV{'HOME'} && -f "$ENV{'HOME'}/.autom4te.cfg";
 load_configuration (".autom4te.cfg")
@@ -970,10 +969,11 @@ if ($freeze)
     exit $exit_code;
   }
 
-# We need our cache directory.
+# We need our cache directory.  Don't fail with parallel creation.
 if (! -d "$cache")
   {
     mkdir "$cache", 0755
+      or -d "$cache"
       or fatal "cannot create $cache: $!";
   }
 
@@ -981,7 +981,8 @@ if (! -d "$cache")
 # files, but the index is the first and last file to be updated, so
 # locking it is sufficient.
 $icache_file = new Autom4te::XFile $icache, O_RDWR|O_CREAT;
-$icache_file->lock (LOCK_EX);
+$icache_file->lock (LOCK_EX)
+  if ($flock_implemented eq "yes");
 
 # Read the cache index if available and older than autom4te itself.
 # If autom4te is younger, then some structures such as C4che might

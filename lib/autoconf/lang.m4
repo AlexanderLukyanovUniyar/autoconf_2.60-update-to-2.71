@@ -1,50 +1,28 @@
 # This file is part of Autoconf.                       -*- Autoconf -*-
 # Programming languages support.
-# Copyright (C) 2000, 2001, 2002, 2004, 2005, 2006, 2007, 2008 Free
-# Software Foundation, Inc.
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
+# Copyright (C) 2000, 2001, 2002, 2004, 2005, 2006, 2007, 2008, 2009
+# Free Software Foundation, Inc.
+
+# This file is part of Autoconf.  This program is free
+# software; you can redistribute it and/or modify it under the
+# terms of the GNU General Public License as published by the
+# Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
+# Under Section 7 of GPL version 3, you are granted additional
+# permissions described in the Autoconf Configure Script Exception,
+# version 3.0, as published by the Free Software Foundation.
+#
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-# 02110-1301, USA.
-#
-# As a special exception, the Free Software Foundation gives unlimited
-# permission to copy, distribute and modify the configure scripts that
-# are the output of Autoconf.  You need not follow the terms of the GNU
-# General Public License when using or distributing such scripts, even
-# though portions of the text of Autoconf appear in them.  The GNU
-# General Public License (GPL) does govern all other use of the material
-# that constitutes the Autoconf program.
-#
-# Certain portions of the Autoconf source text are designed to be copied
-# (in certain cases, depending on the input) into the output of
-# Autoconf.  We call these the "data" portions.  The rest of the Autoconf
-# source text consists of comments plus executable code that decides which
-# of the data portions to output in any given case.  We call these
-# comments and executable code the "non-data" portions.  Autoconf never
-# copies any of the non-data portions into its output.
-#
-# This special exception to the GPL applies to versions of Autoconf
-# released by the Free Software Foundation.  When you make and
-# distribute a modified version of Autoconf, you may extend this special
-# exception to the GPL to apply to your modified version as well, *unless*
-# your modified version has the potential to copy into its output some
-# of the text that was the non-data portion of the version that you started
-# with.  (In other words, unless your change moves or copies text from
-# the non-data portions to the data portions.)  If your modification has
-# such potential, you must delete any notice of this special exception
-# to the GPL from your modified version.
-#
+# and a copy of the Autoconf Configure Script Exception along with
+# this program; see the files COPYINGv3 and COPYING.EXCEPTION
+# respectively.  If not, see <http://www.gnu.org/licenses/>.
+
 # Written by David MacKenzie, with help from
 # Franc,ois Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
 # Roland McGrath, Noah Friedman, david d zuhn, and many others.
@@ -86,7 +64,7 @@ m4_define([AC_LANG_CASE],
 m4_define([_AC_LANG_DISPATCH],
 [m4_ifdef([$1($2)],
        [m4_indir([$1($2)], m4_shift2($@))],
-       [AC_FATAL([$1: unknown language: $2])])])
+       [m4_fatal([$1: unknown language: $2])])])
 
 
 # _AC_LANG_SET(OLD, NEW)
@@ -182,6 +160,30 @@ m4_defun([AC_LANG_ASSERT],
 
 
 
+# AC_LANG_DEFINE(NAME, ABBREV, PREFIX, COMPILER-VAR, COPY-FROM, SHELL-VARS)
+# -------------------------------------------------------------------------
+# Define a language referenced by AC_LANG(NAME), with cache variable prefix
+# ABBREV, Makefile variable prefix PREFIX and compiler variable COMPILER-VAR.
+# AC_LANG(NAME) is defined to SHELL-VARS, other macros are copied from language
+# COPY-FROM.  Even if COPY-FROM is empty, a default definition is provided for
+# language-specific macros AC_LANG_SOURCE(NAME) and AC_LANG_CONFTEST(NAME).
+m4_define([AC_LANG_DEFINE],
+[m4_define([AC_LANG($1)], [$6])]
+[m4_define([_AC_LANG_ABBREV($1)], [$2])]
+[m4_define([_AC_LANG_PREFIX($1)], [$3])]
+[m4_define([_AC_CC($1)], [$4])]
+[m4_copy([AC_LANG_CONFTEST($5)], [AC_LANG_CONFTEST($1)])]
+[m4_copy([AC_LANG_SOURCE($5)], [AC_LANG_SOURCE($1)])]
+[m4_copy([_AC_LANG_NULL_PROGRAM($5)], [_AC_LANG_NULL_PROGRAM($1)])]
+[m4_ifval([$5],
+[m4_copy([AC_LANG_PROGRAM($5)], [AC_LANG_PROGRAM($1)])]
+[m4_copy([AC_LANG_CALL($5)], [AC_LANG_CALL($1)])]
+[m4_copy([AC_LANG_FUNC_LINK_TRY($5)], [AC_LANG_FUNC_LINK_TRY($1)])]
+[m4_copy([AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN($5)], [AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN($1)])]
+[m4_copy([AC_LANG_BOOL_COMPILE_TRY($5)], [AC_LANG_BOOL_COMPILE_TRY($1)])]
+[m4_copy([AC_LANG_INT_SAVE($5)], [AC_LANG_INT_SAVE($1)])]
+[m4_copy([_AC_LANG_IO_PROGRAM($5)], [_AC_LANG_IO_PROGRAM($1)])])])
+
 ## ----------------------- ##
 ## 2. Producing programs.  ##
 ## ----------------------- ##
@@ -191,7 +193,14 @@ m4_defun([AC_LANG_ASSERT],
 # ----------------------
 # Save the BODY in `conftest.$ac_ext'.  Add a trailing new line.
 AC_DEFUN([AC_LANG_CONFTEST],
-[cat >conftest.$ac_ext <<_ACEOF
+[_AC_LANG_DISPATCH([$0], _AC_LANG, $@)])
+
+
+# AC_LANG_CONFTEST()(BODY)
+# ------------------------
+# Default implementation of AC_LANG_CONFTEST.
+m4_define([AC_LANG_CONFTEST()],
+[cat > conftest.$ac_ext <<_ACEOF
 $1
 _ACEOF])
 
@@ -204,6 +213,13 @@ AC_DEFUN([AC_LANG_SOURCE],
 [_AC_LANG_DISPATCH([$0], _AC_LANG, $@)])
 
 
+# AC_LANG_SOURCE()(BODY)
+# ----------------------
+# Default implementation of AC_LANG_SOURCE.
+m4_define([AC_LANG_SOURCE()],
+[$1])
+
+
 # AC_LANG_PROGRAM([PROLOGUE], [BODY])
 # -----------------------------------
 # Produce a valid source for the current language.  Prepend the
@@ -211,6 +227,30 @@ AC_DEFUN([AC_LANG_SOURCE],
 # execution the BODY (typically glued inside the `main' function, or
 # equivalent).
 AC_DEFUN([AC_LANG_PROGRAM],
+[AC_LANG_SOURCE([_AC_LANG_DISPATCH([$0], _AC_LANG, $@)])])
+
+
+# _AC_LANG_NULL_PROGRAM()()
+# -------------------------
+# Default implementation of AC_LANG_NULL_PROGRAM
+m4_define([_AC_LANG_NULL_PROGRAM()],
+[AC_LANG_PROGRAM([], [])])
+
+
+# _AC_LANG_NULL_PROGRAM
+# ----------------------
+# Produce valid source for the current language that does
+# nothing.
+AC_DEFUN([_AC_LANG_NULL_PROGRAM],
+[AC_LANG_SOURCE([_AC_LANG_DISPATCH([$0], _AC_LANG, $@)])])
+
+
+# _AC_LANG_IO_PROGRAM
+# -----------------------------------
+# Produce valid source for the current language that creates
+# a file.  (This is used when detecting whether executables
+# work, e.g. to detect cross-compiling.)
+AC_DEFUN([_AC_LANG_IO_PROGRAM],
 [AC_LANG_SOURCE([_AC_LANG_DISPATCH([$0], _AC_LANG, $@)])])
 
 
@@ -252,6 +292,12 @@ AC_DEFUN([AC_LANG_BOOL_COMPILE_TRY],
 AC_DEFUN([AC_LANG_INT_SAVE],
 [_AC_LANG_DISPATCH([$0], _AC_LANG, $@)])
 
+
+# _AC_CC
+# ------
+# The variable name of the compiler.
+m4_define([_AC_CC],
+[_AC_LANG_DISPATCH([$0], _AC_LANG, $@)])
 
 
 ## -------------------------------------------- ##
@@ -360,7 +406,7 @@ AC_BEFORE([$0], [_AC_COMPILER_EXEEXT])
 AC_BEFORE([$0], [AC_LINK_IFELSE])
 
 m4_define([_AC_COMPILER_EXEEXT],
-[AC_LANG_CONFTEST([AC_LANG_PROGRAM()])
+[AC_LANG_CONFTEST([_AC_LANG_NULL_PROGRAM])
 if _AC_DO_VAR(ac_link); then
   ac_no_link=no
   ]m4_defn([_AC_COMPILER_EXEEXT])[
@@ -469,7 +515,7 @@ m4_define([_AC_COMPILER_EXEEXT_DEFAULT],
 [# Try to create an executable without -o first, disregard a.out.
 # It will help us diagnose broken compilers, and finding out an intuition
 # of exeext.
-AC_MSG_CHECKING([for _AC_LANG compiler default output file name])
+AC_MSG_CHECKING([whether the _AC_LANG compiler works])
 ac_link_default=`AS_ECHO(["$ac_link"]) | sed ['s/ -o *conftest[^ ]*//']`
 
 # The possible output files:
@@ -502,7 +548,7 @@ do
 	# certainly right.
 	break;;
     *.* )
-        if test "${ac_cv_exeext+set}" = set && test "$ac_cv_exeext" != no;
+	if test "${ac_cv_exeext+set}" = set && test "$ac_cv_exeext" != no;
 	then :; else
 	   ac_cv_exeext=`expr "$ac_file" : ['[^.]*\(\..*\)']`
 	fi
@@ -519,24 +565,35 @@ done
 test "$ac_cv_exeext" = no && ac_cv_exeext=
 ],
       [ac_file=''])
-AC_MSG_RESULT([$ac_file])
 AS_IF([test -z "$ac_file"],
-[_AC_MSG_LOG_CONFTEST
-AC_MSG_FAILURE([_AC_LANG compiler cannot create executables], 77)])
+[AC_MSG_RESULT([no])
+_AC_MSG_LOG_CONFTEST
+AC_MSG_FAILURE([_AC_LANG compiler cannot create executables], 77)],
+[AC_MSG_RESULT([yes])])
+AC_MSG_CHECKING([for _AC_LANG compiler default output file name])
+AC_MSG_RESULT([$ac_file])
 ac_exeext=$ac_cv_exeext
 ])# _AC_COMPILER_EXEEXT_DEFAULT
 
 
-# _AC_COMPILER_EXEEXT_WORKS
+# _AC_COMPILER_EXEEXT_CROSS
 # -------------------------
-m4_define([_AC_COMPILER_EXEEXT_WORKS],
+# FIXME: These cross compiler hacks should be removed for Autoconf 3.0
+#
+# It is not sufficient to run a no-op program -- this succeeds and gives
+# a false negative when cross-compiling for the compute nodes on the
+# IBM Blue Gene/L.  Instead, _AC_COMPILER_EXEEXT calls _AC_LANG_IO_PROGRAM
+# to create a program that writes to a file, which is sufficient to
+# detect cross-compiling on Blue Gene.  Note also that AC_COMPUTE_INT
+# requires programs that create files when not cross-compiling, so it
+# is safe and not a bad idea to check for this capability in general.
+m4_define([_AC_COMPILER_EXEEXT_CROSS],
 [# Check that the compiler produces executables we can run.  If not, either
 # the compiler is broken, or we cross compile.
-AC_MSG_CHECKING([whether the _AC_LANG compiler works])
-# FIXME: These cross compiler hacks should be removed for Autoconf 3.0
-# If not cross compiling, check that we can run a simple program.
+AC_MSG_CHECKING([whether we are cross compiling])
 if test "$cross_compiling" != yes; then
-  if _AC_DO_TOKENS([./$ac_file]); then
+  _AC_DO_VAR(ac_link)
+  if _AC_DO_TOKENS([./conftest$ac_cv_exeext]); then
     cross_compiling=no
   else
     if test "$cross_compiling" = maybe; then
@@ -547,16 +604,6 @@ If you meant to cross compile, use `--host'.])
     fi
   fi
 fi
-AC_MSG_RESULT([yes])
-])# _AC_COMPILER_EXEEXT_WORKS
-
-
-# _AC_COMPILER_EXEEXT_CROSS
-# -------------------------
-m4_define([_AC_COMPILER_EXEEXT_CROSS],
-[# Check that the compiler produces executables we can run.  If not, either
-# the compiler is broken, or we cross compile.
-AC_MSG_CHECKING([whether we are cross compiling])
 AC_MSG_RESULT([$cross_compiling])
 ])# _AC_COMPILER_EXEEXT_CROSS
 
@@ -582,7 +629,7 @@ for ac_file in conftest.exe conftest conftest.*; do
   esac
 done],
 	      [AC_MSG_FAILURE([cannot compute suffix of executables: cannot compile and link])])
-rm -f conftest$ac_cv_exeext
+rm -f conftest conftest$ac_cv_exeext
 AC_MSG_RESULT([$ac_cv_exeext])
 ])# _AC_COMPILER_EXEEXT_O
 
@@ -599,19 +646,27 @@ AC_MSG_RESULT([$ac_cv_exeext])
 #
 # Must be run before _AC_COMPILER_OBJEXT because _AC_COMPILER_EXEEXT_DEFAULT
 # checks whether the compiler works.
+#
+# Do not rename this macro; Automake decides whether EXEEXT is used
+# by checking whether `_AC_COMPILER_EXEEXT' has been expanded.
+#
+# See _AC_COMPILER_EXEEXT_CROSS for why we need _AC_LANG_IO_PROGRAM.
 m4_define([_AC_COMPILER_EXEEXT],
-[AC_LANG_CONFTEST([AC_LANG_PROGRAM()])
+[AC_LANG_CONFTEST([_AC_LANG_NULL_PROGRAM])
 ac_clean_files_save=$ac_clean_files
 ac_clean_files="$ac_clean_files a.out a.out.dSYM a.exe b.out"
 _AC_COMPILER_EXEEXT_DEFAULT
-_AC_COMPILER_EXEEXT_WORKS
 rm -f -r a.out a.out.dSYM a.exe conftest$ac_cv_exeext b.out
 ac_clean_files=$ac_clean_files_save
-_AC_COMPILER_EXEEXT_CROSS
 _AC_COMPILER_EXEEXT_O
 rm -f conftest.$ac_ext
 AC_SUBST([EXEEXT], [$ac_cv_exeext])dnl
 ac_exeext=$EXEEXT
+AC_LANG_CONFTEST([_AC_LANG_IO_PROGRAM])
+ac_clean_files="$ac_clean_files conftest.out"
+_AC_COMPILER_EXEEXT_CROSS
+rm -f conftest.$ac_ext conftest$ac_cv_exeext conftest.out
+ac_clean_files=$ac_clean_files_save
 ])# _AC_COMPILER_EXEEXT
 
 
@@ -627,7 +682,7 @@ ac_exeext=$EXEEXT
 # it includes.  So do it by hand.
 m4_define([_AC_COMPILER_OBJEXT],
 [AC_CACHE_CHECK([for suffix of object files], ac_cv_objext,
-[AC_LANG_CONFTEST([AC_LANG_PROGRAM()])
+[AC_LANG_CONFTEST([_AC_LANG_NULL_PROGRAM])
 rm -f conftest.o conftest.obj
 AS_IF([_AC_DO_VAR(ac_compile)],
 [for ac_file in conftest.o conftest.obj conftest.*; do

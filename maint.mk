@@ -2,7 +2,8 @@
 # This Makefile fragment tries to be general-purpose enough to be
 # used by at least coreutils, idutils, CPPI, Bison, and Autoconf.
 
-## Copyright (C) 2001-2008 Free Software Foundation, Inc.
+## Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
+## Free Software Foundation, Inc.
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -21,6 +22,9 @@
 # ME := $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
 ME := maint.mk
 
+# Override this in cfg.mk if you use a non-standard build-aux directory.
+build_aux ?= $(srcdir)/build-aux
+
 # Do not save the original name or timestamp in the .tar.gz file.
 # Use --rsyncable if available.
 gzip_rsyncable := \
@@ -31,7 +35,7 @@ GIT = git
 VC = $(GIT)
 VC-tag = git tag -s -m '$(VERSION)'
 
-VC_LIST = $(srcdir)/build-aux/vc-list-files -C $(srcdir)
+VC_LIST = $(build_aux)/vc-list-files -C $(srcdir)
 
 VC_LIST_EXCEPT = \
   $(VC_LIST) | if test -f $(srcdir)/.x-$@; then	\
@@ -52,8 +56,22 @@ this-vc-tag-regexp = v$(VERSION_REGEXP)
 my_distdir = $(PACKAGE)-$(VERSION)
 
 # Old releases are stored here.
-# Used for diffs and xdeltas.
+# Used for diffs.
 release_archive_dir ?= ../release
+
+# Override gnu_rel_host and url_dir_list in cfg.mk if these are not right.
+# Use alpha.gnu.org for alpha and beta releases.
+# Use ftp.gnu.org for stable releases.
+gnu_ftp_host-alpha = alpha.gnu.org
+gnu_ftp_host-beta = alpha.gnu.org
+gnu_ftp_host-stable = ftp.gnu.org
+gnu_rel_host ?= $(gnu_ftp_host-$(RELEASE_TYPE))
+
+ifeq ($(gnu_rel_host),ftp.gnu.org)
+url_dir_list ?= http://ftpmirror.gnu.org/$(PACKAGE)
+else
+url_dir_list ?= ftp://$(gnu_rel_host)/gnu/$(PACKAGE)
+endif
 
 # Prevent programs like 'sort' from considering distinct strings to be equal.
 # Doing it here saves us from having to set LC_ALL elsewhere in this file.
@@ -480,6 +498,7 @@ cvs-check: vc-diff-check
 
 maintainer-distcheck:
 	$(MAKE) distcheck
+	$(MAKE) -C tests $(AM_MAKEFLAGS) maintainer-check
 	$(MAKE) my-distcheck
 
 # Don't make a distribution if checks fail.
@@ -525,9 +544,8 @@ my-distcheck: $(local-check) $(release_archive_dir)/$(prev-tgz)
 	echo "========================"
 
 prev-tgz = $(PACKAGE)-$(PREV_VERSION).tar.gz
-xd-delta = $(PACKAGE)-$(PREV_VERSION)-$(VERSION).xdelta
 
-rel-files = $(xd-delta) $(DIST_ARCHIVES)
+rel-files = $(DIST_ARCHIVES)
 announcement: NEWS ChangeLog $(rel-files)
 	@$(announce_gen)						\
 	    --release-type=$(RELEASE_TYPE)				\
@@ -549,60 +567,19 @@ www-gnu = http://www.gnu.org
 # Use mv, if you don't have/want move-if-change.
 move_if_change ?= move-if-change
 
-
-# --------------------- #
-# Updating everything.  #
-# --------------------- #
-
-.PHONY: update
-local_updates ?= cvs-update
-update: $(local_updates)
-
-
-# -------------------------- #
-# Updating GNU build tools.  #
-# -------------------------- #
-
-cvs_files ?= \
-  $(srcdir)/build-aux/depcomp \
-  $(srcdir)/build-aux/install-sh \
-  $(srcdir)/build-aux/missing
-gnulib_repo=:pserver:anonymous@cvs.savannah.gnu.org:/sources/gnulib
-.PHONY: wget-update
-wget-update: $(get-targets)
-
-.PHONY: cvs-update
-cvs-update:
-	fail=;								\
-	for f in $(cvs_files) dummy; do					\
-	  test $$f = dummy && continue;					\
-	  test -f $$f || { echo "*** skipping $$f" 1>&2; continue; };	\
-	  cvs diff $$f > /dev/null					\
-	    || { echo "*** $$f is locally modified; skipping it" 1>&2;	\
-		 fail=yes; continue; };					\
-	  file=$$(expr "X$$f" : 'X$(srcdir)/\(.*\)');			\
-	  echo checking out $$file...;					\
-	  $(CVS) -d $(gnulib_repo) co -p gnulib/$$file >$$f.t		\
-	    && $(move_if_change) $$f.t $$f;				\
-	done;								\
-	test "$$fail" && exit 1
-
 emit_upload_commands:
 	@echo =====================================
 	@echo =====================================
-	@echo "$(srcdir)/build-aux/gnupload $(GNUPLOADFLAGS) \\"
+	@echo "$(build_aux)/gnupload $(GNUPLOADFLAGS) \\"
 	@echo "    --to $(gnu_rel_host):$(PACKAGE) \\"
 	@echo "  $(rel-files)"
 	@echo '# send the /tmp/announcement e-mail'
 	@echo =====================================
 	@echo =====================================
 
-$(xd-delta): $(release_archive_dir)/$(prev-tgz) $(distdir).tar.gz
-	xdelta delta -9 $^ $@ || :
-
-.PHONY: alpha beta major
-alpha beta major: news-date-check changelog-check $(local-check)
-	test $@ = major						\
+.PHONY: alpha beta stable
+alpha beta stable: news-date-check changelog-check $(local-check)
+	test $@ = stable						\
 	  && { echo $(VERSION) | grep -E '^[0-9]+(\.[0-9]+)+$$'	\
 	       || { echo "invalid version string: $(VERSION)" 1>&2; exit 1;};}\
 	  || :
@@ -616,3 +593,31 @@ alpha beta major: news-date-check changelog-check $(local-check)
 	$(VC) commit -m \
 	  '$(prev_version_file): Record previous version: $(VERSION).' \
 	  $(prev_version_file)
+
+
+.PHONY: web-manual
+web-manual:
+	@test -z "$(manual_title)" \
+	  && { echo define manual_title in cfg.mk 1>&2; exit 1; } || :
+	@cd '$(srcdir)/doc'; \
+	  $(SHELL) ../build-aux/gendocs.sh -o '$(abs_builddir)/doc/manual' \
+	     --email $(PACKAGE_BUGREPORT) $(PACKAGE) \
+	    "$(PACKAGE_NAME) - $(manual_title)"
+	@echo " *** Upload the doc/manual directory to web-cvs."
+
+# If you want to set UPDATE_COPYRIGHT_* environment variables,
+# put the assignments in this variable.
+update-copyright-env ?=
+
+# Run this rule once per year (usually early in January)
+# to update all FSF copyright year lists in your project.
+# If you have an additional project-specific rule,
+# add it in cfg.mk along with a line 'update-copyright: prereq'.
+# By default, exclude all variants of COPYING; you can also
+# add exemptions (such as ChangeLog..* for rotated change logs)
+# in the file .x-update-copyright.
+.PHONY: update-copyright
+update-copyright:
+	grep -l -w Copyright $$($(VC_LIST_EXCEPT))		\
+		$(srcdir)/ChangeLog | grep -v COPYING		\
+	  | $(update-copyright-env) xargs $(build_aux)/$@

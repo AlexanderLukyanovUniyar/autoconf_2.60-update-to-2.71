@@ -1,50 +1,28 @@
 # This file is part of Autoconf.			-*- Autoconf -*-
 # Checking for functions.
-# Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007 Free Software
-# Foundation, Inc.
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
+# Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008,
+# 2009 Free Software Foundation, Inc.
+
+# This file is part of Autoconf.  This program is free
+# software; you can redistribute it and/or modify it under the
+# terms of the GNU General Public License as published by the
+# Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
+# Under Section 7 of GPL version 3, you are granted additional
+# permissions described in the Autoconf Configure Script Exception,
+# version 3.0, as published by the Free Software Foundation.
+#
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-# 02110-1301, USA.
-#
-# As a special exception, the Free Software Foundation gives unlimited
-# permission to copy, distribute and modify the configure scripts that
-# are the output of Autoconf.  You need not follow the terms of the GNU
-# General Public License when using or distributing such scripts, even
-# though portions of the text of Autoconf appear in them.  The GNU
-# General Public License (GPL) does govern all other use of the material
-# that constitutes the Autoconf program.
-#
-# Certain portions of the Autoconf source text are designed to be copied
-# (in certain cases, depending on the input) into the output of
-# Autoconf.  We call these the "data" portions.  The rest of the Autoconf
-# source text consists of comments plus executable code that decides which
-# of the data portions to output in any given case.  We call these
-# comments and executable code the "non-data" portions.  Autoconf never
-# copies any of the non-data portions into its output.
-#
-# This special exception to the GPL applies to versions of Autoconf
-# released by the Free Software Foundation.  When you make and
-# distribute a modified version of Autoconf, you may extend this special
-# exception to the GPL to apply to your modified version as well, *unless*
-# your modified version has the potential to copy into its output some
-# of the text that was the non-data portion of the version that you started
-# with.  (In other words, unless your change moves or copies text from
-# the non-data portions to the data portions.)  If your modification has
-# such potential, you must delete any notice of this special exception
-# to the GPL from your modified version.
-#
+# and a copy of the Autoconf Configure Script Exception along with
+# this program; see the files COPYINGv3 and COPYING.EXCEPTION
+# respectively.  If not, see <http://www.gnu.org/licenses/>.
+
 # Written by David MacKenzie, with help from
 # Franc,ois Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
 # Roland McGrath, Noah Friedman, david d zuhn, and many others.
@@ -61,55 +39,77 @@
 ## 1. Generic tests for functions.  ##
 ## -------------------------------- ##
 
+# _AC_CHECK_FUNC_BODY
+# -------------------
+# Shell function body for AC_CHECK_FUNC.
+m4_define([_AC_CHECK_FUNC_BODY],
+[  AS_LINENO_PUSH([$[]1])
+  AC_CACHE_CHECK([for $[]2], [$[]3],
+  [AC_LINK_IFELSE([AC_LANG_FUNC_LINK_TRY($[]2)],
+		  [AS_VAR_SET([$[]3], [yes])],
+		  [AC_LINK_IFELSE([AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN([$[]1])],
+				  [AS_VAR_SET([$[]3], [yes])],
+				  [AS_VAR_SET([$[]3], [no])])])])
+  AS_LINENO_POP
+])# _AC_CHECK_FUNC_BODY
+
 
 # AC_CHECK_FUNC(FUNCTION, [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
 # -----------------------------------------------------------------
+# Check whether FUNCTION links in the current language.  Set the cache
+# variable ac_cv_func_FUNCTION accordingly, then execute
+# ACTION-IF-FOUND or ACTION-IF-NOT-FOUND.
 AC_DEFUN([AC_CHECK_FUNC],
-[AS_VAR_PUSHDEF([ac_var], [ac_cv_func_$1])dnl
-AC_CACHE_CHECK([for $1], [ac_var],
-[AC_LINK_IFELSE([AC_LANG_FUNC_LINK_TRY([$1])],
-		[AS_VAR_SET([ac_var], [yes])],
-		[AC_LINK_IFELSE([AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN([$1])],
-				[AS_VAR_SET([ac_var], [yes])],
-				[AS_VAR_SET([ac_var], [no])])])])
-AS_VAR_IF([ac_var], [yes], [$2], [$3])dnl
-AS_VAR_POPDEF([ac_var])dnl
-])# AC_CHECK_FUNC
+[AC_REQUIRE_SHELL_FN([ac_fn_]_AC_LANG_ABBREV[_check_func],
+  [AS_FUNCTION_DESCRIBE([ac_fn_]_AC_LANG_ABBREV[_check_func],
+    [LINENO FUNC VAR],
+    [Tests whether FUNC exists, setting the cache variable VAR accordingly])],
+  [_$0_BODY])]dnl
+[AS_VAR_PUSHDEF([ac_var], [ac_cv_func_$1])]dnl
+[ac_fn_[]_AC_LANG_ABBREV[]_check_func "$LINENO" "$1" "ac_var"
+AS_VAR_IF([ac_var], [yes], [$2], [$3])
+AS_VAR_POPDEF([ac_var])])# AC_CHECK_FUNC
 
 
-# _AH_CHECK_FUNCS(FUNCTION...)
-# ----------------------------
-m4_define([_AH_CHECK_FUNCS],
-[m4_foreach_w([AC_Func], [$1],
-   [AH_TEMPLATE(AS_TR_CPP([HAVE_]m4_defn([AC_Func])),
-      [Define to 1 if you have the `]m4_defn([AC_Func])[' function.])])])
+# _AH_CHECK_FUNC(FUNCTION)
+# ------------------------
+# Prepare the autoheader snippet for FUNCTION.
+m4_define([_AH_CHECK_FUNC],
+[AH_TEMPLATE(AS_TR_CPP([HAVE_$1]),
+  [Define to 1 if you have the `$1' function.])])
 
 
 # AC_CHECK_FUNCS(FUNCTION..., [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
 # ---------------------------------------------------------------------
+# Check for each whitespace-separated FUNCTION, and perform
+# ACTION-IF-FOUND or ACTION-IF-NOT-FOUND for each function.
+# Additionally, make the preprocessor definition HAVE_FUNCTION
+# available for each found function.  Either ACTION may include
+# `break' to stop the search.
 AC_DEFUN([AC_CHECK_FUNCS],
-[_AH_CHECK_FUNCS([$1])dnl
-for ac_func in $1
-do
-AC_CHECK_FUNC($ac_func,
-	      [AC_DEFINE_UNQUOTED(AS_TR_CPP([HAVE_$ac_func])) $2],
-	      [$3])dnl
-done
-])
+[m4_map_args_w([$1], [_AH_CHECK_FUNC(], [)])]dnl
+[AS_FOR([AC_func], [ac_func], [$1],
+[AC_CHECK_FUNC(AC_func,
+	       [AC_DEFINE_UNQUOTED(AS_TR_CPP([HAVE_]AC_func)) $2],
+	       [$3])dnl])
+])# AC_CHECK_FUNCS
 
+
+# _AC_CHECK_FUNC_ONCE(FUNCTION)
+# -----------------------------
+# Check for a single FUNCTION once.
+m4_define([_AC_CHECK_FUNC_ONCE],
+[_AH_CHECK_FUNC([$1])AC_DEFUN([_AC_Func_$1],
+  [m4_divert_text([INIT_PREPARE], [AS_VAR_APPEND([ac_func_list], [" $1"])])
+_AC_FUNCS_EXPANSION])AC_REQUIRE([_AC_Func_$1])])
 
 # AC_CHECK_FUNCS_ONCE(FUNCTION...)
 # --------------------------------
+# Add each whitespace-separated name in FUNCTION to the list of functions
+# to check once.
 AC_DEFUN([AC_CHECK_FUNCS_ONCE],
-[
-  _AH_CHECK_FUNCS([$1])
-  m4_foreach_w([AC_Func], [$1],
-    [AC_DEFUN([_AC_Func_]m4_defn([AC_Func]),
-       [m4_divert_text([INIT_PREPARE],
-	  [ac_func_list="$ac_func_list AC_Func"])
-	_AC_FUNCS_EXPANSION])
-     AC_REQUIRE([_AC_Func_]m4_defn([AC_Func]))])
-])
+[m4_map_args_w([$1], [_AC_CHECK_FUNC_ONCE(], [)])])
+
 m4_define([_AC_FUNCS_EXPANSION],
 [
   m4_divert_text([DEFAULTS], [ac_func_list=])
@@ -121,8 +121,8 @@ m4_define([_AC_FUNCS_EXPANSION],
 # AC_REPLACE_FUNCS(FUNCTION...)
 # -----------------------------
 AC_DEFUN([AC_REPLACE_FUNCS],
-[m4_foreach_w([AC_Func], [$1], [AC_LIBSOURCE(AC_Func.c)])dnl
-AC_CHECK_FUNCS([$1], , [_AC_LIBOBJ($ac_func)])
+[m4_map_args_w([$1], [AC_LIBSOURCE(], [.c)])]dnl
+[AC_CHECK_FUNCS([$1], , [_AC_LIBOBJ($ac_func)])
 ])
 
 
@@ -632,10 +632,12 @@ if test $ac_cv_func_getgroups = yes; then
 		  [ac_cv_func_getgroups_works=no],
 		  [ac_cv_func_getgroups_works=no])
    ])
-  if test $ac_cv_func_getgroups_works = yes; then
-    AC_DEFINE(HAVE_GETGROUPS, 1,
-	      [Define to 1 if your system has a working `getgroups' function.])
-  fi
+else
+  ac_cv_func_getgroups_works=no
+fi
+if test $ac_cv_func_getgroups_works = yes; then
+  AC_DEFINE(HAVE_GETGROUPS, 1,
+	    [Define to 1 if your system has a working `getgroups' function.])
 fi
 LIBS=$ac_save_LIBS
 ])# AC_FUNC_GETGROUPS
@@ -832,14 +834,14 @@ fi
 AN_FUNCTION([lstat], [AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK])
 AC_DEFUN([AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK],
 [AC_CACHE_CHECK(
-       [whether lstat dereferences a symlink specified with a trailing slash],
+       [whether lstat correctly handles trailing slash],
        [ac_cv_func_lstat_dereferences_slashed_symlink],
 [rm -f conftest.sym conftest.file
 echo >conftest.file
 if test "$as_ln_s" = "ln -s" && ln -s conftest.file conftest.sym; then
   AC_RUN_IFELSE([AC_LANG_PROGRAM([AC_INCLUDES_DEFAULT],
     [struct stat sbuf;
-     /* Linux will dereference the symlink and fail.
+     /* Linux will dereference the symlink and fail, as required by POSIX.
 	That is better in the sense that it means we will not
 	have to compile and use the lstat wrapper.  */
      return lstat ("conftest.sym/", &sbuf) == 0;])],
@@ -855,12 +857,12 @@ rm -f conftest.sym conftest.file
 ])
 
 test $ac_cv_func_lstat_dereferences_slashed_symlink = yes &&
-  AC_DEFINE_UNQUOTED(LSTAT_FOLLOWS_SLASHED_SYMLINK, 1,
+  AC_DEFINE_UNQUOTED([LSTAT_FOLLOWS_SLASHED_SYMLINK], [1],
 		     [Define to 1 if `lstat' dereferences a symlink specified
 		      with a trailing slash.])
 
-if test $ac_cv_func_lstat_dereferences_slashed_symlink = no; then
-  AC_LIBOBJ(lstat)
+if test "x$ac_cv_func_lstat_dereferences_slashed_symlink" = xno; then
+  AC_LIBOBJ([lstat])
 fi
 ])
 
@@ -1186,9 +1188,9 @@ AU_ALIAS([AM_FUNC_MKTIME], [AC_FUNC_MKTIME])
 # ------------
 AN_FUNCTION([mmap], [AC_FUNC_MMAP])
 AC_DEFUN([AC_FUNC_MMAP],
-[AC_CHECK_HEADERS(stdlib.h unistd.h)
-AC_CHECK_FUNCS(getpagesize)
-AC_CACHE_CHECK(for working mmap, ac_cv_func_mmap_fixed_mapped,
+[AC_CHECK_HEADERS_ONCE([stdlib.h unistd.h sys/param.h])
+AC_CHECK_FUNCS([getpagesize])
+AC_CACHE_CHECK([for working mmap], [ac_cv_func_mmap_fixed_mapped],
 [AC_RUN_IFELSE([AC_LANG_SOURCE([AC_INCLUDES_DEFAULT]
 [[/* malloc might have been renamed as rpl_malloc. */
 #undef malloc
@@ -1224,11 +1226,6 @@ char *malloc ();
 
 /* This mess was copied from the GNU getpagesize.h.  */
 #ifndef HAVE_GETPAGESIZE
-/* Assume that all systems that can run configure have sys/param.h.  */
-# ifndef HAVE_SYS_PARAM_H
-#  define HAVE_SYS_PARAM_H 1
-# endif
-
 # ifdef _SC_PAGESIZE
 #  define getpagesize() sysconf(_SC_PAGESIZE)
 # else /* no _SC_PAGESIZE */
@@ -1263,8 +1260,9 @@ int
 main ()
 {
   char *data, *data2, *data3;
+  const char *cdata2;
   int i, pagesize;
-  int fd;
+  int fd, fd2;
 
   pagesize = getpagesize ();
 
@@ -1277,27 +1275,41 @@ main ()
   umask (0);
   fd = creat ("conftest.mmap", 0600);
   if (fd < 0)
-    return 1;
+    return 2;
   if (write (fd, data, pagesize) != pagesize)
-    return 1;
+    return 3;
   close (fd);
+
+  /* Next, check that the tail of a page is zero-filled.  File must have
+     non-zero length, otherwise we risk SIGBUS for entire page.  */
+  fd2 = open ("conftest.txt", O_RDWR | O_CREAT | O_TRUNC, 0600);
+  if (fd2 < 0)
+    return 4;
+  cdata2 = "";
+  if (write (fd2, cdata2, 1) != 1)
+    return 5;
+  data2 = (char *) mmap (0, pagesize, PROT_READ | PROT_WRITE, MAP_SHARED, fd2, 0L);
+  if (data2 == MAP_FAILED)
+    return 6;
+  for (i = 0; i < pagesize; ++i)
+    if (*(data2 + i))
+      return 7;
+  close (fd2);
+  if (munmap (data2, pagesize))
+    return 8;
 
   /* Next, try to mmap the file at a fixed address which already has
      something else allocated at it.  If we can, also make sure that
      we see the same garbage.  */
   fd = open ("conftest.mmap", O_RDWR);
   if (fd < 0)
-    return 1;
-  data2 = (char *) malloc (2 * pagesize);
-  if (!data2)
-    return 1;
-  data2 += (pagesize - ((long int) data2 & (pagesize - 1))) & (pagesize - 1);
+    return 9;
   if (data2 != mmap (data2, pagesize, PROT_READ | PROT_WRITE,
 		     MAP_PRIVATE | MAP_FIXED, fd, 0L))
-    return 1;
+    return 10;
   for (i = 0; i < pagesize; ++i)
     if (*(data + i) != *(data2 + i))
-      return 1;
+      return 11;
 
   /* Finally, make sure that changes to the mapped area do not
      percolate back to the file as seen by read().  (This is a bug on
@@ -1306,12 +1318,12 @@ main ()
     *(data2 + i) = *(data2 + i) + 1;
   data3 = (char *) malloc (pagesize);
   if (!data3)
-    return 1;
+    return 12;
   if (read (fd, data3, pagesize) != pagesize)
-    return 1;
+    return 13;
   for (i = 0; i < pagesize; ++i)
     if (*(data + i) != *(data3 + i))
-      return 1;
+      return 14;
   close (fd);
   return 0;
 }]])],
@@ -1319,10 +1331,10 @@ main ()
 	       [ac_cv_func_mmap_fixed_mapped=no],
 	       [ac_cv_func_mmap_fixed_mapped=no])])
 if test $ac_cv_func_mmap_fixed_mapped = yes; then
-  AC_DEFINE(HAVE_MMAP, 1,
+  AC_DEFINE([HAVE_MMAP], [1],
 	    [Define to 1 if you have a working `mmap' system call.])
 fi
-rm -f conftest.mmap
+rm -f conftest.mmap conftest.txt
 ])# AC_FUNC_MMAP
 
 
@@ -1735,8 +1747,9 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([AC_INCLUDES_DEFAULT
 	    && t.st_mtime - s.st_mtime < 120);]])],
 	      ac_cv_func_utime_null=yes,
 	      ac_cv_func_utime_null=no,
-	      ac_cv_func_utime_null=no)])
-if test $ac_cv_func_utime_null = yes; then
+	      ac_cv_func_utime_null='guessing yes')])
+if test "x$ac_cv_func_utime_null" != xno; then
+  ac_cv_func_utime_null=yes
   AC_DEFINE(HAVE_UTIME_NULL, 1,
 	    [Define to 1 if `utime(file, NULL)' sets file's timestamp to the
 	     present.])
