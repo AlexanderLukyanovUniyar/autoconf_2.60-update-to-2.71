@@ -203,7 +203,7 @@ __typeof__(__builtin_$1) $1;
 
 __typeof__(__builtin_$1) *f = $1;
 #endif
-], [return f != __builtin_$1;])])
+], [return f != $1;])])
 
 # AC_LANG_BOOL_COMPILE_TRY(C)(PROLOGUE, EXPRESSION)
 # -------------------------------------------------

@@ -47,7 +47,7 @@ m4_define([_AC_CHECK_FUNC_BODY],
   AC_CACHE_CHECK([for $[]2], [$[]3],
   [AC_LINK_IFELSE([AC_LANG_FUNC_LINK_TRY($[]2)],
 		  [AS_VAR_SET([$[]3], [yes])],
-		  [AC_LINK_IFELSE([AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN([$[]1])],
+		  [AC_LINK_IFELSE([AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN($[]2)],
 				  [AS_VAR_SET([$[]3], [yes])],
 				  [AS_VAR_SET([$[]3], [no])])])])
   AS_LINENO_POP
