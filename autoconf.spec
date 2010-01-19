@@ -28,6 +28,7 @@ PreReq: autoconf-common, alternatives >= 0:0.4
 Requires: m4 >= 1.4.5, mktemp >= 1:1.3.1
 
 BuildRequires: help2man, alternatives >= 0:0.4
+%{!?__buildreqs:%{!?_without_check:%{!?_disable_check:BuildRequires: gcc-c++ gcc-g77 libgomp-devel}}}
 
 %description
 GNU's Autoconf is a tool for configuring source code and Makefiles.
@@ -106,6 +107,9 @@ cat >>%buildroot%_altdir/%name <<EOF
 %_man1dir/$i.1.gz	%_man1dir/$i%suff.1.gz	%_bindir/%realname%suff
 EOF
 done
+
+%check
+%make_build -k check
 
 %files
 %config %_sysconfdir/buildreqs/packages/substitute.d/%name
