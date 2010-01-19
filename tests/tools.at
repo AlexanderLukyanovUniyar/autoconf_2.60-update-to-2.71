@@ -1291,6 +1291,9 @@ do
   TMPDIR=" tmp$dir"
   export TMPDIR
 
+  # skip if we cannot create such a file or directory
+  AT_CHECK([mkdir "$dir" "$TMPDIR" && touch "$file.in" || exit 77])
+
   cat >"$file.in" <<'END'
 [AC_INIT(x,0)
 m4@&t@_include([foo.m4])
@@ -1298,8 +1301,6 @@ AC_CONFIG_HEADERS([config.h:config.hin])
 AC_MACRO
 AC_OUTPUT]
 END
-  # skip if we cannot create such a file or directory
-  AT_CHECK([mkdir "$dir" "$TMPDIR" && test -f "$file.in" || exit 77])
   cat >"$dir"/foo.m4 <<'END'
 [AC_DEFUN([AC_MACRO], [echo hi])]
 END
