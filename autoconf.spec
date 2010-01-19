@@ -63,8 +63,7 @@ sed -i '/@direntry/,/@end direntry/ s/^\(\*[[:space:]]\+[[:alnum:].-]\+\)\(:[[:s
 export ac_cv_prog_EMACS=no
 autoreconf -iv
 %configure --program-suffix=%suff
-# Starting with 2.60, parallel builds are broken
-%make
+%make_build
 
 %install
 %makeinstall
