@@ -4,7 +4,7 @@
 
 Name: %realname%dialect
 Version: 2.65
-Release: alt1
+Release: alt2
 Epoch: 2
 
 Summary: A GNU tool for automatically configuring source code
@@ -121,6 +121,12 @@ done
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Tue Jan 19 2010 Dmitry V. Levin <ldv@altlinux.org> 2:2.65-alt2
+- Updated to v2.65-32-g57b9bc3.
+- Fixed recently introduced typos in builtin functions check support.
+- Added %%check.
+- Reenabled parallel build.
+
 * Tue Jan 05 2010 Dmitry V. Levin <ldv@altlinux.org> 2:2.65-alt1
 - Updated to v2.65-19-g6c11abd (closes: #21744).
 - autoreconf: Added gtkdocize support.
