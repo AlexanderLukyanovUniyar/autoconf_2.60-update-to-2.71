@@ -2,8 +2,8 @@
 # This Makefile fragment tries to be general-purpose enough to be
 # used by at least coreutils, idutils, CPPI, Bison, and Autoconf.
 
-## Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
-## Free Software Foundation, Inc.
+## Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009,
+## 2010 Free Software Foundation, Inc.
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -546,15 +546,29 @@ my-distcheck: $(local-check) $(release_archive_dir)/$(prev-tgz)
 prev-tgz = $(PACKAGE)-$(PREV_VERSION).tar.gz
 
 rel-files = $(DIST_ARCHIVES)
+
+gnulib_dir ?= $(srcdir)/gnulib
+gnulib-version = $$(cd $(gnulib_dir) && git describe)
+bootstrap-tools ?= autoconf,automake,gnulib
+
+# If it's not already specified, derive the GPG key ID from
+# the signed tag we've just applied to mark this release.
+gpg_key_ID ?= \
+  $$(git cat-file tag v$(VERSION) > .ann-sig \
+     && gpgv .ann-sig - < /dev/null 2>&1 \
+	  | sed -n '/.*key ID \([0-9A-F]*\)/s//\1/p'; rm -f .ann-sig)
+
 announcement: NEWS ChangeLog $(rel-files)
-	@$(announce_gen)						\
+	@$(build_aux)/announce_gen					\
 	    --release-type=$(RELEASE_TYPE)				\
 	    --package=$(PACKAGE)					\
 	    --prev=$(PREV_VERSION)					\
 	    --curr=$(VERSION)						\
 	    --gpg-key-id=$(gpg_key_ID)					\
 	    --news=$(srcdir)/NEWS					\
-	    --bootstrap-tools=automake					\
+	    --bootstrap-tools=$(bootstrap-tools)			\
+	    --gnulib-version=$(gnulib-version)				\
+	    --no-print-checksums					\
 	    $(addprefix --url-dir=, $(url_dir_list))
 
 ## ---------------- ##

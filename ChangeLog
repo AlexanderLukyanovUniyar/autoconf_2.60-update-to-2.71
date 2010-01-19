@@ -1,3 +1,100 @@
+2010-01-19  Ralf Wildenhues  <Ralf.Wildenhues@gmx.de>
+
+	config.status: consistent exit status with nonexistent config file input.
+	* lib/autoconf/status.m4 (_AC_OUTPUT_MAIN_LOOP): Ensure we
+	exit with status 1 rather than with that of 'false', for
+	reproducibility.
+	(AC_OUTPUT): Ensure to exit 1 in case of config.status failure.
+	* tests/torture.at (Missing templates): Also test code path
+	for $srcdir != '.'.
+	Report by Tim Rice.
+
+2010-01-13  Eric Blake  <ebb9@byu.net>
+
+	Fix previous example.
+	* doc/autoconf.texi (Here-Documents): Touch up the example to
+	match output to sample command line.
+
+	Document here-doc pitfall.
+	* doc/autoconf.texi (Here-Documents): Mention problem with <<-
+	operator.
+	Reported by Jim Meyering.
+
+2010-01-12  Eric Blake  <ebb9@byu.net>
+
+	Typo fix in earlier commit.
+	* doc/autoconf.texi (Autoconf Language): Fix typo.
+
+2010-01-12  Ralf Wildenhues  <Ralf.Wildenhues@gmx.de>
+
+	Allow AC_FUNC_MKTIME to work with C++.
+	* lib/autoconf/functions.m4 (AC_FUNC_MKTIME): ANSIfy KnR function
+	definitions.  Use `const char*' for character literals; cast them
+	to `char*' for putenv.
+
+2010-01-11  Ralf Wildenhues  <Ralf.Wildenhues@gmx.de>
+
+	Export AUTOM4TE in tests/atlocal.in, for aclocal.
+	* tests/atlocal.in: Set and export $AUTOM4TE, for aclocal.
+	Report by Tim Rice.
+
+2010-01-08  Eric Blake  <ebb9@byu.net>
+
+	Make autotest example act better with automake.
+	* doc/autoconf.texi (Making testsuite Scripts): Rely on automake
+	feature for recommended autotest snippet, following our own use.
+
+	Clarify language on handling of opening parenthesis.
+	* doc/autoconf.texi (Autoconf Language): Give an example of
+	improper argument passing.
+	* THANKS: Update.
+	Reported by Juan Carlos Hurtado.
+
+2010-01-06  Ralf Wildenhues  <Ralf.Wildenhues@gmx.de>
+
+	Don't fail autom4te preselection test due to different Automake.
+	* tests/tools.at (autom4te preselections): If the cache test
+	fails, extract the Automake version from the toplevel
+	Makefile.in file of the source tree; skip, rather than fail
+	the test group if the automake program has a different version.
+	* THANKS: Update.
+	Report by Dieter Jurzitza, fix suggested by Eric Blake.
+
+2010-01-06  Peter Breitenlohner  <peb@mppmu.mpg.de>
+	    Ralf Wildenhues  <Ralf.Wildenhues@gmx.de>
+
+	Fix AC_CONFIG_LINKS to generated files when srcdir is absolute.
+	* lib/autoconf/status.m4 (_AC_OUTPUT_LINK): Check $ac_source,
+	not $srcdir, for being relative or absolute.
+	* tests/torture.at (AC_CONFIG_LINKS): New test.
+	(AC_CONFIG_LINKS and identical files): Extend test, avoid some
+	forks.
+	Report, patch and testcase example by Peter Breitenlohner.
+
+2010-01-05  Eric Blake  <ebb9@byu.net>
+
+	Improve release automation.
+	* maint.mk (gnulib_dir, gnulib-version, bootstrap-tools)
+	(announcement): Copy from latest gnulib maint.mk.
+	* cfg.mk (announce_gen, gpg_key_ID): Delete.
+	(bootstrap-tools): Override the default.
+
+	Update upstream files.
+	* GNUmakefile: Update via 'make fetch'.
+	* build-aux/announce-gen: Likewise.
+	* build-aux/config.guess: Likewise.
+	* build-aux/config.sub: Likewise.
+	* build-aux/gendocs.sh: Likewise.
+	* build-aux/gnupload: Likewise.
+	* build-aux/move-if-change: Likewise.
+	* build-aux/update-copyright: Likewise.
+	* build-aux/vc-list-files: Likewise.
+	* doc/standards.texi: Likewise.
+	* cfg.mk (update-copyright-env): Enforce wrap column.
+
+	Update copyright year.
+	All files changed to add 2010, via 'make update-copyright'.
+
 2009-12-31  Bruno Haible  <bruno@clisp.org>
 
 	Improve documentation on Solaris tr bugs.
@@ -20741,7 +20838,7 @@
 	End:
 
 	Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008,
-	2009 Free Software Foundation, Inc.
+	2009, 2010 Free Software Foundation, Inc.
 
 	This program is free software: you can redistribute it and/or
 	modify it under the terms of the GNU General Public License as

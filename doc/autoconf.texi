@@ -199,7 +199,7 @@ a package for creating scripts to configure source code packages using
 templates and an M4 macro package.
 
 Copyright @copyright{} 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000,
-2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 Free Software
+2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010 Free Software
 Foundation, Inc.
 
 @quotation
@@ -1132,7 +1132,14 @@ need a means to distinguish literal strings from text to be expanded:
 quotation.
 
 When calling macros that take arguments, there must not be any white
-space between the macro name and the open parenthesis.  Arguments should
+space between the macro name and the open parenthesis.
+
+@example
+AC_INIT ([oops], [1.0]) # incorrect
+AC_INIT([hello], [1.0]) # good
+@end example
+
+Arguments should
 be enclosed within the quote characters @samp{[} and @samp{]}, and be
 separated by commas.  Any leading blanks or newlines in arguments are ignored,
 unless they are quoted.  You should always quote an argument that
@@ -14685,6 +14692,24 @@ macro when it was expanded before in a conditional path, and the
 condition turned out to be false at runtime, and we end up not
 executing the macro at all.
 
+Be careful with the use of @samp{<<-} to unindent here-documents.  The
+behavior is only portable for stripping leading @key{TAB}s, and things
+can silently break if an overzealous editor converts to using leading
+spaces (not all shells are nice enough to warn about unterminated
+here-documents).
+
+@example
+$ @kbd{printf 'cat <<-x\n\t1\n\t 2\n\tx\n' | bash && echo done}
+1
+ 2
+done
+$ @kbd{printf 'cat <<-x\n 1\n  2\n x\n' | bash-3.2 && echo done}
+ 1
+  2
+ x
+done
+@end example
+
 @node File Descriptors
 @section File Descriptors
 @cindex Descriptors
@@ -23746,17 +23771,17 @@ $(srcdir)/package.m4: $(top_srcdir)/configure.ac
         :;@{ \
           echo '# Signature of the current package.' && \
           echo 'm4_define([AT_PACKAGE_NAME],' && \
-          echo '  [@@PACKAGE_NAME@@])' && \
+          echo '  [$(PACKAGE_NAME)])' && \
           echo 'm4_define([AT_PACKAGE_TARNAME],' && \
-          echo '  [@@PACKAGE_TARNAME@@])' && \
+          echo '  [$(PACKAGE_TARNAME)])' && \
           echo 'm4_define([AT_PACKAGE_VERSION],' && \
-          echo '  [@@PACKAGE_VERSION@@])' && \
+          echo '  [$(PACKAGE_VERSION)])' && \
           echo 'm4_define([AT_PACKAGE_STRING],' && \
-          echo '  [@@PACKAGE_STRING@@])' && \
+          echo '  [$(PACKAGE_STRING)])' && \
           echo 'm4_define([AT_PACKAGE_BUGREPORT],' && \
-          echo '  [@@PACKAGE_BUGREPORT@@])'; \
+          echo '  [$(PACKAGE_BUGREPORT)])'; \
           echo 'm4_define([AT_PACKAGE_URL],' && \
-          echo '  [@@PACKAGE_URL@@])'; \
+          echo '  [$(PACKAGE_URL)])'; \
         @} >'$(srcdir)/package.m4'
 
 EXTRA_DIST = testsuite.at $(srcdir)/package.m4 $(TESTSUITE) atlocal.in
@@ -23795,6 +23820,12 @@ the following:
 
 @example
 subdir = tests
+PACKAGE_NAME = @@PACKAGE_NAME@@
+PACKAGE_TARNAME = @@PACKAGE_TARNAME@@
+PACKAGE_VERSION = @@PACKAGE_VERSION@@
+PACKAGE_STRING = @@PACKAGE_STRING@@
+PACKAGE_BUGREPORT = @@PACKAGE_BUGREPORT@@
+PACKAGE_URL = @@PACKAGE_URL@@
 
 atconfig: $(top_builddir)/config.status
         cd $(top_builddir) && \

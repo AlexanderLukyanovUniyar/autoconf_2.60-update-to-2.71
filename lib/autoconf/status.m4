@@ -1,7 +1,7 @@
 # This file is part of Autoconf.                       -*- Autoconf -*-
 # Parameterizing and creating config.status.
 # Copyright (C) 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001,
-# 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 Free Software
+# 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010 Free Software
 # Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
@@ -974,7 +974,7 @@ m4_define([_AC_OUTPUT_LINK],
     rm -f "$ac_file"
 
     # Try a relative symlink, then a hard link, then a copy.
-    case $srcdir in
+    case $ac_source in
     [[\\/$]]* | ?:[[\\/]]* ) ac_rel_source=$ac_source ;;
 	*) ac_rel_source=$ac_top_build_prefix$ac_source ;;
     esac
@@ -1294,7 +1294,7 @@ if test "$no_create" != yes; then
   exec AS_MESSAGE_LOG_FD>>config.log
   # Use ||, not &&, to avoid exiting from the if with $? = 1, which
   # would make configure fail if this is the last instruction.
-  $ac_cs_success || AS_EXIT
+  $ac_cs_success || AS_EXIT([1])
 fi
 dnl config.status should not do recursion.
 AC_PROVIDE_IFELSE([AC_CONFIG_SUBDIRS], [_AC_OUTPUT_SUBDIRS()])dnl
@@ -1666,7 +1666,7 @@ do
 	   [[\\/$]]*) false;;
 	   *) test -f "$srcdir/$ac_f" && ac_f="$srcdir/$ac_f";;
 	   esac ||
-	   AC_MSG_ERROR([cannot find input file: `$ac_f']);;
+	   AC_MSG_ERROR([cannot find input file: `$ac_f'], [1]);;
       esac
       case $ac_f in *\'*) ac_f=`AS_ECHO(["$ac_f"]) | sed "s/'/'\\\\\\\\''/g"`;; esac
       AS_VAR_APPEND([ac_file_inputs], [" '$ac_f'"])

@@ -104,6 +104,7 @@ Dennis J. Linse             ?
 Derek R. Price              derek.price@openavenue.com
 Didier Desseaux             didess@infonie.fr
 Didier Verna                didier@xemacs.org
+Dieter Jurzitza             dieter.jurzitza@t-online.de
 Dietmar P. Schindler        schd@mra.man.de
 Dmitry Grebeniuk            gdsfh1@gmail.com
 Doug Evans                  dje@canuck.cygnus.com
@@ -195,6 +196,7 @@ Jonathan Kamens             jik@kamens.brookline.ma.us
 Josef Tran                  josef@timetrackertechnology.com
 Josef Vukovic               josefvukovic@googlemail.com
 Joseph S. Myers             jsm28@cam.ac.uk
+Juan Carlos Hurtado         adso.lists@gmail.com
 Jules Colding               colding@42tools.com
 Julian Onions               j.onions@nexor.co.uk
 Julien Danjou               acid@debian.org
@@ -410,7 +412,7 @@ coding: utf-8
 End:
 
 Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007,
-2008, 2009 Free Software Foundation, Inc.
+2008, 2009, 2010 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
