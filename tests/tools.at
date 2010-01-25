@@ -1283,7 +1283,7 @@ export x
 rm -f a b
 for funny in \
   'with  funny '\'' $x & #! name ' \
-  'with  funny \ '\'' \'\'' " <a >b * ? name '
+  'with  funny \ '\'' \'\'' " <a >b * ? name ' #"
 do
   funny=`func_sanitize_file_name "$funny"`
   file=" file $funny"
