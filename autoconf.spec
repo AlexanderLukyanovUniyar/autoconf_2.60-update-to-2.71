@@ -4,7 +4,7 @@
 
 Name: %realname%dialect
 Version: 2.65
-Release: alt2
+Release: alt3
 Epoch: 2
 
 Summary: A GNU tool for automatically configuring source code
@@ -121,6 +121,12 @@ done
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Mon Jan 25 2010 Dmitry V. Levin <ldv@altlinux.org> 2:2.65-alt3
+- Updated to v2.65-35-ga2889ee.
+- Enhanced AC_LANG_WERROR and "gcc -Werror" support in AC_CHECK_FUNC,
+  added tests to ensure that AC_CHECK_FUNC remains compatible with
+  AC_LANG_WERROR and "gcc -Werror".
+
 * Tue Jan 19 2010 Dmitry V. Levin <ldv@altlinux.org> 2:2.65-alt2
 - Updated to v2.65-32-g57b9bc3.
 - Fixed recently introduced typos in builtin functions check support.
