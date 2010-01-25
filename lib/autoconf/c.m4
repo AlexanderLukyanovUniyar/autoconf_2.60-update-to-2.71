@@ -187,22 +187,16 @@ choke me
 
 
 # AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN(C)(FUNCTION)
-# ----------------------------------
-# This will test if function is available as
-# gcc3 builtin.
+# ----------------------------------------------
+# Test whether the given function is available as a gcc built-in function.
 #
 m4_define([AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN(C)],
 [AC_LANG_PROGRAM(
-[#ifndef __GNUC__
-choke me
-#else
-#undef $1
-/* Declare this function with same prototype as __builtin_$1.
-  This removes warning about conflicting type with builtin */
+[#undef $1
+/* Declare this function with the same prototype as __builtin_$1.
+  This removes a warning about conflicting types for built-in function $1 */
 __typeof__(__builtin_$1) $1;
-
 __typeof__(__builtin_$1) *f = $1;
-#endif
 ], [return f != $1;])])
 
 # AC_LANG_BOOL_COMPILE_TRY(C)(PROLOGUE, EXPRESSION)
