@@ -3,8 +3,8 @@
 %define suff -2.60
 
 Name: %realname%dialect
-Version: 2.65
-Release: alt3
+Version: 2.68
+Release: alt1
 Epoch: 2
 
 Summary: A GNU tool for automatically configuring source code
@@ -124,6 +124,9 @@ done
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Thu Sep 23 2010 Dmitry V. Levin <ldv@altlinux.org> 2:2.68-alt1
+- Updated to v2.68.
+
 * Mon Jan 25 2010 Dmitry V. Levin <ldv@altlinux.org> 2:2.65-alt3
 - Updated to v2.65-35-ga2889ee.
 - Enhanced AC_LANG_WERROR and "gcc -Werror" support in AC_CHECK_FUNC,
