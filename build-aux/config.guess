@@ -4,7 +4,7 @@
 #   2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
 #   Free Software Foundation, Inc.
 
-timestamp='2009-12-30'
+timestamp='2010-08-21'
 
 # This file is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -92,7 +92,7 @@ if test $# != 0; then
   exit 1
 fi
 
-trap 'exit 1' 1 2 15
+trap 'exit 1' HUP INT TERM
 
 # CC_FOR_BUILD -- compiler used by this script. Note that the use of a
 # compiler to aid in system detection is discouraged as it requires
@@ -105,8 +105,8 @@ trap 'exit 1' 1 2 15
 # Portable tmp directory creation inspired by the Autoconf team.
 
 set_cc_for_build='
-trap "exitcode=\$?; (rm -f \$tmpfiles 2>/dev/null; rmdir \$tmp 2>/dev/null) && exit \$exitcode" EXIT ;
-trap "rm -f \$tmpfiles 2>/dev/null; rmdir \$tmp 2>/dev/null; exit 1" PIPE HUP INT TERM ;
+trap "exitcode=\$?; (rm -f \$tmpfiles 2>/dev/null; rmdir \$tmp 2>/dev/null) && exit \$exitcode" 0 ;
+trap "rm -f \$tmpfiles 2>/dev/null; rmdir \$tmp 2>/dev/null; exit 1" HUP INT PIPE TERM ;
 tmp="`mktemp -dt cg.XXXXXXXXXX`" || exit 1 ;
 dummy=$tmp/dummy ;
 tmpfiles="$dummy.c $dummy.o $dummy.rel $dummy" ;
@@ -548,7 +548,7 @@ EOF
 		echo rs6000-ibm-aix3.2
 	fi
 	exit ;;
-    *:AIX:*:[456])
+    *:AIX:*:[4567])
 	IBM_CPU_ID=`/usr/sbin/lsdev -C -c processor -S available | sed 1q | awk '{ print $1 }'`
 	if /usr/sbin/lsattr -El ${IBM_CPU_ID} | grep ' POWER' >/dev/null 2>&1; then
 		IBM_ARCH=rs6000
@@ -963,6 +963,9 @@ EOF
 	exit ;;
     sparc:Linux:*:* | sparc64:Linux:*:*)
 	echo ${UNAME_MACHINE}-unknown-linux-gnu
+	exit ;;
+    tile*:Linux:*:*)
+	echo ${UNAME_MACHINE}-tilera-linux-gnu
 	exit ;;
     vax:Linux:*:*)
 	echo ${UNAME_MACHINE}-dec-linux-gnu

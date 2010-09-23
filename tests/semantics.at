@@ -109,9 +109,40 @@ AT_CHECK_MACRO([AC_CHECK_DECLS],
 		   struct { int x[20]; } mystruct;
 		   extern int myfunc();
 		   #define mymacro1(arg) arg
-		   #define mymacro2]])]],
+		   #define mymacro2]])
+  # The difference in space-before-open-paren is intentional.
+  AC_CHECK_DECLS([basenam (char *), dirnam(char *),
+		  [moreargs (char, short, int, long, void *, char [], float, double)]],,,
+		 [[#ifdef __cplusplus
+		   extern "C++" char *basenam (char *);
+		   extern "C++" const char *basenam (const char *);
+		   #else
+		   extern char *basenam (const char *);
+		   #endif
+		   #ifdef __cplusplus
+		   extern "C" {
+		   #endif
+		   extern int moreargs (char, short, int, long, void *,
+					char [], float, double);
+		   #ifdef __cplusplus
+		   }
+		   #endif
+		   ]])
+  AC_CHECK_DECL([declared (char *)],, [AS_EXIT([1])],
+		[[#ifdef __cplusplus
+		  extern "C++" char *declared (char *);
+		  extern "C++" const char *declared (const char *);
+		  #else
+		  extern char *declared (const char *);
+		  #endif
+		]])
+  AC_CHECK_DECL([undeclared (char *)], [AS_EXIT([1])],, [[]])
+]],
 [AT_CHECK_DEFINES(
-[#define HAVE_DECL_MYENUM 1
+[#define HAVE_DECL_BASENAM 1
+#define HAVE_DECL_DIRNAM 0
+#define HAVE_DECL_MOREARGS 1
+#define HAVE_DECL_MYENUM 1
 #define HAVE_DECL_MYFUNC 1
 #define HAVE_DECL_MYMACRO1 1
 #define HAVE_DECL_MYMACRO2 1
@@ -173,8 +204,15 @@ AT_DATA([config.in],
 ])
 
 AT_CONFIGURE_AC(
-[AC_CONFIG_FILES(config.libobjs:config.in)
-AC_REPLACE_FUNCS(printf autoconf_ftnirp)])
+[AC_CONFIG_FILES([config.libobjs:config.in])
+AC_REPLACE_FUNCS([printf \
+autoconf_ftnirp])
+funcs='fprintf autoconf_ftnirpf'
+AH_TEMPLATE([HAVE_FPRINTF], [])
+AH_TEMPLATE([HAVE_AUTOCONF_FTNIRPF], [])
+AC_REPLACE_FUNCS([\
+$funcs])
+AS_UNSET([funcs])])
 
 AT_CHECK_AUTOCONF([-W obsolete])
 AT_CHECK_AUTOHEADER
@@ -182,11 +220,13 @@ AT_CHECK_CONFIGURE
 AT_CHECK_ENV
 AT_CHECK_DEFINES(
 [/* #undef HAVE_AUTOCONF_FTNIRP */
+/* #undef HAVE_AUTOCONF_FTNIRPF */
+#define HAVE_FPRINTF 1
 #define HAVE_PRINTF 1
 ])
 
 AT_CHECK([sed 's/  */ /g;s/^ //;s/ $//' config.libobjs], [],
-	 [${LIBOBJDIR}autoconf_ftnirp$U.o
+	 [${LIBOBJDIR}autoconf_ftnirp$U.o ${LIBOBJDIR}autoconf_ftnirpf$U.o
 ])
 
 AT_CLEANUP
@@ -282,7 +322,7 @@ AT_CLEANUP
 
 
 # AC_CHECK_MEMBER
-# ----------------
+# ---------------
 # Check that it performs the correct actions.
 # Must define HAVE_STRUCT_YES_S_YES, but not HAVE_STRUCT_YES_S_NO.
 AT_CHECK_MACRO([AC_CHECK_MEMBER],
@@ -347,7 +387,7 @@ AT_CHECK_MACRO_CROSS([AC_CHECK_ALIGNOF struct],
 [[AC_CHECK_ALIGNOF([struct { char c; }])
 AC_CHECK_ALIGNOF([struct nosuchstruct])
 ]],
-[AT_CHECK([[grep "#define ALIGNOF_STRUCT___CHAR_C___ [^0]" config.h]],
+[AT_CHECK([[grep "#define ALIGNOF_STRUCT___CHAR_C___ [1-9]" config.h]],
 	 0, ignore)
 AT_CHECK([[grep "#define ALIGNOF_STRUCT_NOSUCHSTRUCT 0" config.h]],
 	 0, ignore)
@@ -376,12 +416,16 @@ AT_CHECK_MACRO_CROSS([AC_CHECK_SIZEOF struct],
 AC_CHECK_SIZEOF([struct x], [], [struct x { char c; int x; };])
 AC_CHECK_SIZEOF([const struct x], [], [struct x { const char *p; int x; };])
 AC_CHECK_SIZEOF([struct nosuchstruct])
+# Taken from autoconf.texi:Generic Compiler Characteristics.
+AC_CHECK_SIZEOF([int *])
 ]],
-[AT_CHECK([[grep "#define SIZEOF_STRUCT_X [^0]" config.h]],
+[AT_CHECK([[grep "#define SIZEOF_STRUCT_X [1-9]" config.h]],
 	 0, ignore)
-AT_CHECK([[grep "#define SIZEOF_CONST_STRUCT_X [^0]" config.h]],
+AT_CHECK([[grep "#define SIZEOF_CONST_STRUCT_X [1-9]" config.h]],
 	 0, ignore)
 AT_CHECK([[grep "#define SIZEOF_STRUCT_NOSUCHSTRUCT 0" config.h]],
+	 0, ignore)
+AT_CHECK([[grep "#define SIZEOF_INT_P [1-9]" config.h]],
 	 0, ignore)
 ])
 

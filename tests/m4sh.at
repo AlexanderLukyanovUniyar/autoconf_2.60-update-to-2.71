@@ -18,6 +18,71 @@ AT_BANNER([M4sh.])
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+## ------------------- ##
+## AS_WARN, AS_ERROR.  ##
+## ------------------- ##
+
+AT_SETUP([AS@&t@_WARN and AS@&t@_ERROR])
+AT_KEYWORDS([m4sh])
+
+dnl without logging
+AT_DATA_M4SH([script.as],
+[[AS_INIT
+AS_WARN([*watch out*])dnl
+
+if test x"$die" != x; then
+  AS_ERROR([you're dead])dnl
+
+  AS_ERROR([really])dnl
+
+fi
+echo got here
+]])
+
+AT_CHECK_M4SH
+AT_CHECK([$CONFIG_SHELL ./script], [],
+[[got here
+]], [[script: WARNING: *watch out*
+]])
+AT_CHECK([die=: $CONFIG_SHELL ./script], [1],
+[], [[script: WARNING: *watch out*
+script: error: you're dead
+]])
+
+dnl with logging
+rm script
+AT_DATA_M4SH([script.as],
+[[AS_INIT
+m4_define([gone], [AS_ERROR([really])])
+m4_define([AS_MESSAGE_LOG_FD], [5])
+exec AS_MESSAGE_LOG_FD>log.txt
+AS_WARN([*watch out*])dnl
+
+if test x"$die" != x; then
+  AS_ERROR([you're dead])dnl
+
+  AS_ERROR([really])dnl
+
+fi
+echo got here
+exec AS_MESSAGE_LOG_FD>&-
+]])
+
+AT_CHECK_M4SH
+AT_CHECK([$CONFIG_SHELL ./script], [],
+[[got here
+]], [[script: WARNING: *watch out*
+]])
+AT_CHECK([[grep 'script:[0-9]*: WARNING: \*watch out\*' log.txt]], [], [ignore])
+AT_CHECK([die=: $CONFIG_SHELL ./script], [1],
+[], [[script: WARNING: *watch out*
+script: error: you're dead
+]])
+AT_CHECK([[grep 'script:[0-9]*: WARNING: \*watch out\*' log.txt]], [], [ignore])
+AT_CHECK([[grep 'script:[0-9]*: error: you'\''re dead' log.txt]], [], [ignore])
+
+AT_CLEANUP
+
 ## ---------------- ##
 ## LINENO support.  ##
 ## ---------------- ##
@@ -95,7 +160,6 @@ AT_CHECK([sh ./test/test-2],                       0, [expout])
 AT_CLEANUP
 
 
-
 ## ---------------------- ##
 ## LINENO stack support.  ##
 ## ---------------------- ##
@@ -124,9 +188,51 @@ AT_CHECK([$CONFIG_SHELL ./script])
 AT_CLEANUP
 
 
-## ------------- ##
-## AS_BASENAME.  ##
-## ------------- ##
+## -------- ##
+## AS_BOX.  ##
+## -------- ##
+
+# Output a framed one-line message.
+AT_SETUP([AS@&t@_BOX])
+AT_KEYWORDS([m4sh])
+
+AT_DATA_M4SH([script.as],
+[[AS_INIT
+echo
+AS_BOX([Send a simple message, to foobar@example.com])
+AS_BOX([Send a simple message, to foobar@example.com], [$])
+m4_define([msg], [$complex])
+complex='Not quite as simple |$[1]'
+AS_BOX([msg])
+AS_BOX([msg], [,])
+AS_EXIT(0)
+]])
+
+AT_CHECK_M4SH
+AT_CHECK([sed -n '/ -\{44\} /,/ -\{44\} /p' script ]dnl
+[| sed '1 s/.*## -/## -/; 3 s/- ##.*/- ##/'], [],
+[[## -------------------------------------------- ##
+## Send a simple message, to foobar@example.com ##
+## -------------------------------------------- ##
+]])
+
+AT_CHECK([$CONFIG_SHELL ./script], [], [[
+## -------------------------------------------- ##
+## Send a simple message, to foobar@example.com ##
+## -------------------------------------------- ##
+## $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ ##
+## Send a simple message, to foobar@example.com ##
+## $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ ##
+## ----------------------- ##
+## Not quite as simple |$1 ##
+## ----------------------- ##
+## ,,,,,,,,,,,,,,,,,,,,,,, ##
+## Not quite as simple |$1 ##
+## ,,,,,,,,,,,,,,,,,,,,,,, ##
+]])
+
+AT_CLEANUP
+
 
 # Strip path from file.
 AT_SETUP([AS@&t@_BASENAME])
@@ -240,6 +346,48 @@ AT_CHECK([$CONFIG_SHELL ./script])
 
 AT_CLEANUP
 
+
+## ---------------- ##
+## AS_SET_CATFILE.  ##
+## ---------------- ##
+
+AT_SETUP([AS@&t@_SET_CATFILE])
+AT_KEYWORDS([m4sh])
+
+AT_DATA_M4SH([script.as],
+[[AS_INIT
+
+# CATFILE_TEST(DIR, FILE, EXPECTED)
+m4_define([CATFILE_TEST],
+[# AS_SET_CATFILE works and can be used in a compound list.
+if AS_SET_CATFILE([var], [$1], [$2]) \
+   && test "$var" = $3; then :; else
+  echo "catfile($1, $2) = $var != $3" >&2
+fi
+# AS_SET_CATFILE can use non-literals in its arguments.
+varname=var2
+dirpart=$1
+filepart=$2
+if AS_SET_CATFILE([$varname], [$dirpart], [$filepart]) \
+   && test "$var2" = $3; then :; else
+  echo "catfile($dirpart, $filepart) = $var2 != $3" >&2
+fi
+])
+
+CATFILE_TEST([dir], [file], [dir/file])
+CATFILE_TEST([.], [file], [file])
+CATFILE_TEST([dir], [.], [dir])
+CATFILE_TEST([dir], [/abs/file], [/abs/file])
+CATFILE_TEST([dir], [C:/abs/file], [C:/abs/file])
+CATFILE_TEST(["dir  name"], ['file  name'], ['dir  name/file  name'])
+
+AS_EXIT(0)
+]])
+
+AT_CHECK_M4SH
+AT_CHECK([$CONFIG_SHELL ./script])
+
+AT_CLEANUP
 
 
 ## --------- ##
@@ -444,8 +592,8 @@ AT_CLEANUP
 ## Negated classes in globbing.  ##
 ## ----------------------------- ##
 
-# It is known that `[^...]' is not universally supported, but it is
-# unknown for `[!...]'.
+# According to http://www.in-ulm.de/~mascheck/bourne/, all shells with
+# functions also support `[!...]'.  But `[^...]' is not universally supported.
 
 AT_SETUP([Negated classes in globbing])
 AT_KEYWORDS([m4sh])
@@ -468,15 +616,78 @@ AT_CHECK([$CONFIG_SHELL ./script])
 
 AT_CLEANUP
 
+## ---------------------------- ##
+## Null variable substitution.  ##
+## ---------------------------- ##
 
+# According to http://www.in-ulm.de/~mascheck/bourne/, all shells with
+# functions also support `${a:-b}'.
+
+AT_SETUP([Null variable substitution])
+AT_KEYWORDS([m4sh])
+
+AT_DATA_M4SH([script.as],
+[[AS_INIT
+
+AS_UNSET([a])
+b=
+c=.
+case ${a:-x}${b:-y}${c:-z} in
+  xy.) ;;
+  *) exit 1 ;;
+esac
+case ${a-x}${b-y}${c-z} in
+  x.) ;;
+  *) exit 2 ;;
+esac
+
+case ${a+x}${b+y}${c+z} in
+  yz) ;;
+  *) exit 3 ;;
+esac
+case ${a:+x}${b:+y}${c:+z} in
+  z) ;;
+  *) exit 4 ;;
+esac
+
+case ${a=x}${b=y}${c=z} in
+  x.) ;;
+  *) exit 5 ;;
+esac
+AS_UNSET([a])
+case ${a:=x}${b:=y}${c:=z} in
+  xy.) ;;
+  *) exit 6 ;;
+esac
+case $a$b$c in
+  xy.) ;;
+  *) exit 7 ;;
+esac
+AS_UNSET([a])
+b=
+
+(: ${a?oops}; echo fail) 2>err && exit 8
+grep oops err >/dev/null || exit 9
+test "${b?oops}" = '' || exit 10
+test "${c?oops}" = . || exit 11
+(: ${a:?oops}; echo fail) 2>err && exit 12
+grep oops err >/dev/null || exit 13
+(: ${b:?oops}; echo fail) 2>err && exit 14
+grep oops err >/dev/null || exit 15
+test "${c:?oops}" = . || exit 16
+]])
+
+AT_CHECK_M4SH
+AT_CHECK([$CONFIG_SHELL ./script])
+
+AT_CLEANUP
 
 
 ## ------------------- ##
 ## Functions Support.  ##
 ## ------------------- ##
 
-# Hypothesis: the shell we are running, after having checked for
-# $LINENO support, supports functions.
+# All m4sh scripts require function support.
 
 AT_SETUP([Functions Support])
 AT_KEYWORDS([m4sh])
@@ -518,8 +729,7 @@ AT_CLEANUP
 ## Functions and return Support.  ##
 ## ------------------------------ ##
 
-# Hypothesis: the shell we are running, after having checked for
-# $LINENO support, supports functions, and the `return' keyword.
+# All m4sh scripts require working return within functions.
 
 AT_SETUP([Functions and return Support])
 AT_KEYWORDS([m4sh])
@@ -552,7 +762,7 @@ AT_CLEANUP
 
 
 ## --------------------------- ##
-## Nested AS_REQUIRE_SHELL_FN ##
+## Nested AS_REQUIRE_SHELL_FN. ##
 ## --------------------------- ##
 
 # Hypothesis: M4sh expands nested AS_REQUIRE_SHELL_FN
@@ -1035,20 +1245,39 @@ AT_CLEANUP
 ## --------------- ##
 
 AT_SETUP([AS@&t@_LITERAL_IF])
-AT_KEYWORDS([m4sh])
+AT_KEYWORDS([m4sh AS@&t@_LITERAL_WORD_IF AS@&t@_LITERAL_HEREDOC_IF])
 
 AT_DATA_M4SH([script.as], [[dnl
 AS_INIT
 echo AS_LITERAL_IF([lit], [ok], [ERR]) 1
-echo AS_LITERAL_IF([l$it], [ERR], [ok]) 2
-echo AS_LITERAL_IF([l`case a in b) ;; esac`it], [ERR], [ok]) 3
-m4_define([mac], [lit])
-echo AS_LITERAL_IF([mac], [ok], [ERR]) 4
-echo AS_LITERAL_IF([mac($, ``)], [ok], [ERR]) 5
+echo AS_LITERAL_IF([l-/.it], [ok], [ERR]) 2
+echo AS_LITERAL_IF([l''it], [ERR], [ok]) 3
+echo AS_LITERAL_IF([l$it], [ERR], [ok]) 4
+echo AS_LITERAL_IF([l$it], [ERR1], [ERR2], [ok]) 5
+echo AS_LITERAL_IF([l${it}], [ERR1], [ERR2], [ok]) 6
+echo AS_LITERAL_IF([l`case a in b) ;; esac`it], [ERR], [ok]) 7
+echo AS_LITERAL_IF([l`case a in b) ;; esac`it], [ERR1], [ok], [ERR2]) 8
+m4_define([mac], [l-/.it])
+echo AS_LITERAL_IF([mac], [ok], [ERR]) 9
+echo AS_LITERAL_IF([mac($, ``)], [ok], [ERR]) 10
 m4_define([mac], [l$it])
-echo AS_LITERAL_IF([mac], [ERR], [ok]) 6
+echo AS_LITERAL_IF([mac], [ERR], [ok]) 11
+echo AS_LITERAL_IF([mac], [ERR1], [ERR2], [ok]) 12
 m4_define([mac], [l``it])
-echo AS_LITERAL_IF([mac], [ERR], [ok]) 7
+echo AS_LITERAL_IF([mac], [ERR], [ok]) 13
+echo AS_LITERAL_IF([mac], [ERR1], [ok], [ERR2]) 14
+echo AS_LITERAL_IF([	a ][
+b], [ok], [ERR]) 15
+echo AS_LITERAL_WORD_IF([	a ][
+b], [ERR], [ok]) 16
+echo AS_LITERAL_HEREDOC_IF([	a ][
+b], [ok], [ERR]) 17
+echo AS_LITERAL_IF([(a)], [ERR], [ok]) 18
+echo AS_LITERAL_WORD_IF([(a)], [ERR], [ok]) 19
+echo AS_LITERAL_HEREDOC_IF([(a)], [ok], [ERR]) 20
+echo AS_LITERAL_IF([@S|@a], [ERR], [ok]) 21
+echo AS_LITERAL_WORD_IF([@S|@a], [ERR], [ok]) 22
+echo AS_LITERAL_HEREDOC_IF([@S|@a], [ERR], [ok]) 23
 ]])
 
 AT_CHECK_M4SH
@@ -1060,6 +1289,98 @@ ok 4
 ok 5
 ok 6
 ok 7
+ok 8
+ok 9
+ok 10
+ok 11
+ok 12
+ok 13
+ok 14
+ok 15
+ok 16
+ok 17
+ok 18
+ok 19
+ok 20
+ok 21
+ok 22
+ok 23
+]])
+
+AT_CLEANUP
+
+
+## --------------------- ##
+## AS_TR_SH, AS_TR_CPP.  ##
+## --------------------- ##
+
+AT_SETUP([AS@&t@_TR_SH and AS@&t@_TR_CPP])
+
+AT_DATA_M4SH([script.as], [[dnl
+AS_INIT
+m4_define([abc], [hI])m4_define([ABC], [Hi])
+m4_define([hi], [oops])m4_define([HI], [OOPS])
+echo AS_TR_SH(abc) AS_TR_SH(aBc) AS_TR_SH(ABC)
+echo AS_TR_SH([abc]) AS_TR_SH([aBc]) AS_TR_SH([ABC])
+echo AS_TR_SH([[abc]]) AS_TR_SH([[aBc]]) AS_TR_SH([[ABC]])
+echo AS_TR_CPP(abc) AS_TR_CPP(aBc) AS_TR_CPP(ABC)
+echo AS_TR_CPP([abc]) AS_TR_CPP([aBc]) AS_TR_CPP([ABC])
+echo AS_TR_CPP([[abc]]) AS_TR_CPP([[aBc]]) AS_TR_CPP([[ABC]])
+echo ===
+[var=abc vAr=aBc VAR=ABC]
+echo AS_TR_SH($var) AS_TR_SH($vAr) AS_TR_SH($VAR)
+echo AS_TR_SH([$var]) AS_TR_SH([$vAr]) AS_TR_SH([$VAR])
+echo AS_TR_SH([[$var]]) AS_TR_SH([[$vAr]]) AS_TR_SH([[$VAR]])
+echo AS_TR_CPP($var) AS_TR_CPP($vAr) AS_TR_CPP($VAR)
+echo AS_TR_CPP([$var]) AS_TR_CPP([$vAr]) AS_TR_CPP([$VAR])
+echo AS_TR_CPP([[$var]]) AS_TR_CPP([[$vAr]]) AS_TR_CPP([[$VAR]])
+echo ===
+echo AS_TR_SH(`echo abc`) AS_TR_SH(`echo aBc`) AS_TR_SH(`echo ABC`)
+echo AS_TR_SH([`echo abc`]) AS_TR_SH([`echo aBc`]) AS_TR_SH([`echo ABC`])
+echo AS_TR_SH([[`echo abc`]]) AS_TR_SH([[`echo aBc`]]) AS_TR_SH([[`echo ABC`]])
+echo AS_TR_CPP(`echo abc`) AS_TR_CPP(`echo aBc`) AS_TR_CPP(`echo ABC`)
+echo AS_TR_CPP([`echo abc`]) AS_TR_CPP([`echo aBc`]) AS_TR_CPP([`echo ABC`])
+echo AS_TR_CPP([[`echo abc`]]) AS_TR_CPP([[`echo aBc`]]) AS_TR_CPP([[`echo ABC`]])
+echo ===
+echo AS_TR_SH([a.b/c+*-])
+echo AS_TR_CPP([a.b/c+*-])
+var=a.b/c+*-
+echo AS_TR_SH([$var])
+echo AS_TR_CPP([$var])
+m4_define([macro], [a.b/c+*-])
+echo AS_TR_SH([macro])
+echo AS_TR_CPP([macro])
+]])
+
+AT_CHECK_M4SH
+AT_CHECK([$CONFIG_SHELL ./script], [],
+[[hI aBc Hi
+hI aBc Hi
+abc aBc ABC
+HI ABC HI
+HI ABC HI
+ABC ABC ABC
+===
+abc aBc ABC
+abc aBc ABC
+abc aBc ABC
+ABC ABC ABC
+ABC ABC ABC
+ABC ABC ABC
+===
+hI aBc Hi
+hI aBc Hi
+abc aBc ABC
+HI ABC HI
+HI ABC HI
+ABC ABC ABC
+===
+a_b_cpp_
+A_B_C_P_
+a_b_cpp_
+A_B_C_P_
+a_b_cpp_
+A_B_C_P_
 ]])
 
 AT_CLEANUP
@@ -1080,6 +1401,9 @@ AS_INIT
 # Literals.
 dnl AS_VAR_SET_IF also covers AS_VAR_TEST_SET
 AS_VAR_SET_IF([foo], [echo oops]) && echo ok
+AS_VAR_IF([foo], [], [echo ok], [echo oops])
+foo=
+AS_VAR_SET_IF([foo], [echo ok])
 AS_VAR_SET([foo], ['\a  "weird" `value` with; $fun '\''characters
 ']) # 'font-lock
 AS_VAR_COPY([bar], [foo])
@@ -1097,6 +1421,9 @@ m4_ifdef([tmp], [echo oops])
 echo '===='
 num=1
 AS_VAR_SET_IF([foo$num], [echo oops]) && echo ok
+AS_VAR_IF([foo$num], [], [echo ok], [echo oops])
+foo1=
+AS_VAR_SET_IF([foo$num], [echo ok])
 AS_VAR_SET([foo$num], ['\a  "weird" `value` with; $fun '\''characters
 ']) # 'font-lock
 AS_VAR_COPY([bar], [foo$num])
@@ -1115,6 +1442,9 @@ m4_ifdef([tmp], [echo oops])
 # Indirects via command substitution.
 echo '===='
 AS_VAR_SET_IF([`echo foo3`], [echo oops]) && echo ok
+AS_VAR_IF([`echo foo3`], [], [echo ok], [echo oops])
+foo3=
+AS_VAR_SET_IF([`echo foo3`], [echo ok])
 AS_VAR_SET([`echo foo3`], ['\a  "weird" `value` with; $fun '\''characters
 ']) # 'font-lock
 AS_VAR_COPY([bar], [`echo foo3`])
@@ -1134,6 +1464,8 @@ m4_ifdef([tmp], [echo oops])
 
 AT_CHECK_M4SH
 AT_CHECK([$CONFIG_SHELL ./script], [], [[ok
+ok
+ok
 \a  "weird" `value` WITH; $fun 'characters
 -
 \a  "weird" `value` WITH; $fun 'characters
@@ -1142,6 +1474,8 @@ ok
 ok
 ok
 ====
+ok
+ok
 ok
 \a  "weird" `value` WITH; $fun 'characters
 -
@@ -1150,6 +1484,8 @@ ok
 ok
 ok
 ====
+ok
+ok
 ok
 \a  "weird" `value` WITH; $fun 'characters
 -

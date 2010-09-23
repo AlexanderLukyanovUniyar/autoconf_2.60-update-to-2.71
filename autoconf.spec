@@ -60,6 +60,9 @@ find -type f -print0 |
 sed -i '/@direntry/,/@end direntry/ s/^\(\*[[:space:]]\+[[:alnum:].-]\+\)\(:[[:space:]]\+\)(%realname)/\1%suff\2(%realname%suff)/' \
 	doc/autoconf.texi
 
+# Build scripts expect to find autoconf version in this file.
+echo -n %version >.tarball-version
+
 %build
 export ac_cv_prog_EMACS=no
 autoreconf -iv

@@ -104,9 +104,6 @@ ac_exclude_list='
 	/^AC_FC_SRCEXT$/ {next}
 	/^AC_PATH_((TARGET_)?TOOL|PROG)S?$/ {next}
 
-	# Requires the current language to be Fortran, not C.
-	/^AC_FC_FREEFORM$/ {next}
-
 	# Is a number.
 	/^AC_FD_CC$/ {next}
 
@@ -205,8 +202,8 @@ do
     ## Do not edit by hand.  ##
     ## --------------------- ##
 
-    # Copyright (C) 2000, 2001, 2003, 2004, 2005, 2006, 2007 Free Software
-    # Foundation, Inc.
+    # Copyright (C) 2000, 2001, 2003, 2004, 2005, 2006, 2007, 2008, 2009
+    # 2010 Free Software Foundation, Inc.
 
     AT_BANNER([Testing autoconf/$base macros.])
 

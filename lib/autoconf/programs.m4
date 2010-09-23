@@ -445,7 +445,7 @@ fi
 # AC_PATH_PROGS_FEATURE_CHECK(VARIABLE, PROGNAME-LIST,
 #                             FEATURE-TEST, [ACTION-IF-NOT-FOUND=:],
 #                             [PATH=$PATH])
-# ----------------------------------------------------------------
+# ------------------------------------------------------------------
 # Designed to be used inside AC_CACHE_VAL.  It is recommended,
 # but not required, that the user also use AC_ARG_VAR([VARIABLE]).
 # If VARIABLE is not empty, set the cache variable
@@ -756,7 +756,8 @@ if test -z "${LEXLIB+set}"; then
     ac_cv_lib_lex='none needed'
     for ac_lib in '' -lfl -ll; do
       LIBS="$ac_lib $ac_save_LIBS"
-      AC_LINK_IFELSE([`cat $LEX_OUTPUT_ROOT.c`], [ac_cv_lib_lex=$ac_lib])
+      AC_LINK_IFELSE([AC_LANG_DEFINES_PROVIDED[`cat $LEX_OUTPUT_ROOT.c`]],
+	[ac_cv_lib_lex=$ac_lib])
       test "$ac_cv_lib_lex" != 'none needed' && break
     done
     LIBS=$ac_save_LIBS
@@ -772,9 +773,9 @@ AC_CACHE_CHECK(whether yytext is a pointer, ac_cv_prog_lex_yytext_pointer,
 ac_cv_prog_lex_yytext_pointer=no
 ac_save_LIBS=$LIBS
 LIBS="$LEXLIB $ac_save_LIBS"
-AC_LINK_IFELSE(
+AC_LINK_IFELSE([AC_LANG_DEFINES_PROVIDED
   [#define YYTEXT_POINTER 1
-`cat $LEX_OUTPUT_ROOT.c`],
+`cat $LEX_OUTPUT_ROOT.c`]],
   [ac_cv_prog_lex_yytext_pointer=yes])
 LIBS=$ac_save_LIBS
 ])
@@ -825,7 +826,7 @@ SHELL = /bin/sh
 all:
 	@echo '@@@%%%=$(MAKE)=@@@%%%'
 _ACEOF
-# GNU make sometimes prints "make[1]: Entering...", which would confuse us.
+# GNU make sometimes prints "make[1]: Entering ...", which would confuse us.
 case `${MAKE-make} -f conftest.make 2>/dev/null` in
   *@@@%%%=?*=@@@%%%*)
     eval ac_cv_prog_make_${ac_make}_set=yes;;
@@ -894,8 +895,8 @@ AN_PROGRAM([bison], [AC_PROG_YACC])
 AC_DEFUN([AC_PROG_YACC],
 [AC_CHECK_PROGS(YACC, 'bison -y' byacc, yacc)dnl
 AC_ARG_VAR(YACC,
-[The `Yet Another C Compiler' implementation to use.  Defaults to the first
-program found out of: `bison -y', `byacc', `yacc'.])dnl
+[The `Yet Another Compiler Compiler' implementation to use.  Defaults to
+the first program found out of: `bison -y', `byacc', `yacc'.])dnl
 AC_ARG_VAR(YFLAGS,
 [The list of arguments that will be passed by default to $YACC.  This script
 will default YFLAGS to the empty string to avoid a default value of `-d' given

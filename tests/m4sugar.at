@@ -245,19 +245,14 @@ AT_CLEANUP
 
 AT_SETUP([m4@&t@_warn])
 
-# m4_text_wrap is used to display the help strings.  Also, check that
-# commas are not swallowed.  This can easily happen because of
-# m4-listification.
-
-# FIXME: For the time being we use -f to make sure we do issue the
-# warnings.  But maybe autom4te should handle that by itself?
-
 AT_DATA_M4SUGAR([script.4s],
 [[m4_init
-m4_defun([cross_warning], [m4_warn([cross],  [cross])])
+m4_defun([cross_warning], [m4_warn([cross], [cross])])
 
 m4_divert([0])dnl
-m4_warn([obsolete],  [obsolete])dnl
+m4_warn([obsolete], [obsolete])dnl
+cross_warning[]dnl
+m4_warn([syntax], [syntax])dnl
 cross_warning[]dnl
 m4_warn([syntax], [syntax])dnl
 ]])
@@ -265,27 +260,38 @@ m4_warn([syntax], [syntax])dnl
 AT_CHECK_M4SUGAR([-o-], 0, [],
 [script.4s:4: warning: prefer named diversions
 script.4s:7: warning: syntax
+script.4s:9: warning: syntax
 ])
 
-AT_CHECK_M4SUGAR([-o- -Wall -f], 0, [],
+AT_CHECK_M4SUGAR([-o- -Wall], 0, [],
 [script.4s:4: warning: prefer named diversions
 script.4s:5: warning: obsolete
 script.4s:6: warning: cross
 script.4s:2: cross_warning is expanded from...
 script.4s:6: the top level
 script.4s:7: warning: syntax
+script.4s:8: warning: cross
+script.4s:2: cross_warning is expanded from...
+script.4s:8: the top level
+script.4s:9: warning: syntax
 ])
 
-AT_CHECK_M4SUGAR([-o- -Wnone,cross -f], 0, [],
+AT_CHECK_M4SUGAR([-o- -Wnone,cross], 0, [],
 [script.4s:6: warning: cross
 script.4s:2: cross_warning is expanded from...
 script.4s:6: the top level
+script.4s:8: warning: cross
+script.4s:2: cross_warning is expanded from...
+script.4s:8: the top level
 ])
 
-AT_CHECK_M4SUGAR([-o- -Wnone,cross,error -f], 1, [],
+AT_CHECK_M4SUGAR([-o- -Wnone,cross,error], 1, [],
 [[script.4s:6: warning: cross
 script.4s:2: cross_warning is expanded from...
 script.4s:6: the top level
+script.4s:8: warning: cross
+script.4s:2: cross_warning is expanded from...
+script.4s:8: the top level
 ]])
 
 AT_CLEANUP
@@ -464,13 +470,15 @@ AT_KEYWORDS([m4@&t@_defun_init m4@&t@_copy m4@&t@_defun_once])
 
 dnl check out m4_defun_init, m4_copy, and odd macro names
 AT_CHECK_M4SUGAR_TEXT([[
+m4_define([t], [text])dnl
 m4_defun_init([a], [[init a
-]], [[common a]])dnl
+]], [[common a] t])dnl
 m4_defun([b], [[b]m4_require([a])])dnl
 m4_defun([c], [[c]m4_require([a])])dnl
 b
 c
-a
+a()dnl
+
 m4_defun_init([-], [hello, ], [m4_if([$#], [0], [world], [[$1]])])dnl
 m4_copy([-], [.])dnl
 m4_indir([.])
@@ -478,10 +486,10 @@ m4_indir([.], [goodbye])
 m4_indir([-], [again])
 ]], [[
 init a
-common a
+common a text
 b
 c
-common a
+common a text
 hello, world
 goodbye
 hello, again
@@ -1133,6 +1141,30 @@ a
 
 AT_CLEANUP
 
+
+## ------------- ##
+## m4_text_box.  ##
+## ------------- ##
+
+AT_SETUP([m4@&t@_text_box])
+
+AT_CHECK_M4SUGAR_TEXT([[
+m4_text_box([a $1 @&t@b])
+m4_text_box([a $1 @&t@b], [$])
+m4_text_box([a $1 @&t@b], [,])
+]], [[
+## ------ ##
+## a $1 b ##
+## ------ ##
+## $$$$$$ ##
+## a $1 b ##
+## $$$$$$ ##
+## ,,,,,, ##
+## a $1 b ##
+## ,,,,,, ##
+]])
+
+AT_CLEANUP
 
 ## -------------- ##
 ## m4_text_wrap.  ##
@@ -2076,6 +2108,33 @@ m4_count(m4_shift(m4_set_intersection([a], [b])))
 5000
 3333
 3334
+]])
+
+AT_CLEANUP
+
+
+## ---------------------- ##
+## __file__ and __line__. ##
+## ---------------------- ##
+
+AT_SETUP([[__file__ and __line__]])
+
+# Check that __file__ and __line__ work.
+# Check that m4__file__ and m4__line__ are not defined
+# (and get them to pass by the undefined-macro check).
+# Try to not assume too much about AT_CHECK_M4SUGAR_TEXT.
+AT_CHECK_M4SUGAR_TEXT([[dnl
+m4_pattern_allow([m4__file__])dnl
+m4_pattern_allow([m4__line__])dnl
+m4__file__
+m4__line__
+__file__
+m4_define([first], __line__)dnl
+m4_define([second], __line__)dnl
+m4_assert(first + 1 == second)dnl
+]], [[m4@&t@__@&t@file__
+m4@&t@__@&t@line__
+script.4s
 ]])
 
 AT_CLEANUP

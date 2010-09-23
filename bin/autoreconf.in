@@ -86,8 +86,8 @@ Library directories:
   -B, --prepend-include=DIR  prepend directory DIR to search path
   -I, --include=DIR          append directory DIR to search path
 
-The environment variables AUTOCONF, AUTOHEADER, AUTOMAKE, ACLOCAL,
-AUTOPOINT, LIBTOOLIZE, M4, and MAKE are honored.
+The environment variables AUTOM4TE, AUTOCONF, AUTOHEADER, AUTOMAKE,
+ACLOCAL, AUTOPOINT, LIBTOOLIZE, M4, and MAKE are honored.
 
 Report bugs to <bug-autoconf\@gnu.org>.
 GNU Autoconf home page: <http://www.gnu.org/software/autoconf/>.
@@ -124,8 +124,12 @@ my $install = 0;
 my $symlink = 0;
 # Does aclocal support --force?
 my $aclocal_supports_force = 0;
+# Does aclocal support -Wfoo?
+my $aclocal_supports_warnings = 0;
 # Does automake support --force-missing?
 my $automake_supports_force_missing = 0;
+# Does automake support -Wfoo?
+my $automake_supports_warnings = 0;
 # Does libtoolize support --install?
 my $libtoolize_supports_install = 0;
 
@@ -188,9 +192,14 @@ sub parse_args ()
 	}
     }
 
-  $aclocal_supports_force = `$aclocal --help 2>/dev/null` =~ /--force/;
-  $automake_supports_force_missing = `$automake --help 2>/dev/null` =~ /--force-missing/;
-  $libtoolize_supports_install = `$libtoolize --help 2>/dev/null` =~ /--install/;
+  my $aclocal_help = `$aclocal --help 2>/dev/null`;
+  my $automake_help = `$automake --help 2>/dev/null`;
+  my $libtoolize_help = `$libtoolize --help 2>/dev/null`;
+  $aclocal_supports_force = $aclocal_help =~ /--force/;
+  $aclocal_supports_warnings = $aclocal_help =~ /--warnings/;
+  $automake_supports_force_missing = $automake_help =~ /--force-missing/;
+  $automake_supports_warnings = $automake_help =~ /--warnings/;
+  $libtoolize_supports_install = $libtoolize_help =~ /--install/;
 
   # Dispatch autoreconf's option to the tools.
   # --include;
@@ -255,7 +264,9 @@ sub parse_args ()
       $autoconf   .= $warn;
       $autoheader .= $warn;
       $automake   .= $warn
-	if `$automake --help` =~ /--warnings/;
+	if $automake_supports_warnings;
+      $aclocal    .= $warn
+        if $aclocal_supports_warnings;
     }
 }
 

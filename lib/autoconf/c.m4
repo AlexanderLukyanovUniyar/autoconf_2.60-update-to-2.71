@@ -79,7 +79,7 @@ AU_DEFUN([AC_LANG_C], [AC_LANG(C)])
 
 
 # AC_LANG_CONFTEST(C)(BODY)
-# -----------------------
+# -------------------------
 # We can't use '#line $LINENO "configure"' here, since
 # Sun c89 (Sun WorkShop 6 update 2 C 5.3 Patch 111679-08 2002/05/09)
 # rejects $LINENO greater than 32767, and some configure scripts
@@ -347,7 +347,7 @@ AC_DEFUN([_AC_ARG_VAR_LIBS],
 
 
 # AC_LANG_PREPROC(C)
-# -------------------
+# ------------------
 # Find the C preprocessor.  Must be AC_DEFUN'd to be AC_REQUIRE'able.
 AC_DEFUN([AC_LANG_PREPROC(C)],
 [AC_REQUIRE([AC_PROG_CPP])])
@@ -389,7 +389,7 @@ break])
 
 done
 # Because of `break', _AC_PREPROC_IFELSE's cleaning code was skipped.
-rm -f conftest.err conftest.$ac_ext
+rm -f conftest.i conftest.err conftest.$ac_ext
 AS_IF([$ac_preproc_ok], [$1], [$2])
 ])# _AC_PROG_PREPROC_WORKS_IFELSE
 
@@ -638,7 +638,7 @@ fi
 
 
 # AC_LANG_PREPROC(C++)
-# ---------------------
+# --------------------
 # Find the C++ preprocessor.  Must be AC_DEFUN'd to be AC_REQUIRE'able.
 AC_DEFUN([AC_LANG_PREPROC(C++)],
 [AC_REQUIRE([AC_PROG_CXXCPP])])
@@ -1021,7 +1021,7 @@ AC_DEFUN([AC_LANG_COMPILER(Objective C++)],
 
 
 # AC_PROG_OBJCXX([LIST-OF-COMPILERS])
-# ---------------------------------
+# -----------------------------------
 # LIST-OF-COMPILERS is a space separated list of Objective C++ compilers to
 # search for (if not specified, a default list is used).  This just gives
 # the user an opportunity to specify an alternative search list for the
@@ -1956,7 +1956,7 @@ AC_DEFUN([AC_C_TYPEOF],
 # Expands to some language dependent source code for testing the presence of
 # OpenMP.
 AC_DEFUN([_AC_LANG_OPENMP],
-[_AC_LANG_DISPATCH([$0], _AC_LANG, $@)])
+[AC_LANG_SOURCE([_AC_LANG_DISPATCH([$0], _AC_LANG, $@)])])
 
 # _AC_LANG_OPENMP(C)
 # ------------------
@@ -1979,7 +1979,7 @@ m4_define([_AC_LANG_OPENMP(Fortran 77)],
 [AC_LANG_FUNC_LINK_TRY([omp_get_num_threads])])
 
 # _AC_LANG_OPENMP(Fortran)
-# ---------------------------
+# ------------------------
 m4_copy([_AC_LANG_OPENMP(Fortran 77)], [_AC_LANG_OPENMP(Fortran)])
 
 # AC_OPENMP

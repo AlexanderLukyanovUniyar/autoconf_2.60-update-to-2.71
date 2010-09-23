@@ -33,6 +33,17 @@ gnulib_dir = '$(abs_srcdir)'/../gnulib
 # The bootstrap tools (override the default).
 bootstrap-tools = automake
 
+# Set preferred lists for announcements.
+
+announcement_Cc_ = $(PACKAGE_BUGREPORT), autotools-announce@gnu.org
+announcement_mail-alpha = autoconf@gnu.org
+announcement_mail-beta = autoconf@gnu.org
+announcement_mail-stable = info-gnu@gnu.org, autoconf@gnu.org
+announcement_mail_headers_ =						\
+To: $(announcement_mail-$(RELEASE_TYPE))				\
+CC: $(announcement_Cc_)							\
+Mail-Followup-To: autoconf@gnu.org
+
 # Update files from gnulib.
 .PHONY: fetch gnulib-update autom4te-update
 fetch: gnulib-update autom4te-update
@@ -57,6 +68,7 @@ gnulib-update:
 	cp $(gnulib_dir)/doc/gnu-oids.texi $(srcdir)/doc
 	cp $(gnulib_dir)/doc/make-stds.texi $(srcdir)/doc
 	cp $(gnulib_dir)/doc/standards.texi $(srcdir)/doc
+	cp $(gnulib_dir)/m4/autobuild.m4 $(srcdir)/m4
 	cp $(gnulib_dir)/top/GNUmakefile $(srcdir)
 
 WGET = wget
@@ -97,3 +109,6 @@ local-checks-to-skip ?= \
 update-copyright-env = \
   UPDATE_COPYRIGHT_USE_INTERVALS=0 \
   UPDATE_COPYRIGHT_MAX_LINE_LENGTH=72
+
+# Prevent incorrect NEWS edits.
+old_NEWS_hash = 2ddcbbdee88e191370a07c8d73d8680c

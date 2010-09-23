@@ -3,7 +3,7 @@
 @setfilename standards.info
 @settitle GNU Coding Standards
 @c This date is automagically updated when you save this file:
-@set lastupdate December 11, 2009
+@set lastupdate September 9, 2010
 @c %**end of header
 
 @dircategory GNU organization
@@ -27,7 +27,7 @@
 The GNU coding standards, last updated @value{lastupdate}.
 
 Copyright @copyright{} 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
-2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 Free Software
+2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010 Free Software
 Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
@@ -101,11 +101,17 @@ interface at
 @url{http://lists.gnu.org/mailman/listinfo/gnustandards-commit}.
 Archives are also available there.
 
-Corrections or suggestions for this document should be sent to
-@email{bug-standards@@gnu.org}.  If you make a suggestion, please include a
-suggested new wording for it; our time is limited.  We prefer a context
-diff to the @file{standards.texi} or @file{make-stds.texi} files, but if
-you don't have those files, please mail your suggestion anyway.
+@cindex @code{bug-standards@@gnu.org} email address
+@cindex Savannah repository for gnustandards
+@cindex gnustandards project repository
+Please send corrections or suggestions for this document to
+@email{bug-standards@@gnu.org}.  If you make a suggestion, please
+include a suggested new wording for it, to help us consider the
+suggestion efficiently.  We prefer a context diff to the Texinfo
+source, but if that's difficult for you, you can make a context diff
+for some other version of this document, or propose it in any way that
+makes it clear.  The source repository for this document can be found
+at @url{http://savannah.gnu.org/projects/gnustandards}.
 
 These standards cover the minimum of what is important when writing a
 GNU package.  Likely, the need for additional standards will come up.
@@ -509,7 +515,7 @@ and is not always appropriate, following this policy would have saved
 GCC developers many hours, or even days, per year.
 
 In the case of function-like macros like @code{REVERSIBLE_CC_MODE} in
-GCC which cannot be simply used in @code{if( ...)} statements, there is
+GCC which cannot be simply used in @code{if (...)} statements, there is
 an easy workaround.  Simply introduce another macro
 @code{HAS_REVERSIBLE_CC_MODE} as in the following example:
 
@@ -537,6 +543,7 @@ command line interface, and how libraries should behave.
 * User Interfaces::             Standards about interfaces generally.
 * Graphical Interfaces::        Standards for graphical interfaces.
 * Command-Line Interfaces::     Standards for command line interfaces.
+* Dynamic Plug-In Interfaces::  Standards for dynamic plug-in interfaces.
 * Option Table::                Table of long options.
 * OID Allocations::             Table of OID slots for GNU.
 * Memory Usage::                When and how to care about memory needs.
@@ -690,7 +697,7 @@ creating temporary files in world-writable directories.  In C, you can
 avoid this problem by creating temporary files in this manner:
 
 @example
-fd = open(filename, O_WRONLY | O_CREAT | O_EXCL, 0600);
+fd = open (filename, O_WRONLY | O_CREAT | O_EXCL, 0600);
 @end example
 
 @noindent
@@ -849,25 +856,32 @@ multi-column format.
 @node Graphical Interfaces
 @section Standards for Graphical Interfaces
 @cindex graphical user interface
+@cindex interface styles
+@cindex user interface styles
 
-@cindex gtk+
+@cindex GTK+
 When you write a program that provides a graphical user interface,
-please make it work with X Windows and the GTK+ toolkit unless the
-functionality specifically requires some alternative (for example,
-``displaying jpeg images while in console mode'').
+please make it work with the X Window System and the GTK+ toolkit
+unless the functionality specifically requires some alternative (for
+example, ``displaying jpeg images while in console mode'').
 
 In addition, please provide a command-line interface to control the
 functionality.  (In many cases, the graphical user interface can be a
 separate program which invokes the command-line program.)  This is
 so that the same jobs can be done from scripts.
 
-@cindex corba
-@cindex gnome
-Please also consider providing a CORBA interface (for use from GNOME), a
-library interface (for use from C), and perhaps a keyboard-driven
-console interface (for use by users from console mode).  Once you are
-doing the work to provide the functionality and the graphical interface,
-these won't be much extra work.
+@cindex CORBA
+@cindex GNOME
+@cindex D-bus
+@cindex keyboard interface
+@cindex library interface
+Please also consider providing a D-bus interface for use from other
+running programs, such as within GNOME.  (GNOME used to use CORBA
+for this, but that is being phased out.)  In addition, consider
+providing a library interface (for use from C), and perhaps a
+keyboard-driven console interface (for use by users from console
+mode).  Once you are doing the work to provide the functionality and
+the graphical interface, these won't be much extra work.
 
 
 @node Command-Line Interfaces
@@ -1035,10 +1049,6 @@ GNU General Public License, @url{http://www.gnu.org/@/licenses/@/gpl.html}.
 @item LGPL
 GNU Lesser General Public License, @url{http://www.gnu.org/@/licenses/@/lgpl.html}.
 
-@item GPL/Guile
-GNU GPL with the exception for Guile; for example, GPLv3+/Guile means
-the GNU GPL version 3 or later, with the extra exception for Guile.
-
 @item GPL/Ada
 GNU GPL with the exception for Ada.
 
@@ -1070,12 +1080,12 @@ The non-license that is being in the public domain,
 The license for Python, @url{http://www.python.org/@/2.0.1/@/license.html}.
 
 @item RBSD
-The revised (3-clause) BSD, compatible with the GNU GPL,
+The revised (3-clause) BSD, compatible with the GNU GPL,@*
 @url{http://www.xfree86.org/@/3.3.6/@/COPYRIGHT2.html#5}.
 
 @item X11
 The simple non-copyleft license used for most versions of the X Window
-system, @url{http://www.xfree86.org/@/3.3.6/@/COPYRIGHT2.html#3}.
+System, @url{http://www.xfree86.org/@/3.3.6/@/COPYRIGHT2.html#3}.
 
 @item Zlib
 The license for Zlib, @url{http://www.gzip.org/@/zlib/@/zlib_license.html}.
@@ -1111,6 +1121,44 @@ General help using GNU software: <http://www.gnu.org/gethelp/>
 @end example
 
 It is ok to mention other appropriate mailing lists and web pages.
+
+
+@node Dynamic Plug-In Interfaces
+@section Standards for Dynamic Plug-in Interfaces
+@cindex plug-ins
+@cindex dynamic plug-ins
+
+Another aspect of keeping free programs free is encouraging
+development of free plug-ins, and discouraging development of
+proprietary plug-ins.  Many GNU programs will not have anything like
+plug-ins at all, but those that do should follow these
+practices.
+
+First, the general plug-in architecture design should closely tie the
+plug-in to the original code, such that the plug-in and the base
+program are parts of one extended program.  For GCC, for example,
+plug-ins receive and modify GCC's internal data structures, and so
+clearly form an extended program with the base GCC.
+
+@vindex plugin_is_GPL_compatible
+Second, you should require plug-in developers to affirm that their
+plug-ins are released under an appropriate license.  This should be
+enforced with a simple programmatic check.  For GCC, again for
+example, a plug-in must define the global symbol
+@code{plugin_is_GPL_compatible}, thus asserting that the plug-in is
+released under a GPL-compatible license (@pxref{Plugins,, Plugins,
+gccint, GCC Internals}).
+
+By adding this check to your program you are not creating a new legal
+requirement.  The GPL itself requires plug-ins to be free software,
+licensed compatibly.  As long as you have followed the first rule above
+to keep plug-ins closely tied to your original program, the GPL and AGPL
+already require those plug-ins to be released under a compatible
+license.  The symbol definition in the plug-in---or whatever equivalent
+works best in your program---makes it harder for anyone who might
+distribute proprietary plug-ins to legally defend themselves.  If a case
+about this got to court, we can point to that symbol as evidence that
+the plug-in developer understood that the license had this requirement.
 
 
 @node Option Table
@@ -2274,6 +2322,13 @@ files that are bigger than will fit in memory all at once.
 If your program creates complicated data structures, just make them in
 memory and give a fatal error if @code{malloc} returns zero.
 
+@pindex valgrind
+@cindex memory leak
+Memory leak detectors such as @command{valgrind} can be useful, but
+don't complicate a program merely to avoid their false alarms.  For
+example, if memory is used until just before a process exits, don't
+free it simply to silence a leak detector.
+
 @node File Usage
 @section File Usage
 @cindex file usage
@@ -2582,6 +2637,17 @@ warnings for valid and legitimate code which they do not want to change.
 If you want to do this, then do.  The compiler should be your servant,
 not your master.
 
+@pindex clang
+@pindex lint
+Don't make the program ugly just to placate static analysis tools such
+as @command{lint}, @command{clang}, and GCC with extra warnings
+options such as @option{-Wconversion} and @option{-Wundef}.  These
+tools can help find bugs and unclear code, but they can also generate
+so many false alarms that that it hurts readability to silence them
+with unnecessary casts, wrappers, and other complications.  For
+example, please don't insert casts to @code{void} or calls to
+do-nothing functions merely to pacify a lint checker.
+
 Declarations of external functions and functions to appear later in the
 source file should all go in one place near the beginning of the file
 (somewhere before the first function definition in the file), or else
@@ -2599,6 +2665,7 @@ declaration of each local variable into the smallest scope that includes
 all its uses.  This makes the program even cleaner.
 
 Don't use local variables or parameters that shadow global identifiers.
+GCC's @samp{-Wshadow} option can detect this problem.
 
 @cindex multiple variables in a line
 Don't declare multiple variables in one declaration that spans lines.
@@ -2702,10 +2769,9 @@ if (foo == 0)
   fatal ("virtual memory exhausted");
 @end example
 
-@pindex lint
-Don't make the program ugly to placate @code{lint}.  Please don't insert any
-casts to @code{void}.  Zero without a cast is perfectly fine as a null
-pointer constant, except when calling a varargs function.
+This example uses zero without a cast as a null pointer constant.
+This is perfectly fine, except that a cast is needed when calling a
+varargs function or when using @code{sizeof}.
 
 @node Names
 @section Naming Variables, Functions, and Files
@@ -3531,7 +3597,7 @@ clear explanation of how the earlier version differed.
 
 The change log file is normally called @file{ChangeLog} and covers an
 entire directory.  Each directory can have its own change log, or a
-directory can use the change log of its parent directory--it's up to
+directory can use the change log of its parent directory---it's up to
 you.
 
 Another alternative is to record change log information with a version
@@ -3539,21 +3605,20 @@ control system such as RCS or CVS.  This can be converted automatically
 to a @file{ChangeLog} file using @code{rcs2log}; in Emacs, the command
 @kbd{C-x v a} (@code{vc-update-change-log}) does the job.
 
-There's no need to describe the full purpose of the changes or how they
-work together.  If you think that a change calls for explanation, you're
-probably right.  Please do explain it---but please put the explanation
-in comments in the code, where people will see it whenever they see the
-code.  For example, ``New function'' is enough for the change log when
-you add a function, because there should be a comment before the
-function definition to explain what it does.
+There's no need to describe the full purpose of the changes or how
+they work together.  However, sometimes it is useful to write one line
+to describe the overall purpose of a change or a batch of changes.  If
+you think that a change calls for explanation, you're probably right.
+Please do explain it---but please put the full explanation in comments
+in the code, where people will see it whenever they see the code.  For
+example, ``New function'' is enough for the change log when you add a
+function, because there should be a comment before the function
+definition to explain what it does.
 
 In the past, we recommended not mentioning changes in non-software
 files (manuals, help files, etc.) in change logs.  However, we've been
 advised that it is a good idea to include them, for the sake of
 copyright records.
-
-However, sometimes it is useful to write one line to describe the
-overall purpose of a batch of changes.
 
 The easiest way to add an entry to @file{ChangeLog} is with the Emacs
 command @kbd{M-x add-change-log-entry}.  An entry should have an
@@ -4183,7 +4248,7 @@ documentation.
 By contrast, it is ok to refer to journal articles and textbooks in
 the comments of a program for explanation of how it functions, even
 though they are non-free.  This is because we don't include such
-things in the GNU system even they are free---they are outside the
+things in the GNU system even if they are free---they are outside the
 scope of what a software distribution needs to include.
 
 Referring to a web site that describes or recommends a non-free

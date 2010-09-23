@@ -231,11 +231,12 @@ m4_define([m4_assert],
 ## ------------- ##
 
 
-# _m4_warn(CATEGORY, MESSAGE, STACK-TRACE)
-# ----------------------------------------
+# _m4_warn(CATEGORY, MESSAGE, [STACK-TRACE])
+# ------------------------------------------
 # Report a MESSAGE to the user if the CATEGORY of warnings is enabled.
 # This is for traces only.
-# The STACK-TRACE is a \n-separated list of "LOCATION: MESSAGE".
+# If present, STACK-TRACE is a \n-separated list of "LOCATION: MESSAGE",
+# where the last line (and no other) ends with "the top level".
 #
 # Within m4, the macro is a no-op.  This macro really matters
 # when autom4te post-processes the trace output.
@@ -736,7 +737,7 @@ m4_define([_m4_shiftn],
 
 # m4_shift2(...)
 # m4_shift3(...)
-# -----------------
+# --------------
 # Returns ... shifted twice, and three times.  Faster than m4_shiftn.
 m4_define([m4_shift2], [m4_shift(m4_shift($@))])
 m4_define([m4_shift3], [m4_shift(m4_shift(m4_shift($@)))])
@@ -1396,7 +1397,7 @@ m4_define([_m4_divert()],                0)
 
 
 # m4_divert_stack
-# ------------------
+# ---------------
 # Print the diversion stack, if it's nonempty.  The caller is
 # responsible for any leading or trailing newline.
 m4_define([m4_divert_stack],
@@ -1922,7 +1923,7 @@ m4_define([_m4_divert_dump])
 
 
 # m4_divert_require(DIVERSION, NAME-TO-CHECK, [BODY-TO-EXPAND])
-# --------------------------------------------------------------
+# -------------------------------------------------------------
 # Same as m4_require, but BODY-TO-EXPAND goes into the named DIVERSION;
 # requirements still go in the current diversion though.
 #
@@ -1973,7 +1974,7 @@ m4_define([m4_defun],
 # m4_defun'd, we can add a parameter, similar to the third parameter
 # to m4_defun.
 m4_define([m4_defun_init],
-[m4_define([$1], [$3])m4_defun([$1],
+[m4_define([$1], [$3[]])m4_defun([$1],
    [$2[]_m4_popdef(]m4_dquote($[0])[)m4_indir(]m4_dquote($[0])dnl
 [m4_if(]m4_dquote($[#])[, [0], [], ]m4_dquote([,$]@)[))], [m4_pushdef])])
 
@@ -2171,7 +2172,7 @@ m4_defn([m4_cr_digits])dnl
 
 # m4_cr_symbols1
 # m4_cr_symbols2
-# -------------------------------
+# --------------
 m4_define([m4_cr_symbols1],
 m4_defn([m4_cr_Letters])dnl
 _)
@@ -2192,13 +2193,16 @@ m4_defn([m4_cr_digits])dnl
 # characters via m4_translit must deal with the fact that m4_translit does
 # not add quotes to the output.
 #
+# In EBCDIC, $ is immediately followed by *, which leads to problems
+# if m4_cr_all is inlined into a macro definition; so swap them.
+#
 # It is mainly useful in generating inverted character range maps, for use
 # in places where m4_translit is faster than an equivalent m4_bpatsubst;
 # the regex `[^a-z]' is equivalent to:
 #  m4_translit(m4_dquote(m4_defn([m4_cr_all])), [a-z])
 m4_define([m4_cr_all],
 m4_translit(m4_dquote(m4_format(m4_dquote(m4_for(
-  ,1,255,,[[%c]]))m4_for([i],1,255,,[,i]))), [-])-)
+  ,1,255,,[[%c]]))m4_for([i],1,255,,[,i]))), [$*-], [*$])-)
 
 
 # _m4_define_cr_not(CATEGORY)
@@ -2672,11 +2676,11 @@ m4_define([_m4_text_wrap_word],
 # will post-process.
 m4_define([m4_text_box],
 [m4_pushdef([m4_Border],
-	    m4_translit(m4_format([%*s], m4_decr(m4_qlen(_m4_expand([$1
+	    m4_translit(m4_format([[[%*s]]], m4_decr(m4_qlen(_m4_expand([$1
 ]))), []), [ ], m4_default_quoted([$2], [-])))]dnl
-[[##] m4_Border [##]
+[[##] _m4_defn([m4_Border]) [##]
 [##] $1 [##]
-[##] m4_Border [##]_m4_popdef([m4_Border])])
+[##] _m4_defn([m4_Border]) [##]_m4_popdef([m4_Border])])
 
 
 # m4_qlen(STRING)

@@ -1,4 +1,4 @@
-# m4.m4 serial 10
+# m4.m4 serial 11
 
 # Copyright (C) 2000, 2006, 2007, 2008, 2009, 2010 Free Software
 # Foundation, Inc.
@@ -34,7 +34,7 @@ AC_PATH_PROGS_FEATURE_CHECK([M4], [m4 gm4 gnum4],
       && ac_cv_path_M4=$ac_path_M4 ac_path_M4_found=:
       rm -f conftest.m4f],
       [AC_MSG_ERROR([no acceptable m4 could be found in \$PATH.
-GNU M4 1.4.6 or later is required; 1.4.13 is recommended])])])
+GNU M4 1.4.6 or later is required; 1.4.14 is recommended])])])
   M4=$ac_cv_path_M4
   AC_CACHE_CHECK([whether $ac_cv_path_M4 accepts --gnu],
     [ac_cv_prog_gnu_m4_gnu],
@@ -51,8 +51,8 @@ GNU M4 1.4.6 or later is required; 1.4.13 is recommended])])])
   if test x$ac_had_posixly_correct = xyes; then
     POSIXLY_CORRECT=:
     if test $ac_cv_prog_gnu_m4_gnu = no; then
-      AC_MSG_WARN([The version of M4 that was found does not support -g.])
-      AC_MSG_WARN([Using it with POSIXLY_CORRECT set may cause problems.])
+      AC_MSG_WARN([the version of M4 that was found does not support -g])
+      AC_MSG_WARN([using it with POSIXLY_CORRECT set may cause problems])
     fi
   fi
   AC_CACHE_CHECK([how m4 supports trace files], [ac_cv_prog_gnu_m4_debugfile],

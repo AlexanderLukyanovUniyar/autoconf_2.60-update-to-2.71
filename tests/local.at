@@ -25,6 +25,8 @@ m4_pattern_allow([^m4_(define|shift)$])
 # Programs this package provides
 AT_TESTED([autom4te autoconf autoheader autoupdate autoreconf ifnames])
 
+# Enable colored test output.
+AT_COLOR_TESTS
 
 ## ---------------- ##
 ## Utility macros.  ##
@@ -78,6 +80,11 @@ m4_define([AT_CHECK_PERL_SYNTAX],
 #  script.4s:1: /usr/local/bin/gm4: Cannot open foo: No such file or directory
 #  autom4te: /usr/local/bin/gm4 failed with exit status: 1
 #
+# or this (GNU M4 1.4.13 installed as m4-1.4.13):
+#
+#  /usr/bin/m4-1.4.13:script.4s:1: include: cannot open `foo': No such file or directory
+#  autom4te: /usr/bin/m4-1.4.13 failed with exit status: 1
+#
 # becomes
 #
 #  m4:script.4s:1: cannot open `foo': No such file or directory
@@ -106,8 +113,8 @@ m4_define([AT_CHECK_M4],
 [AT_CHECK([$1], [$2], [$3],
           m4_case([$4], [], [], [ignore], [ignore], [stderr]))
 m4_case([$4], [], [], [ignore], [],
-[AT_CHECK([[sed 's/^[^:]*m4[.ex]*: *\([^:]*:\) *\([0-9][0-9]*: \)/m4:\1\2/
-	s/^\([^:]*:\) *\([0-9][0-9]*:\)[^:]*m4[.ex]*: /m4:\1\2 /
+[AT_CHECK([[sed 's/^[^:]*m4[-.ex0-9]*: *\([^:]*:\) *\([0-9][0-9]*: \)/m4:\1\2/
+	s/^\([^:]*:\) *\([0-9][0-9]*:\)[^:]*m4[-.ex0-9]*: /m4:\1\2 /
 	s/: C\(annot open \)\([^`:]*\):/: c\1`\2'\'':/
 	s/: include:\( cannot open\)/:\1/
 	s/^autom4te: [^ ]*m4[.ex]* /autom4te: m4 /
@@ -224,7 +231,7 @@ m4_define([AT_CHECK_AUTOHEADER],
 # AT_CHECK_CONFIGURE(END-COMMAND,
 #                    [EXIT-STATUS = 0],
 #                    [STDOUT = IGNORE], STDERR)
-# --------------------------------------------
+# ---------------------------------------------
 # `abs_top_srcdir' is needed so that `./configure' finds install-sh.
 # Using --srcdir is more expensive.
 m4_define([AT_CHECK_CONFIGURE],
@@ -242,6 +249,9 @@ m4_define([AT_CHECK_CONFIGURE],
 # Perhaps grep -E is not supported, or perhaps it chokes on such a big regex.
 # In this case just don't pay attention to the env.  It would be great
 # to keep the error message but we can't: that would break AT_CHECK.
+#
+# FreeBSD sh may intermingle the trace output from the egrep and grep
+# commands in the pipe, so turn off tracing for these.
 #
 # Some tests might exit prematurely when they find a problem, in
 # which case `env-after' is probably missing.  Don't check it then.
@@ -287,6 +297,7 @@ test -f state-ls.after \
   && { $at_diff state-ls.before state-ls.after || return 1; }
 # Compare variable space dumps.
 if test -f state-env.before && test -f state-env.after; then
+  set +x
   for act_file in state-env.before state-env.after
   do
     $EGREP -v '^(m4_join([|],
@@ -303,7 +314,7 @@ if test -f state-env.before && test -f state-env.after; then
       [CYGWIN|ISC|MINGW32|MINIX|EMXOS2|XENIX|EXEEXT|OBJEXT],
       [X_(CFLAGS|(EXTRA_|PRE_)?LIBS)|x_(includes|libraries)|(have|no)_x],
       [(host|build|target)(_(alias|cpu|vendor|os))?],
-      [cross_compiling],
+      [cross_compiling|U],
       [interpval|PATH_SEPARATOR],
       [F77_DUMMY_MAIN|f77_(case|underscore)],
       [FC(_DUMMY_MAIN|FLAGS|LIBS|FLAGS_f)?],
@@ -316,6 +327,7 @@ if test -f state-env.before && test -f state-env.after; then
       # There may be variables spread on several lines; remove latter lines.
       $GREP '^m4_defn([m4_re_word])=' >clean-$act_file
   done
+  $at_traceon
   $at_diff clean-state-env.before clean-state-env.after
 fi
 } [#]at_check_env])
