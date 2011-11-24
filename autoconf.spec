@@ -4,28 +4,30 @@
 
 Name: %realname%dialect
 Version: 2.68
-Release: alt1
+Release: alt2
 Epoch: 2
 
 Summary: A GNU tool for automatically configuring source code
 License: GPLv2+
 Group: Development/Other
 Url: http://www.gnu.org/software/%realname/
-Packager: Dmitry V. Levin <ldv@altlinux.org>
 BuildArch: noarch
 
 %set_compress_method gzip
 %define srcname %realname-%version-%release
 %define __spec_autodep_custom_pre export autom4te_perllibdir=%buildroot%_datadir/%realname%suff
 
-# ftp://ftp.gnu.org/gnu/autoconf/autoconf-%version.tar.gz
+# git://git.altlinux.org/gears/a/autoconf_2.60.git
 Source: %srcname.tar
 
 Provides: %realname = %epoch:%version-%release
 Obsoletes: %realname
 
 PreReq: autoconf-common, alternatives >= 0:0.4
-Requires: m4 >= 1.4.5, mktemp >= 1:1.3.1
+# GNU m4 version 1.4.6 or later is required; 1.4.14 or later is recommended.
+Requires: m4 >= 1.4.14
+# portable mktemp, later obsoleted by coreutils.
+Requires: mktemp >= 1:1.3.1
 
 BuildRequires: help2man, alternatives >= 0:0.4
 %{!?__buildreqs:%{!?_without_check:%{!?_disable_check:BuildRequires: gcc-c++ gcc-g77 libgomp-devel}}}
@@ -47,7 +49,7 @@ Autoconf is only required for the generation of the scripts, not
 their use.
 
 %prep
-%setup -q -n %srcname
+%setup -n %srcname
 find -type f -print0 |
 	xargs -r0 fgrep -lZ @RPM_AUTOCONF_SUFFIX@ -- |
 	xargs -r0 sed -i s,@RPM_AUTOCONF_SUFFIX@,%suff, --
@@ -61,7 +63,7 @@ sed -i '/@direntry/,/@end direntry/ s/^\(\*[[:space:]]\+[[:alnum:].-]\+\)\(:[[:s
 	doc/autoconf.texi
 
 # Build scripts expect to find autoconf version in this file.
-echo -n %version >.tarball-version
+echo -n %version > .tarball-version
 
 %build
 export ac_cv_prog_EMACS=no
@@ -124,6 +126,9 @@ done
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Thu Nov 24 2011 Dmitry V. Levin <ldv@altlinux.org> 2:2.68-alt2
+- Backported upstream fix for AS_LITERAL_IF.
+
 * Thu Sep 23 2010 Dmitry V. Levin <ldv@altlinux.org> 2:2.68-alt1
 - Updated to v2.68.
 
