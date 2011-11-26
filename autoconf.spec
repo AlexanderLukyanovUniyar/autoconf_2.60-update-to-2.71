@@ -4,7 +4,7 @@
 
 Name: %realname%dialect
 Version: 2.68
-Release: alt2
+Release: alt3
 Epoch: 2
 
 Summary: A GNU tool for automatically configuring source code
@@ -126,8 +126,11 @@ done
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Sat Nov 26 2011 Dmitry V. Levin <ldv@altlinux.org> 2:2.68-alt3
+- Backported upstream fix for regression in AC_REPLACE_FUNCS.
+
 * Thu Nov 24 2011 Dmitry V. Levin <ldv@altlinux.org> 2:2.68-alt2
-- Backported upstream fix for AS_LITERAL_IF.
+- Backported upstream fix for regression in AS_LITERAL_IF.
 
 * Thu Sep 23 2010 Dmitry V. Levin <ldv@altlinux.org> 2:2.68-alt1
 - Updated to v2.68.
