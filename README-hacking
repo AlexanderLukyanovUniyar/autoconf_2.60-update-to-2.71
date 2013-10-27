@@ -18,7 +18,7 @@ tools we depend upon, including:
 - Automake 1.10+ <http://www.gnu.org/software/automake/>
 - Help2man 1.29+ <http://www.gnu.org/software/help2man/>
 - M4 1.4.6+ <http://www.gnu.org/software/m4/>
-- Perl 5.005_03+ <http://www.cpan.org/>
+- Perl 5.006+ <http://www.cpan.org/>
 - Texinfo 4.8+ <http://www.gnu.org/software/texinfo/>
 
 The following are useful as well, if you want to be able to run commands
@@ -75,7 +75,7 @@ The next step is to generate files like configure and Makefile.in:
 
 Since we're building autoconf itself, and its tests are picky, the
 following procedure includes an extra step to ensure that some
-generated files are regenerated using the tools just build by "make"
+generated files are regenerated using the tools just built by "make"
 (if you use GNU make, the file GNUmakefile sets PATH for you):
 
   $ ./configure
@@ -131,8 +131,7 @@ Enjoy!
 
 -----
 
-Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010 Free
-Software Foundation, Inc.
+Copyright (C) 2002-2012 Free Software Foundation, Inc.
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
