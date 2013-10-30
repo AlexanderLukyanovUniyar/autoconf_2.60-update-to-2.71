@@ -55,6 +55,7 @@ args: --preselect AC_SUBST_TRACE
 args: --preselect AM_AUTOMAKE_VERSION
 args: --preselect AM_CONDITIONAL
 args: --preselect AM_ENABLE_MULTILIB
+args: --preselect AM_EXTRA_RECURSIVE_TARGETS
 args: --preselect AM_GNU_GETTEXT
 args: --preselect AM_GNU_GETTEXT_INTL_SUBDIR
 args: --preselect AM_INIT_AUTOMAKE
@@ -69,6 +70,8 @@ args: --preselect AM_PROG_CXX_C_O
 args: --preselect AM_PROG_F77_C_O
 args: --preselect AM_PROG_FC_C_O
 args: --preselect AM_PROG_MOC
+# AM_PROG_MKDIR_P will be removed in Automake 1.14.
+args: --preselect AM_PROG_MKDIR_P
 args: --preselect AM_SILENT_RULES
 args: --preselect AM_XGETTEXT_OPTION
 args: --preselect _AM_MAKEFILE_INCLUDE
