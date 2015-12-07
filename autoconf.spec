@@ -29,7 +29,7 @@ Requires: m4 >= 1.4.14
 # portable mktemp, later obsoleted by coreutils.
 Requires: mktemp >= 1:1.3.1
 
-BuildRequires: help2man, alternatives >= 0:0.4
+BuildRequires: help2man, makeinfo, alternatives >= 0:0.4
 %{!?__buildreqs:%{!?_without_check:%{!?_disable_check:BuildRequires: gcc-c++ gcc-g77 libgomp-devel}}}
 
 %description
