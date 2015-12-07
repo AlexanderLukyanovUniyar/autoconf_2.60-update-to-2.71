@@ -7277,10 +7277,10 @@ variable
 @code{ac_cv_prog_cc_c89} is set to @samp{no}.  See also
 @code{AC_C_PROTOTYPES} below.
 
-If using the GNU C compiler, set shell variable @code{GCC} to
+If using a compiler that supports GNU C, set shell variable @code{GCC} to
 @samp{yes}.  If output variable @code{CFLAGS} was not already set, set
-it to @option{-g -O2} for the GNU C compiler (@option{-O2} on systems
-where GCC does not accept @option{-g}), or @option{-g} for
+it to @option{-g -O2} for a GNU C compiler (@option{-O2} on systems
+where the compiler does not accept @option{-g}), or @option{-g} for
 other compilers.  If your package does not like this default, then it is
 acceptable to insert the line @samp{: $@{CFLAGS=""@}} after @code{AC_INIT}
 and before @code{AC_PROG_CC} to select an empty default instead.
@@ -7615,7 +7615,7 @@ is declared.
 @acindex{C_TYPEOF}
 @cvindex HAVE_TYPEOF
 @cvindex typeof
-If the C compiler supports GCC's @code{typeof} syntax either
+If the C compiler supports GNU C's @code{typeof} syntax either
 directly or
 through a different spelling of the keyword (e.g., @code{__typeof__}),
 define @code{HAVE_TYPEOF}.  If the support is available only through a
@@ -7640,7 +7640,7 @@ New programs need not use this macro.
 @defmac AC_PROG_GCC_TRADITIONAL
 @acindex{PROG_GCC_TRADITIONAL}
 @ovindex CC
-Add @option{-traditional} to output variable @code{CC} if using the
+Add @option{-traditional} to output variable @code{CC} if using a
 GNU C compiler and @code{ioctl} does not work properly without
 @option{-traditional}.  That usually happens when the fixed header files
 have not been installed on an old system.
@@ -7740,10 +7740,10 @@ like this:
 AC_PROG_OBJC([gcc objcc objc])
 @end example
 
-If using the GNU Objective C compiler, set shell variable
+If using a compiler that supports GNU Objective C, set shell variable
 @code{GOBJC} to @samp{yes}.  If output variable @code{OBJCFLAGS} was not
-already set, set it to @option{-g -O2} for the GNU Objective C
-compiler (@option{-O2} on systems where @command{gcc} does not accept
+already set, set it to @option{-g -O2} for a GNU Objective C
+compiler (@option{-O2} on systems where the compiler does not accept
 @option{-g}), or @option{-g} for other compilers.
 @end defmac
 
@@ -7781,10 +7781,10 @@ like this:
 AC_PROG_OBJCXX([gcc g++ objcc++ objcxx])
 @end example
 
-If using the GNU Objective C++ compiler, set shell variable
+If using a compiler that supports GNU Objective C++, set shell variable
 @code{GOBJCXX} to @samp{yes}.  If output variable @code{OBJCXXFLAGS} was not
-already set, set it to @option{-g -O2} for the GNU Objective C++
-compiler (@option{-O2} on systems where @command{gcc} does not accept
+already set, set it to @option{-g -O2} for a GNU Objective C++
+compiler (@option{-O2} on systems where the compiler does not accept
 @option{-g}), or @option{-g} for other compilers.
 @end defmac
 
@@ -7902,12 +7902,12 @@ example, if you didn't like the default order, then you could invoke
 AC_PROG_F77([fl32 f77 fort77 xlf g77 f90 xlf90])
 @end example
 
-If using @code{g77} (the GNU Fortran 77 compiler), then
+If using a compiler that supports GNU Fortran 77,
 set the shell variable @code{G77} to @samp{yes}.
 If the output variable @code{FFLAGS} was not already set in the
-environment, then set it to @option{-g -02} for @code{g77} (or @option{-O2}
-where @code{g77} does not accept @option{-g}).  Otherwise, set
-@code{FFLAGS} to @option{-g} for all other Fortran 77 compilers.
+environment, set it to @option{-g -02} for @code{g77} (or @option{-O2}
+where the GNU Fortran 77 compiler does not accept @option{-g}), or
+@option{-g} for other compilers.
 
 The result of the GNU test is cached in the
 @code{ac_cv_f77_compiler_gnu} variable, acceptance of @option{-g} in the
@@ -7942,12 +7942,12 @@ This macro may, alternatively, be invoked with an optional first argument
 which, if specified, must be a blank-separated list of Fortran
 compilers to search for, just as in @code{AC_PROG_F77}.
 
-If using @code{gfortran} or @code{g77} (the GNU Fortran compilers), then
+If using a compiler that supports GNU Fortran,
 set the shell variable @code{GFC} to @samp{yes}.
 If the output variable @code{FCFLAGS} was not already set in the
-environment, then set it to @option{-g -02} for GNU @code{g77} (or
-@option{-O2} where @code{g77} does not accept @option{-g}).  Otherwise,
-set @code{FCFLAGS} to @option{-g} for all other Fortran compilers.
+environment, then set it to @option{-g -02} for a GNU Fortran compiler (or
+@option{-O2} where the compiler does not accept @option{-g}), or
+@option{-g} for other compilers.
 
 The result of the GNU test is cached in the @code{ac_cv_fc_compiler_gnu}
 variable, acceptance of @option{-g} in the @code{ac_cv_prog_fc_g}
@@ -13462,6 +13462,18 @@ should be valid to name macros in comments (which doesn't make sense to
 the authors of this documentation: input, such as macros, should be
 documented by @samp{dnl} comments; reserving @samp{#}-comments to
 document the output).
+
+As an example of a common use of this macro, consider what happens in
+packages that want to use the @command{pkg-config} script via the
+third-party @code{PKG_CHECK_MODULES} macro.  By default, if a developer
+checks out the development tree but has not yet installed the pkg-config
+macros locally, they can manage to successfully run @command{autoconf}
+on the package, but the resulting @file{configure} file will likely
+result in a confusing shell message about a syntax error on the line
+mentioning the unexpanded PKG_CHECK_MODULES macro.  On the other hand,
+if @file{configure.ac} includes @code{m4_pattern_forbid([^PKG_])}, the
+missing pkg-config macros will be detected immediately without allowing
+@command{autoconf} to succeed.
 @end defmac
 
 Of course, you might encounter exceptions to these generic rules, for
@@ -13471,6 +13483,11 @@ instance you might have to refer to @samp{$m4_flags}.
 @msindex{pattern_allow}
 Any token matching @var{pattern} is allowed, including if it matches an
 @code{m4_pattern_forbid} pattern.
+
+For example, gnulib uses @code{m4_pattern_forbid([^gl_])} to reserve the
+@code{gl_} namespace for itself, but also uses
+@code{m4_pattern_allow([^gl_ES$])} to avoid a false negative on the
+valid locale name.
 @end defmac
 
 @node Debugging via autom4te
@@ -16443,12 +16460,12 @@ and it has most of the problems listed under @code{`@var{commands}`}.
 
 This construct can be
 nested while this is impossible to do portably with back quotes.
-Unfortunately it is not yet universally supported.  Most notably, even recent
-releases of Solaris don't support it:
+Although it is almost universally supported, unfortunately Solaris 10
+and earlier releases lack it:
 
 @example
 $ @kbd{showrev -c /bin/sh | grep version}
-Command version: SunOS 5.10 Generic 121005-03 Oct 2006
+Command version: SunOS 5.10 Generic 142251-02 Sep 2010
 $ @kbd{echo $(echo blah)}
 syntax error: `(' unexpected
 @end example
@@ -17731,6 +17748,29 @@ $ @kbd{/bin/sh -c 'export foo; foo=bar; echo $foo'}
 bar
 @end example
 
+Posix requires @command{export} to work with any arbitrary value for the
+contents of the variable being exported, as long as the total size of
+the environment combined with arguments doesn't exceed @code{ARG_MAX}
+when executing a child process.  However, some shells have extensions
+that involve interpreting some environment values specially, regardless
+of the variable name.  We currently know of one case: all versions of
+Bash released prior to 27 September 2014 intepret an environment
+variable with an initial content substring of @code{() @{} as an
+exported function definition (this is the ``Shellshock'' remote
+execution bug, CVE-2014-6271 and friends, where it was possible to
+eploit the function parser to cause remote code execution on child bash
+startup; newer versions of Bash use special environment variable
+@emph{names} instead of values to implement the same feature).
+
+There may be entries inherited into the environment that are not valid
+as shell variable names; Posix states that processes should be tolerant
+of these names.  Some shells such as @command{dash} do this by removing
+those names from the environment at startup, while others such as
+@command{bash} hide the entry from shell access but still pass it on to
+child processes.  While you can set such names using @command{env} for a
+direct child process, you cannot rely on them being preserved through an
+intermediate pass through the shell.
+
 @item @command{false}
 @c ------------------
 @prindex @command{false}
@@ -17773,6 +17813,42 @@ done
 But keep in mind that Zsh, even in Bourne shell emulation mode, performs
 word splitting on @samp{$@{1+"$@@"@}}; see @ref{Shell Substitutions},
 item @samp{$@@}, for more.
+
+Posix requires support for a @command{for} loop with no list after
+@code{in}.  However, Solaris @command{/bin/sh} treats that as a syntax
+error.  It is possible to work around this by providing any shell word
+that expands to nothing, or by ignoring an obvious sentinel.
+
+@example
+$ @kbd{/bin/sh -c 'for a in $empty; do echo hi; done'}
+$ @kbd{/bin/sh -c 'for a in ; do echo hi; done'}
+/bin/sh: syntax error at line 1: `;' unexpected
+@end example
+
+This syntax problem is most frequently encountered in code that goes
+through several layers of expansion, such as an m4 macro or makefile
+variable used as a list body, where the first layer of expansion (m4 or
+make) can end up expanding to nothing in the version handed to the
+shell.  In the makefile context, one common workaround is to use a shell
+variable rather than a make variable as the source of the list.
+
+@example
+$ @kbd{cat Makefile}
+list =
+bad:
+	@@for arg in $(list); do echo $$arg; done
+good:
+	@@list='$(list)'; for arg in $$list; do echo $$arg; done
+$ @kbd{make bad 2&>1 | head -n1}
+sh: syntax error at line 1: `;' unexpected
+$ @kbd{make bad list='a b'}
+a
+b
+$ @kbd{make good}
+$ @kbd{make good list='a b'}
+a
+b
+@end example
 
 In Solaris @command{/bin/sh}, when the list of arguments of a
 @command{for} loop starts with @emph{unquoted} tokens looking like
@@ -18723,9 +18799,7 @@ avoid this problem, omit the trailing slashes.  For example, use
 @samp{cp -R source /tmp/newdir} rather than @samp{cp -R source
 /tmp/newdir/} if @file{/tmp/newdir} does not exist.
 
-@c This is thanks to Ian.
-The ancient SunOS 4 @command{cp} does not support @option{-f}, although
-its @command{mv} does.
+The @option{-f} option is portable nowadays.
 
 @cindex timestamp resolution
 Traditionally, file timestamps had 1-second resolution, and @samp{cp
@@ -19127,9 +19201,11 @@ the workaround is to use @command{join -a1 file1 file2} instead.
 @item @command{ln}
 @c ---------------
 @prindex @command{ln}
+The @option{-f} option is portable nowadays.
+
 @cindex Symbolic links
-Don't rely on @command{ln} having a @option{-f} option.  Symbolic links
-are not available on old systems; use @samp{$(LN_S)} as a portable substitute.
+Symbolic links are not available on some systems; use @samp{$(LN_S)} as
+a portable substitute.
 
 For versions of the DJGPP before 2.04,
 @command{ln} emulates symbolic links
