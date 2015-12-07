@@ -13,7 +13,7 @@ Group: Development/Other
 Url: http://www.gnu.org/software/%realname/
 BuildArch: noarch
 
-%set_compress_method gzip
+%set_compress_method xz
 %define srcname %realname-%version-%release
 %define __spec_autodep_custom_pre export autom4te_perllibdir=%buildroot%_datadir/%realname%suff
 
@@ -98,7 +98,7 @@ mkdir -p %buildroot%_altdir
 cat >%buildroot%_altdir/%name <<EOF
 %_bindir/%realname-default	%_bindir/%realname%suff	40
 %_datadir/%realname	%_datadir/%realname%suff	%_bindir/%realname%suff
-%_infodir/%realname.info.gz	%_infodir/%realname%suff.info.gz	%_bindir/%realname%suff
+%_infodir/%realname.info.xz	%_infodir/%realname%suff.info.xz	%_bindir/%realname%suff
 EOF
 
 for i in autoheader autom4te autoreconf autoscan autoupdate ifnames; do
@@ -109,7 +109,7 @@ done
 
 for i in %realname autoheader autom4te autoreconf autoscan autoupdate config.guess config.sub ifnames; do
 cat >>%buildroot%_altdir/%name <<EOF
-%_man1dir/$i.1.gz	%_man1dir/$i%suff.1.gz	%_bindir/%realname%suff
+%_man1dir/$i.1.xz	%_man1dir/$i%suff.1.xz	%_bindir/%realname%suff
 EOF
 done
 
