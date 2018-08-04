@@ -4,7 +4,7 @@
 
 Name: %realname%dialect
 Version: 2.69
-Release: alt3
+Release: alt4
 Epoch: 2
 
 Summary: A GNU tool for automatically configuring source code
@@ -102,6 +102,9 @@ done
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Sat Aug 04 2018 Dmitry V. Levin <ldv@altlinux.org> 2:2.69-alt4
+- Dropped alternatives in favour of autoconf-defaults setup.
+
 * Mon Dec 07 2015 Dmitry V. Levin <ldv@altlinux.org> 2:2.69-alt3
 - Backported yet more upstream fixes.
 - Changed compress method from gzip to xz.
