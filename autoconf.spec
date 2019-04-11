@@ -4,7 +4,7 @@
 
 Name: %realname%dialect
 Version: 2.69
-Release: alt4
+Release: alt5
 Epoch: 2
 
 Summary: A GNU tool for automatically configuring source code
@@ -102,6 +102,9 @@ done
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Thu Apr 11 2019 Dmitry V. Levin <ldv@altlinux.org> 2:2.69-alt5
+- %%check: fixed build with libtool 2.4.6.
+
 * Sat Aug 04 2018 Dmitry V. Levin <ldv@altlinux.org> 2:2.69-alt4
 - Dropped alternatives in favour of autoconf-defaults setup.
 
