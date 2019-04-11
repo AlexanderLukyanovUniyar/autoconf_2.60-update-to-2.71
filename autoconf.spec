@@ -91,7 +91,7 @@ done
 %define _perl_lib_path %perl_vendor_privlib:%_datadir/%realname%suff
 
 %check
-%make_build -k check
+%make_build -k check VERBOSE=1
 
 %files
 %config %_sysconfdir/buildreqs/packages/substitute.d/%name
