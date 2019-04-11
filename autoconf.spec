@@ -20,7 +20,7 @@ BuildArch: noarch
 # git://git.altlinux.org/gears/a/autoconf_2.60.git
 Source: %srcname.tar
 
-PreReq: autoconf-common
+Requires: autoconf-common
 # GNU m4 version 1.4.6 or later is required; 1.4.14 or later is recommended.
 Requires: m4 >= 1.4.14
 # portable mktemp, later obsoleted by coreutils.
