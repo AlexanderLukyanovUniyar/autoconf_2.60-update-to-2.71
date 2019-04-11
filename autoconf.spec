@@ -10,7 +10,7 @@ Epoch: 2
 Summary: A GNU tool for automatically configuring source code
 License: GPLv2+
 Group: Development/Other
-Url: http://www.gnu.org/software/%realname/
+Url: https://www.gnu.org/software/%realname/
 BuildArch: noarch
 
 %set_compress_method xz
