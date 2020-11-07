@@ -89,6 +89,8 @@ for f in %buildroot%_bindir/*%suff; do
 done
 
 %define _perl_lib_path %perl_vendor_privlib:%_datadir/%realname%suff
+%{?filter_from_requires:%filter_from_requires /^perl(Autom4te/d}
+%{?filter_from_provides:%filter_from_provides /^perl(/d}
 
 %check
 %make_build -k check VERBOSE=1
