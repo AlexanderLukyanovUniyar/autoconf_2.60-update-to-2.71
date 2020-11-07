@@ -4,7 +4,7 @@
 
 Name: %realname%dialect
 Version: 2.69
-Release: alt6
+Release: alt7
 Epoch: 2
 
 Summary: A GNU tool for automatically configuring source code
@@ -104,6 +104,9 @@ done
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Sat Nov 07 2020 Dmitry V. Levin <ldv@altlinux.org> 2:2.69-alt7
+- Filtered out perl(Autom4te/*) provides.
+
 * Wed Oct 02 2019 Dmitry V. Levin <ldv@altlinux.org> 2:2.69-alt6
 - Backported two more upstream fixes.
 - AC_PATH_XTRA: removed RPATH injection code.
