@@ -4,7 +4,7 @@
 
 Name: %realname%dialect
 Version: 2.69
-Release: alt7
+Release: alt8
 Epoch: 2
 
 Summary: A GNU tool for automatically configuring source code
@@ -106,6 +106,9 @@ done
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Sun Dec 20 2020 Dmitry V. Levin <ldv@altlinux.org> 2:2.69-alt8
+- Moved config.* man pages to gnu-config.
+
 * Sat Nov 07 2020 Dmitry V. Levin <ldv@altlinux.org> 2:2.69-alt7
 - Filtered out perl(Autom4te/*) provides.
 
