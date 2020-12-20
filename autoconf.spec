@@ -25,6 +25,8 @@ Requires: autoconf-common
 Requires: m4 >= 1.4.14
 # portable mktemp, later obsoleted by coreutils.
 Requires: mktemp >= 1:1.3.1
+# due to config.guess.1 and config.sub.1
+Requires: gnu-config >= 1.0.971.ff53
 
 BuildRequires: help2man, makeinfo
 %{!?__buildreqs:%{!?_without_check:%{!?_disable_check:BuildRequires: gcc-c++ gcc-g77 libgomp-devel}}}
