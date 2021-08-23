@@ -195,7 +195,7 @@ m4_define([AC_LANG_FUNC_LINK_TRY_GCC_BUILTIN(C)],
 /* Declare this function with the same prototype as __builtin_$1.
   This removes a warning about conflicting types for built-in function $1 */
 __typeof__(__builtin_$1) $1;
-__typeof__(__builtin_$1) *f = $1;
+__typeof__(__builtin_$1) *volatile f = $1;
 ], [return f != $1;])])
 
 # AC_LANG_BOOL_COMPILE_TRY(C)(PROLOGUE, EXPRESSION)
