@@ -1,7 +1,8 @@
 #                                                       -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-# Copyright (C) 1992-1995, 1999-2012 Free Software Foundation, Inc.
+# Copyright (C) 1992-1995, 1999-2017, 2020-2021 Free Software
+# Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,10 +15,9 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# We need AC_CONFIG_TESTDIR, AC_PROG_SED, AC_PROG_GREP.
-AC_PREREQ([2.60])
+AC_PREREQ([2.62])
 
 AC_INIT([GNU Autoconf],
 	m4_esyscmd([build-aux/git-version-gen .tarball-version]),
@@ -28,11 +28,16 @@ AC_CONFIG_AUX_DIR([build-aux])
 
 AM_INIT_AUTOMAKE([1.11 dist-xz readme-alpha no-texinfo.tex std-options])
 
+# Keep this on a line of its own, since it must be found and processed
+# by the 'update-release-year' rule in our Makefile.
+RELEASE_YEAR=2021
+AC_SUBST([RELEASE_YEAR])
+
 AB_INIT
 
-# We use `/bin/sh -n script' to check that there are no syntax errors
-# in the scripts.  Although incredible, there are /bin/sh that go into
-# endless loops with `-n', e.g., SunOS's:
+# We use 'sh -n script' to check that there are no syntax errors
+# in the scripts.  Although incredible, there are sh implementations
+# that go into endless loops with '-n', e.g., SunOS's:
 #
 #   $ uname -a
 #   SunOS ondine 4.1.3 2 sun4m unknown
@@ -47,27 +52,39 @@ AB_INIT
 #   $ time sh -nx endless.sh
 #   ^Csh -nx endless.sh  3,67s user 0,03s system 63% cpu 5,868 total
 #
-# Also, some implementations of /bin/sh (e.g., Solaris 8) are soooo slow
+# Also, some implementations (e.g., Solaris 8) are soooo slow
 # that they are unusable on large scripts like our testsuite.
+#
+# So we must identify a shell whose -n can safely be used.
 
-# So before using `/bin/sh -n' to check our scripts, we first check
-# that `/bin/sh -n' is known to not have these problems.
-
-AC_CACHE_CHECK([whether /bin/sh -n is known to work], [ac_cv_sh_n_works],
-[if (
+AC_CACHE_CHECK([for a shell whose -n mode is known to work],
+               [ac_cv_sh_working_n],
+[ac_cv_sh_working_n=none
+# Start by trying the shell that autoconf decided to use for this script,
+# follow with a hardwired list of shells that are known to work and can
+# be identified as such, starting with the ones with the fewest
+# syntactic extensions.  Unfortunately, several shells that are also
+# known to work can't be easily identified (e.g. some BSD shells and dash).
+# Try ksh93, which is often buggy, and plain ksh and sh last.
+for cand_sh in "$SHELL" pdksh bash zsh ksh93 ksh sh
+do
+  if (
     unset BASH_VERSION ZSH_VERSION
-    /bin/sh -c '
-      test -n "${BASH_VERSION+set}" || # Bash
-      test -n "${KSH_VERSION+set}" || # pdksh
-      test -n "${ZSH_VERSION+set}" || # zsh
+    "$cand_sh" -c '
+      test ${BASH_VERSION+y} || # Bash
+      test ${KSH_VERSION+y}  || # pdksh
+      test ${ZSH_VERSION+y}  || # zsh
+      test ${NETBSD_SHELL+y} || # NetBSD sh
       test -n "${.sh.version}" # ksh93; put this last since its syntax is dodgy
     '
   ) 2>/dev/null
-then ac_cv_sh_n_works=yes
-else ac_cv_sh_n_works=no
-fi
+  then
+    ac_cv_sh_working_n="$cand_sh"
+    break
+  fi
+done
 ])
-AC_SUBST([ac_cv_sh_n_works])
+AC_SUBST([SHELL_N], [$ac_cv_sh_working_n])
 
 AC_MSG_CHECKING([for characters that cannot appear in file names])
 AC_CACHE_VAL([ac_cv_unsupported_fs_chars],
@@ -102,7 +119,7 @@ AC_SUBST([ac_cv_dir_trailing_space])
 
 # Initialize the test suite.
 AC_CONFIG_TESTDIR([tests])
-AC_CONFIG_FILES([tests/Makefile tests/atlocal])
+AC_CONFIG_FILES([tests/atlocal])
 AC_PATH_PROG([EXPR], [expr])
 
 
@@ -120,7 +137,6 @@ AC_PROG_GNU_M4
 ## Man pages.  ##
 ## ----------- ##
 
-AC_CONFIG_FILES([man/Makefile])
 AM_MISSING_PROG([HELP2MAN], [help2man])
 
 
@@ -159,7 +175,6 @@ AC_SUBST([PERL_FLOCK], [$ac_cv_perl_flock_implemented])
 ## Emacs.  ##
 ## ------- ##
 
-AC_CONFIG_FILES([lib/emacs/Makefile])
 TEST_EMACS=$EMACS
 test x"$TEST_EMACS" = xt && TEST_EMACS=
 AC_CHECK_PROGS([TEST_EMACS], [emacs xemacs], [no])
@@ -187,12 +202,15 @@ AC_SUBST([EMACS], [$TEST_EMACS])
 AM_PATH_LISPDIR
 
 
-## ------------ ##
-## Grep & sed.  ##
-## ------------ ##
+## ---------------- ##
+## Grep, sed, awk.  ##
+## ---------------- ##
 AC_PROG_GREP
 AC_PROG_EGREP
 AC_PROG_SED
+# AC_PROG_AWK should have already been performed by AM_INIT_AUTOMAKE.
+# AC_REQUIRE([AC_PROG_AWK]) doesn't work outside of an AC_DEFUN.
+m4_provide_if([AC_PROG_AWK], [], [AC_PROG_AWK])
 
 
 ## ----- ##
@@ -205,25 +223,10 @@ AC_PROG_MAKE_CASE_SENSITIVE
 ## Conclusion.  ##
 ## ------------ ##
 
-dnl Allow maintainer rules under GNU make even in VPATH builds.  This does
-dnl not work in autoconf 2.61 or earlier, but we don't want to require
-dnl unreleased autoconf during bootstrap, hence the version test.
-dnl TODO remove the version check once we depend on autoconf 2.62.
-dnl Meanwhile, we must use a shell variable so that we bypass automake's
-dnl attempts to remove the sole copy of GNUmakefile in a non-VPATH build
-dnl during 'make distclean'.
-dnl TODO avoid the shell variable once automake is fixed.
-GNUmakefile=GNUmakefile
-m4_if(m4_version_compare([2.61a.100],
-	m4_defn([m4_PACKAGE_VERSION])), [1], [],
-      [AC_CONFIG_LINKS([$GNUmakefile:$GNUmakefile], [],
-	[GNUmakefile=$GNUmakefile])])
+dnl Allow maintainer rules under GNU make even in VPATH builds.
+AC_CONFIG_LINKS([GNUmakefile:GNUmakefile])
 
-AC_CONFIG_FILES([Makefile doc/Makefile
-		 lib/Makefile lib/Autom4te/Makefile lib/autoscan/Makefile
-		 lib/m4sugar/Makefile
-		 lib/autoconf/Makefile lib/autotest/Makefile
-		 bin/Makefile])
+AC_CONFIG_FILES([Makefile])
 
 AC_OUTPUT
 # Report the state of this version of Autoconf if this is a beta.

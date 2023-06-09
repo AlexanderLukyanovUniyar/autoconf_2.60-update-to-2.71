@@ -2,7 +2,7 @@
 
 AT_BANNER([Autotest.])
 
-# Copyright (C) 2004-2012 Free Software Foundation, Inc.
+# Copyright (C) 2004-2017, 2020-2021 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@ AT_BANNER([Autotest.])
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 # AT_DATA_AUTOTEST(FILE-NAME, CONTENTS)
@@ -178,6 +178,65 @@ AT_CHECK([cmp file2 file3])
 
 
 ## ------------------ ##
+## AT_DATA_UNQUOTED.  ##
+## ------------------ ##
+
+AT_CHECK_AT_TEST([AT@&t@_DATA_UNQUOTED], [
+AT_CHECK([test -f file1], [1])
+AT_DATA([file1])
+AT_CHECK([test -f file1 && test ! -s file1])
+AT_CHECK([echo hi > file1])
+AT_DATA([file1], [[]])
+AT_CHECK([test -f file1 && test ! -s file1])
+file=file2
+AT_DATA_UNQUOTED([$file], [[$file
+]])
+AT_CHECK([echo file2 > file3])
+AT_CHECK([cmp file2 file3])
+])
+
+## ----------------------------------------------------------- ##
+## AT_PREPARE_TESTS, AT_PREPARE_EACH_TEST, AT_TEST_HELPER_FN.  ##
+## ----------------------------------------------------------- ##
+
+AT_CHECK_AT([AT@&t@_PREPARE_TESTS],
+[[
+AT_INIT([artificial test suite])
+AT_PREPARE_TESTS([FOO=foo; export FOO])
+AT_SETUP([my only test])
+AT_CHECK([test x"$FOO" = xfoo])
+AT_CLEANUP
+]])
+
+AT_CHECK_AT([AT@&t@_PREPARE_EACH_TEST],
+[[
+AT_INIT([artificial test suite])
+AT_PREPARE_EACH_TEST([
+if test -z "$at_test_counter"
+then at_test_counter=1
+else at_test_counter=`expr $at_test_counter + 1`
+fi
+])
+AT_SETUP([test one])
+AT_CHECK([test "$at_test_counter" -eq 1])
+AT_CLEANUP
+AT_SETUP([test two])
+AT_CHECK([test "$at_test_counter" -eq 2])
+AT_CLEANUP
+]])
+
+AT_CHECK_AT([AT@&t@_TEST_HELPER_FN],
+[[
+AT_INIT([artificial test suite])
+AT_TEST_HELPER_FN([helper], [], [], [test x"$][1" = x"$][2"])
+AT_SETUP([my only test])
+AT_CHECK([ath_fn_helper same same])
+AT_CHECK([ath_fn_helper same other], [1])
+AT_CLEANUP
+]])
+
+
+## ------------------ ##
 ## Empty test suite.  ##
 ## ------------------ ##
 
@@ -276,6 +335,32 @@ AT_CHECK_AT_SYNTAX([Multiple AT@&t@_INIT],
 [[AT_INIT([[suite, take one]])
 AT_INIT([repeat])
 ]], [AT@&t@_INIT: invoked multiple times])
+
+AT_CHECK_AT_SYNTAX([Invalid AT@&t@_TEST_HELPER_FN (spaces)],
+[[AT_INIT([buggy test suite])
+AT_TEST_HELPER_FN([bad name], [], [], [:])
+AT_SETUP([only test])
+AT_CHECK([:])
+AT_CLEANUP
+]], [invalid shell function name "bad name"])
+
+AT_CHECK_AT_SYNTAX([Invalid AT@&t@_TEST_HELPER_FN (substitutions)],
+[[AT_INIT([buggy test suite])
+AT_TEST_HELPER_FN([variable_${name}], [], [], [:])
+AT_SETUP([only test])
+AT_CHECK([:])
+AT_CLEANUP
+]], [invalid shell function name "variable_${name}"])
+
+AT_CHECK_AT_SYNTAX([Multiple AT@&t@_TEST_HELPER_FN],
+[[AT_INIT([buggy test suite])
+AT_TEST_HELPER_FN([repeated], [], [], [AS_ECHO([repeated 1])])
+# The duplicate check only cares about the name.
+AT_TEST_HELPER_FN([repeated], [args], [desc], [AS_ECHO([repeated 2])])
+AT_SETUP([only test])
+AT_CHECK([:])
+AT_CLEANUP
+]], [helper function "repeated" defined twice])
 
 # Check for tested programs.  autoconf should only appear once.
 AT_CHECK_AT([Tested programs],
@@ -378,7 +463,7 @@ AT_CHECK_AT_TEST([Syntax error],
    AT_CHECK([${CONFIG_SHELL-$SHELL} -c 'case `. ./syntax; echo $?` in
 		  0|"") exit 77;;
 		esac'], [0], [ignore], [ignore])
-   AT_CHECK([$CONFIG_SHELL ./micro-suite], [1], [ignore], [stderr])
+   AT_CHECK([${CONFIG_SHELL-$SHELL} ./micro-suite], [1], [ignore], [stderr])
    AT_CHECK([grep "unable to parse test group: 2" stderr], [0], [ignore])],
   [1 3])
 
@@ -1428,16 +1513,23 @@ AT_CHECK([grep 'non-numeric argument' stderr], [], [ignore])
 
 AT_SKIP_PARALLEL_TESTS
 
+# The parallel test driver makes some shells generate internal
+# debugging messages on stderr (notably bash 5.x in compile-time
+# development mode, see
+# https://lists.gnu.org/archive/html/bug-autoconf/2020-10/msg00047.html)
+# so ignore stderr in all invocations below.
+
 # Ensure that all tests run, and lines are not split.
-AT_CHECK([$CONFIG_SHELL ./micro-suite -j[]AT_PARALLEL_NJOBS], [], [stdout])
+AT_CHECK([$CONFIG_SHELL ./micro-suite -j[]AT_PARALLEL_NJOBS],
+         [], [stdout], [ignore])
 AT_CHECK([grep -c '^.\{53\}ok' stdout], [], [AT_PARALLEL_NTESTS
 ])
 # Running one test with -j should produce correctly formatted output:
-AT_CHECK([$CONFIG_SHELL ./micro-suite -j 3], [], [stdout])
+AT_CHECK([$CONFIG_SHELL ./micro-suite -j 3], [], [stdout], [ignore])
 AT_CHECK([grep -c '^.\{53\}ok' stdout], [], [1
 ])
 # Specifying more jobs than tests should not hang:
-AT_CHECK([$CONFIG_SHELL ./micro-suite -j3 3], [], [stdout])
+AT_CHECK([$CONFIG_SHELL ./micro-suite -j3 3], [], [stdout], [ignore])
 AT_CHECK([grep -c '^.\{53\}ok' stdout], [], [1
 ])
 # Not even with zero tests:
@@ -1458,9 +1550,13 @@ AT_CHECK([grep 'AT_PARALLEL_NTESTS tests' stdout], [], [ignore])
 
 AT_CLEANUP
 
+# stderr is ignored in the next several tests because the parallel
+# driver makes some shells emit internal debugging messages, see
+# https://lists.gnu.org/archive/html/bug-autoconf/2020-10/msg00047.html
+
 AT_CHECK_AT_TEST([parallel truth],
   [AT_CHECK([:], 0, [], [])],
-  [], [], [], [], [AT_SKIP_PARALLEL_TESTS],
+  [], [], [], [ignore], [AT_SKIP_PARALLEL_TESTS],
   [], [-j])
 
 AT_CHECK_AT_TEST([parallel fallacy],
@@ -1470,7 +1566,7 @@ AT_CHECK_AT_TEST([parallel fallacy],
 
 AT_CHECK_AT_TEST([parallel skip],
   [AT_CHECK([echo output; echo irrelevant >&2; exit 77], 0, [mismatch], [])],
-  [], [], [], [], [AT_SKIP_PARALLEL_TESTS],
+  [], [], [], [ignore], [AT_SKIP_PARALLEL_TESTS],
   [AT_CHECK([grep skipped micro-suite.log], [], [ignore])], [-j])
 
 AT_CHECK_AT_TEST([parallel syntax error],
@@ -1481,14 +1577,14 @@ AT_CHECK_AT_TEST([parallel syntax error],
    AT_CLEANUP
    AT_SETUP([another test])
    AT_CHECK([:])],
-  [], [0], [], [], [AT_SKIP_PARALLEL_TESTS],
+  [], [0], [], [ignore], [AT_SKIP_PARALLEL_TESTS],
   [dnl Until we can find a way to avoid catastrophic failure (ash) or
    dnl lack of failure (zsh), skip the rest of this test on such shells.
    echo 'if' > syntax
    AT_CHECK([${CONFIG_SHELL-$SHELL} -c 'case `. ./syntax; echo $?` in
 		  0|"") exit 77;;
 		esac'], [0], [ignore], [ignore])
-   AT_CHECK([$CONFIG_SHELL ./micro-suite -j], [1], [ignore], [stderr])
+   AT_CHECK([${CONFIG_SHELL-$SHELL} ./micro-suite -j], [1], [ignore], [stderr])
    AT_CHECK([grep "unable to parse test group: 2" stderr], [0], [ignore])],
   [-j2 1 3])
 
@@ -1580,20 +1676,13 @@ for signal in 2 15; do
   # AT_CHECK([[grep '[iI]nterrupt[	 ]' stderr]], [1])
 
   # Ditto with `make' in the loop.
-  : "${MAKE=make}"
-  unset MAKEFLAGS
-  # Need to eliminate outer TESTSUITEFLAGS here.
-  # Need to normalize exit status here: some make implementations
-  # exit 1 (BSD make), some exit 2 (GNU make).
-  AT_CHECK([$MAKE check TESTSUITEFLAGS=; ]dnl
-	   [case $? in 1|2) exit 1;; *) exit $?;; esac],
-	   [1], [ignore], [stderr])
+  # Explicitly setting TESTSUITEFLAGS to empty...
+  AT_CHECK_MAKE([TESTSUITEFLAGS=], [], [1], [ignore], [stderr])
   AT_CHECK([grep 'bailing out' stderr], [], [ignore])
   AT_CHECK([grep 'bailing out' micro-suite.log], [], [ignore])
-  # Ditto, parallel case.
-  AT_CHECK([$MAKE check TESTSUITEFLAGS=--jobs=3; ]dnl
-	   [case $? in 1|2) exit 1;; *) exit $?;; esac],
-	   [1], [ignore], [stderr])
+
+  # ... and explicitly requesting 3-fold parallelism.
+  AT_CHECK_MAKE([TESTSUITEFLAGS=--jobs=3], [], [1], [ignore], [stderr])
   AT_CHECK([grep 'bailing out' stderr], [], [ignore])
   AT_CHECK([grep 'bailing out' micro-suite.log], [], [ignore])
 done
@@ -1739,6 +1828,7 @@ printf %s\\n "$std"
 ## ------------------- ##
 
 AT_SETUP([srcdir propagation])
+AT_KEYWORDS([AC_@&t@CONFIG_TESTDIR])
 
 mkdir pkg vpath-outside vpath-abs
 mkdir pkg/t pkg/vpath-inside
@@ -1866,12 +1956,111 @@ AT_CHECK([grep 'two spaces' suite.log], [1])
 AT_CLEANUP
 
 
+## --------------- ##
+## C executables.  ##
+## --------------- ##
+
+AT_SETUP([C unit tests])
+AT_KEYWORDS([AC_@&t@CONFIG_TESTDIR])
+AT_KEYWORDS([AT_@&t@TESTED])
+
+mkdir t
+AT_DATA([configure.ac], [[AC_INIT
+AC_PROG_CC
+AC_CONFIG_TESTDIR([t], [.])
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT
+]])
+
+# Test file
+AT_DATA([testprog.c],
+[[int main (int argc, char **argv) { return argc == 2 ? 0 : 1; }
+]])
+
+# Testsuite
+AT_DATA([Makefile.in],
+[[testprog@EXEEXT@: testprog.c
+	@CC@ @CPPFLAGS@ @CFLAGS@ @LDFLAGS@ -o testprog@EXEEXT@ testprog.c
+]])
+
+AT_CHECK_AT_PREP([suite],
+[[AT_INIT([suite to check C programs])
+AT_TESTED([testprog$EXEEXT])
+AT_SETUP([my only test])
+AT_CHECK([testprog$EXEEXT foo], [0])
+AT_CHECK([testprog$EXEEXT], [1])
+AT_CLEANUP
+]], [], [], [], [t])
+
+rm t/atconfig
+AT_CHECK_AUTOCONF
+AT_CHECK_CONFIGURE
+AT_CHECK([grep '^EXEEXT='\''.*'\' t/atconfig], [], [ignore])
+AT_CHECK_MAKE
+AT_CHECK([cd t && $CONFIG_SHELL ./suite], [], [ignore])
+AT_CHECK([grep 1.*successful t/suite.log], [], [ignore])
+AT_CLEANUP
+
+
+## -------------------------------------- ##
+## C executables (force .exe extension).  ##
+## -------------------------------------- ##
+
+AT_SETUP([C unit tests (EXEEXT)])
+AT_KEYWORDS([AC_@&t@CONFIG_TESTDIR])
+AT_KEYWORDS([AT_@&t@TESTED])
+
+mkdir t
+AT_DATA([configure.ac], [[AC_INIT
+AC_PROG_CC
+case $ac_cv_exeext in
+  '' | .exe) ;;
+  *) exit 77 ;;
+esac
+ac_cv_exeext=.exe
+AC_SUBST([EXEEXT], [$ac_cv_exeext])
+AC_CONFIG_TESTDIR([t], [.])
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT
+]])
+
+# Test file
+AT_DATA([testprog.c],
+[[int main (int argc, char **argv) { return argc == 2 ? 0 : 1; }
+]])
+
+# Testsuite
+AT_DATA([Makefile.in],
+[[testprog@EXEEXT@: testprog.c
+	@CC@ @CPPFLAGS@ @CFLAGS@ @LDFLAGS@ -o testprog@EXEEXT@ testprog.c
+]])
+
+AT_CHECK_AT_PREP([suite],
+[[AT_INIT([suite to check C programs])
+AT_TESTED([testprog$EXEEXT])
+AT_SETUP([my only test])
+AT_CHECK([testprog$EXEEXT foo], [0])
+AT_CHECK([testprog$EXEEXT], [1])
+AT_CLEANUP
+]], [], [], [], [t])
+
+rm t/atconfig
+AT_CHECK_AUTOCONF
+AT_CHECK_CONFIGURE
+AT_CHECK([grep '^EXEEXT='\''.*'\' t/atconfig], [], [ignore])
+AT_CHECK_MAKE
+AT_CHECK([cd t && $CONFIG_SHELL ./suite], [], [ignore])
+AT_CHECK([grep 1.*successful t/suite.log], [], [ignore])
+AT_CLEANUP
+
+
 ## ------------------------- ##
 ## Erlang EUnit unit tests.  ##
 ## ------------------------- ##
 
 AT_SETUP([Erlang Eunit unit tests])
 AT_KEYWORDS([Erlang])
+AT_KEYWORDS([AC_@&t@CONFIG_TESTDIR])
 
 mkdir s t
 AT_DATA([configure.ac], [[AC_INIT

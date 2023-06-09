@@ -11,7 +11,7 @@ Aaron Crane                 aaronc@pobox.com
 Aaron M. Ucko               amu@alum.mit.edu
 Aaron W. LaFramboise        aaronenvelope277@aaronwl.com
 Adam J. Richter             adam@yggdrasil.com
-Adrian Bunk                 bunk-gnu@fs.tum.de
+Adrian Bunk                 bunk@stusta.de
 Aharon Robbins              arnold@gnu.org
 Akim Demaille               akim@freefriends.org
 Akinori Musha               knu@iDaemons.org
@@ -29,6 +29,7 @@ Alfred G. de Wijn           dwijn@iluvatar.eu.org
 Alfred M. Szmidt            ams@gnu.org
 Allan Caffee                allan.caffee@gmail.com
 Allan Clark                 allanc@chickenandporn.com
+Anaïs Bouque                anais.bouque@fr.thalesgroup.com
 Anders Kaseorg              andersk@MIT.EDU
 Andreas Buening             andreas.buening@nexgo.de
 Andreas Jaeger              aj@suse.de
@@ -104,6 +105,7 @@ David Byron                 dbyron@hheld.com
 David Carter                david@carter.net
 David Cournapeau            david@ar.media.kyoto-u.ac.jp
 David Fang                  fang@csl.cornell.edu
+David Hill                  dhill@mindcry.org
 David J. MacKenzie          djm@uunet.uu.net
 David M. Lloyd              dmlloyd@tds.net
 David Morgan                dmorgan@symark.com
@@ -308,6 +310,7 @@ Nishio Futoshi              fut_nis@d3.dion.ne.jp
 Noah Elliott                elliott@hera.llnl.gov
 Noah Friedman               friedman@gnu.ai.mit.edu
 Noah Misch                  noah@cs.caltech.edu
+Noel Grandin                noel@peralex.com
 Norman Gray                 ?
 Olaf Lenz                   olenz@fias.uni-frankfurt.de
 Ole Holm Nielsen            Ole.H.Nielsen@fysik.dtu.dk
@@ -450,7 +453,7 @@ mode: text
 coding: utf-8
 End:
 
-Copyright (C) 1999-2012 Free Software Foundation, Inc.
+Copyright (C) 1999-2017, 2020-2021 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -463,4 +466,4 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+along with this program.  If not, see <https://www.gnu.org/licenses/>.

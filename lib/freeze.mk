@@ -1,6 +1,7 @@
 # Freeze M4 files.
 
-# Copyright (C) 2002, 2004, 2006-2012 Free Software Foundation, Inc.
+# Copyright (C) 2002, 2004, 2006-2017, 2020-2021 Free Software
+# Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,18 +14,16 @@
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 ## ----------------- ##
 ## Freeze M4 files.  ##
 ## ----------------- ##
 
-SUFFIXES = .m4 .m4f
+SUFFIXES += .m4 .m4f
 
-AUTOM4TE_CFG = $(top_builddir)/lib/autom4te.cfg
-$(AUTOM4TE_CFG): $(top_srcdir)/lib/autom4te.in
-	cd $(top_builddir)/lib && $(MAKE) $(AM_MAKEFLAGS) autom4te.cfg
+AUTOM4TE_CFG = lib/autom4te.cfg
 
 # Do not use AUTOM4TE here, since maint.mk (my-distcheck)
 # checks if we are independent of Autoconf by defining AUTOM4TE (and
@@ -32,8 +31,8 @@ $(AUTOM4TE_CFG): $(top_srcdir)/lib/autom4te.in
 # apply to us.
 MY_AUTOM4TE =									\
 	autom4te_perllibdir='$(top_srcdir)'/lib					\
-	AUTOM4TE_CFG='$(AUTOM4TE_CFG)'         $(top_builddir)/bin/autom4te	\
-		-B '$(top_builddir)'/lib -B '$(top_srcdir)'/lib        # keep ` '
+	AUTOM4TE_CFG='$(AUTOM4TE_CFG)'         $(top_build_prefix)bin/autom4te	\
+		-B '$(top_build_prefix)'lib -B '$(top_srcdir)'/lib        # keep ` '
 
 # When processing the file with diversion disabled, there must be no
 # output but comments and empty lines.
@@ -42,22 +41,23 @@ MY_AUTOM4TE =									\
 # It may happen that the output does not end with an end of line, hence
 # force an end of line when reporting errors.
 .m4.m4f:
-	$(MY_AUTOM4TE)				\
-		--language=$*			\
-		--freeze			\
+	$(MKDIR_P) $(@D)
+	lang=`echo '$*' | sed 's,.*/,,'` \
+	  && if test $$lang = autoconf; then \
+	       lang=autoconf-without-aclocal-m4; \
+	     else :; fi \
+	  && $(MY_AUTOM4TE) \
+		--language=$$lang \
+		--freeze \
 		--output=$@
 
 # Factor the dependencies between all the frozen files.
 # Some day we should explain to Automake how to use autom4te to compute
 # the dependencies...
 src_libdir   = $(top_srcdir)/lib
-build_libdir = $(top_builddir)/lib
+build_libdir = $(top_build_prefix)lib
 
-m4f_dependencies = $(top_builddir)/bin/autom4te $(AUTOM4TE_CFG)
-
-# For parallel builds.
-$(build_libdir)/m4sugar/version.m4:
-	cd $(build_libdir)/m4sugar && $(MAKE) $(AM_MAKEFLAGS) version.m4
+m4f_dependencies = $(top_build_prefix)bin/autom4te $(AUTOM4TE_CFG)
 
 m4sugar_m4f_dependencies =			\
 	$(m4f_dependencies)			\

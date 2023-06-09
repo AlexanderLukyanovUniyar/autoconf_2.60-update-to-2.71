@@ -2,7 +2,8 @@
 
 AT_BANNER([M4sugar.])
 
-# Copyright (C) 2000-2002, 2005-2012 Free Software Foundation, Inc.
+# Copyright (C) 2000-2002, 2005-2017, 2020-2021 Free Software
+# Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,7 +16,7 @@ AT_BANNER([M4sugar.])
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 # AT_CHECK_M4SUGAR_TEXT(CODE, STDOUT, STDERR)
@@ -258,6 +259,7 @@ m4_warn([syntax], [syntax])dnl
 
 AT_CHECK_M4SUGAR([-o-], 0, [],
 [script.4s:4: warning: prefer named diversions
+script.4s:5: warning: obsolete
 script.4s:7: warning: syntax
 script.4s:9: warning: syntax
 ])
@@ -353,7 +355,7 @@ AT_DATA_M4SUGAR([script.4s],
 AT_CHECK_M4SUGAR([-o-], [1], [],
 [[script.4s:1: error: too many m4@&t@_divert_pop
 script.4s:1: the top level
-autom4te: m4 failed with exit status: 1
+autom4te: error: m4 failed with exit status: 1
 ]])
 
 AT_DATA_M4SUGAR([script.4s],
@@ -366,7 +368,7 @@ AT_CHECK_M4SUGAR([-o-], [1], [],
 script.4s:2: m4@&t@_divert_push: 1
 script.4s:1: m4@&t@_divert: KILL
 script.4s:3: the top level
-autom4te: m4 failed with exit status: 1
+autom4te: error: m4 failed with exit status: 1
 ]])
 
 AT_DATA_M4SUGAR([script.4s],
@@ -379,7 +381,7 @@ AT_CHECK_M4SUGAR([-o-], [1], [],
 script.4s:3: m4@&t@_divert_push: 2
 script.4s:2: m4@&t@_divert: KILL
 script.4s:2: the top level
-autom4te: m4 failed with exit status: 1
+autom4te: error: m4 failed with exit status: 1
 ]])
 
 AT_CLEANUP
@@ -424,8 +426,59 @@ m4_require([foo])
 AT_CHECK_M4SUGAR([], 1, [],
 [[script.4s:2: error: m4@&t@_require(foo): cannot be used outside of an m4_defun'd macro
 script.4s:2: the top level
-autom4te: m4 failed with exit status: 1
+autom4te: error: m4 failed with exit status: 1
 ]])
+AT_CLEANUP
+
+
+## ----------------------------- ##
+## m4_require: warning message.  ##
+## ----------------------------- ##
+
+AT_SETUP([m4@&t@_require: warning message])
+AT_KEYWORDS([m4@&t@_require m4@&t@_require_silent_probe])
+
+# Mirror the job of aclocal on a typical scenario: the user invokes a
+# single macro that comes from one included file, which in turn requires
+# another macro from a second file.  When using the incomplete set of
+# files, we want a warning, unless we are merely learning which additional
+# macros are needed in order to regenerate the list of files to include.
+AT_DATA_M4SUGAR([script.4s],
+[[m4_init
+m4_include([script1.4s])
+foo
+]])
+
+AT_DATA_M4SUGAR([script1.4s],
+[[m4_defun([foo], [m4_require([bar])])
+]])
+
+AT_DATA_M4SUGAR([script2.4s],
+[[m4_defun([bar], [BAR])
+]])
+
+AT_CHECK_M4SUGAR([], [0], [],
+[[script.4s:3: warning: bar is m4@&t@_require'd but not m4@&t@_defun'd
+script1.4s:1: foo is expanded from...
+script.4s:3: the top level
+]])
+
+# Inline expansion of AT_CHECK_M4SUGAR, mirroring how aclocal will
+# inject a definition of our witness macro for a silent run.
+echo 'm4@&t@_define([m4@&t@_require_silent_probe])' |
+  AT_CHECK_AUTOM4TE([--language=m4sugar - script.4s -o script],
+[0], [], [])
+
+# Now that we have recomputed the set of include files, things should work.
+AT_DATA_M4SUGAR([script.4s],
+[[m4_init
+m4_include([script1.4s])
+m4_include([script2.4s])
+foo
+]])
+
+AT_CHECK_M4SUGAR([], [0], [], [])
+
 AT_CLEANUP
 
 
@@ -454,7 +507,7 @@ script.4s:3: bar is expanded from...
 script.4s:1: foo is expanded from...
 script.4s:5: baz is expanded from...
 script.4s:9: the top level
-autom4te: m4 failed with exit status: 1
+autom4te: error: m4 failed with exit status: 1
 ]])
 AT_CLEANUP
 
@@ -618,7 +671,7 @@ c
 post
 ]],
 [[script.4s:15: warning: m4@&t@_require: `a' was expanded before it was required
-script.4s:15: http://www.gnu.org/software/autoconf/manual/autoconf.html#Expanded-Before-Required
+script.4s:15: https://www.gnu.org/software/autoconf/manual/autoconf.html#Expanded-Before-Required
 script.4s:5: b is expanded from...
 script.4s:6: c is expanded from...
 script.4s:14: outer is expanded from...
@@ -871,7 +924,7 @@ m4_argn([0], [a], [b], [c])
 AT_CHECK_M4SUGAR([-o-], [1], [],
 [[script.4s:2: error: assert failed: 0 < 0
 script.4s:2: the top level
-autom4te: m4 failed with exit status: 1
+autom4te: error: m4 failed with exit status: 1
 ]])
 
 AT_CLEANUP
@@ -1553,7 +1606,7 @@ m4_for([myvar], 1, 3,-1, [ myvar])
 AT_CHECK_M4SUGAR([], 1, [],
 [[script.4s:3: error: assert failed: -1 > 0
 script.4s:3: the top level
-autom4te: m4 failed with exit status: 1
+autom4te: error: m4 failed with exit status: 1
 ]])
 
 AT_DATA_M4SUGAR([script.4s],
@@ -1564,7 +1617,7 @@ m4_for([myvar], 1, 2, 0, [ myvar])
 AT_CHECK_M4SUGAR([], 1, [],
 [[script.4s:3: error: assert failed: 0 > 0
 script.4s:3: the top level
-autom4te: m4 failed with exit status: 1
+autom4te: error: m4 failed with exit status: 1
 ]])
 
 AT_DATA_M4SUGAR([script.4s],
@@ -1575,7 +1628,7 @@ m4_for([myvar], 2, 1, 0, [ myvar])
 AT_CHECK_M4SUGAR([], 1, [],
 [[script.4s:3: error: assert failed: 0 < 0
 script.4s:3: the top level
-autom4te: m4 failed with exit status: 1
+autom4te: error: m4 failed with exit status: 1
 ]])
 
 dnl m4_shiftn also does bounds checking
@@ -1587,7 +1640,7 @@ m4_shiftn(3,1,2)
 AT_CHECK_M4SUGAR([], 1, [],
 [[script.4s:3: error: assert failed: 0 < 3 && 3 < 3
 script.4s:3: the top level
-autom4te: m4 failed with exit status: 1
+autom4te: error: m4 failed with exit status: 1
 ]])
 
 AT_CLEANUP
@@ -1780,7 +1833,7 @@ AT_DATA_M4SUGAR([script.4s],
 AT_CHECK_M4SUGAR([], 1, [],
 [[script.4s:1: error: too few arguments to m4@&t@_max
 script.4s:1: the top level
-autom4te: m4 failed with exit status: 1
+autom4te: error: m4 failed with exit status: 1
 ]])
 
 AT_DATA_M4SUGAR([script.4s],
@@ -1790,7 +1843,7 @@ AT_DATA_M4SUGAR([script.4s],
 AT_CHECK_M4SUGAR([], 1, [],
 [[script.4s:1: error: too few arguments to m4@&t@_min
 script.4s:1: the top level
-autom4te: m4 failed with exit status: 1
+autom4te: error: m4 failed with exit status: 1
 ]])
 
 AT_CHECK_M4SUGAR_TEXT([[dnl

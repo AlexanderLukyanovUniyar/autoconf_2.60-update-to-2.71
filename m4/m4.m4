@@ -1,6 +1,7 @@
 # m4.m4 serial 12
 
-# Copyright (C) 2000, 2006-2012 Free Software Foundation, Inc.
+# Copyright (C) 2000, 2006-2017, 2020-2021 Free Software Foundation,
+# Inc.
 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -11,14 +12,14 @@
 # --------------
 # Check for GNU M4, at least 1.4.6 (all earlier versions had bugs in
 # trace support and regexp support):
-# http://lists.gnu.org/archive/html/bug-gnu-utils/2006-11/msg00096.html
-# http://lists.gnu.org/archive/html/bug-autoconf/2009-07/msg00023.html
+# https://lists.gnu.org/archive/html/bug-gnu-utils/2006-11/msg00096.html
+# https://lists.gnu.org/archive/html/bug-autoconf/2009-07/msg00023.html
 # Also, check whether --error-output (through 1.4.x) or --debugfile (2.0)
 # is supported, and AC_SUBST M4_DEBUGFILE accordingly.
 # Also avoid versions of m4 that trigger strstr bugs.
 AC_DEFUN([AC_PROG_GNU_M4],
   [AC_ARG_VAR([M4], [Location of GNU M4 1.4.6 or later.  Defaults to the first
-    program of `m4', `gm4', or `gnum4' on PATH that meets Autoconf needs.])
+    program of 'm4', 'gm4', or 'gnum4' on PATH that meets Autoconf needs.])
   AC_CACHE_CHECK([for GNU M4 that supports accurate traces], [ac_cv_path_M4],
     [rm -f conftest.m4f
 ac_had_posixly_correct=${POSIXLY_CORRECT:+yes}

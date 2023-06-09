@@ -34,17 +34,9 @@ be performed in another file than confdefs.h, say confh.h, which is
 used for config.h generation, but not used in configure's own tests.
 
 ** AC_PROG_CC
-Currently it tries to put the C compiler in ANSI C mode by default.
-We should change this spec so that AC_PROG_CC tries to change the
-compiler to be the "nicest" mode, i.e. support for the latest standard
-features (currently ISO C99) plus support for all vendor extensions,
-even if they are slightly incompatible with C99.  The basic idea here
-is that AC_PROG_CC should disable pedanticisms and should enable
-extensions.
-
 Have a way to specify different default flags to try; see this thread
 for more information:
-<http://lists.gnu.org/archive/html/bug-autoconf/2008-08/msg00009.html>.
+<https://lists.gnu.org/archive/html/bug-autoconf/2008-08/msg00009.html>.
 
 
 * Later
@@ -90,6 +82,13 @@ Harlan:
 
 ** Languages
 Integrate other Fortrans etc.
+
+** Picky compilers, e.g., gcc -Werror
+Many Autoconf-generated tests do the wrong thing if someone configures
+with CC='gcc -Werror' or with similar options.  It would be nice if
+these tests worked better with picky compilers.  This will require
+significant reworking in some cases, e.g., AC_CHECK_FUNCS will need
+to know the headers declaring the functions.
 
 ** AC_CHECK_FUNCS and AC_TRY_LINK_FUNC
 I have still not understood what's the difference  between the two
@@ -143,7 +142,9 @@ We also need to check the srcext which are supported by the compiler.
 In fact, this macro is also probably the right place to check for
 objext and exeext.
 
-** AC_PROG_CC_STDC
+** AC_PROG_CC
+How should the desired ISO version be specified?  AC_PROG_CC_C89
+do not play well with each other, or with AC_PROG_CC.
 Should be: AC_PROG_CC_ISO?  Or even more specific for the ISO version?
 Should include more tests (e.g., AC_C_CONST etc.)?  See Peter for very
 useful comments on the technology.  Should we make this a new
@@ -181,9 +182,9 @@ Hi Robert,
 > It doesn't seem to add -DX_DISPLAY_MISSING to X_CFLAGS.  X_DISPLAY_MISSING
 > ends up defined in config.h, instead.
 
-That's only because you're no doubt using AC_CONFIG_HEADER(..) to send
+That's only because you're no doubt using AC_CONFIG_HEADERS([..]) to send
 your defines to a config.h-style file.  If you were to not use
-AC_CONFIG_HEADER and X was not available, then you would see
+AC_CONFIG_HEADERS and X was not available, then you would see
 -DX_DISPLAY_MISSING being added to @DEFS@ as your output files were being
 generated.
 
@@ -195,12 +196,10 @@ it.
 > Maybe it should really be called X_CPPFLAGS?
 
 Well, perhaps.  If you feel strongly about this, feel free to submit a
-change-request.  There is a hyperlink to the bug tracking database from
-http://sourceware.cygnus.com/autoconf/.  With the way it reads in the
-manual right now, it's designed to allow the user to set additional flags
-in the environment prior to running configure--and these don't need to be
-limited to just -I flags.  Nevertheless, I can see a few clean ways to
-improve this.
+change-request.  With the way it reads in the manual right now, it's
+designed to allow the user to set additional flags in the environment
+prior to running configure--and these don't need to be limited to just
+-I flags.  Nevertheless, I can see a few clean ways to improve this.
 
 ** AC_SYS_INTERPRETER
 Defines $interpval.  This is not a standard name.  Do we want to keep
@@ -235,7 +234,7 @@ reassigning the iterator, allowing a break-like functionality (or even
 infloops).  Does this need a new (but maybe slower) macro?  Should we
 also provide something like m4_while([TEST], [EXPR])?  Maybe an
 m4_break() that works inside a looping construct?
-http://lists.gnu.org/archive/html/autoconf-patches/2008-08/msg00121.html
+https://lists.gnu.org/archive/html/autoconf-patches/2008-08/msg00121.html
 
 * Autoconf 3
 
@@ -592,8 +591,8 @@ with autoconf scripts.
 
 ------------------------------------------------------------------------------
 
-Copyright (C) 1994-1996, 1999-2002, 2007-2012 Free Software Foundation,
-Inc.
+Copyright (C) 1994-1996, 1999-2002, 2007-2017, 2020-2021 Free Software
+Foundation, Inc.
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
