@@ -3,7 +3,7 @@
 %define suff -2.60
 
 Name: %realname%dialect
-Version: 2.69
+Version: 2.71
 Release: alt10
 Epoch: 2
 
@@ -106,6 +106,9 @@ done
 %doc AUTHORS NEWS README TODO
 
 %changelog
+* Fri Jun 09 2023 Alexander Lukyanov <a.lukyanov@stud.uniyar.ac.ru> 2:2.71-alt10
+- Updated to v2.71.
+
 * Wed Aug 25 2021 Dmitry V. Levin <ldv@altlinux.org> 2:2.69-alt10
 - Reverted the change that introduced --runstatedir option.
   It caused build regressions in a few packages,
